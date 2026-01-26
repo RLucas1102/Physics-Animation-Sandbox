@@ -23,10 +23,6 @@ using namespace std;
 
 namespace pba{
 
-
-
-
-
 class MyThing: public PbaThingyDingy
 {
   public:
@@ -77,39 +73,6 @@ class MyThing: public PbaThingyDingy
     bool emit;
    
     PSYS MyThing_PSYS;
-
-    ////////////////////////////////////////////////
-    //
-    //      PARTICLE STATE
-    //
-    // The state of a particle is characterized by
-    // (1) particle positions
-    // (2) particle velocities
-    // (3) particle masses
-    // (4) particle colors - useful for display
-    class ParticleState
-    {
-      public:
-        ParticleState() :
-          position(Vector(0,0,0)),
-	        velocity(Vector(0,0,0)),
-	        color(Color(1,1,1,1)),
-	        mass(1.0)
-	        {};
-       
-        ~ParticleState(){};	   
-
-        Vector position;
-        Vector velocity;
-        Color color;
-        float mass;
-    };
-
-    // This is all of the particles in the system
-    std::vector<ParticleState> particles;
-    //
-    //
-    //////////////////////////////////////////////// 
 
 };
 
