@@ -30,15 +30,14 @@ MyThing::MyThing(const std::string nam) :
  PbaThingyDingy (nam),
  emit       (false)
 {
+    MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
     Reset();
     std::cout << name << " constructed\n";
 }
 
 MyThing::~MyThing(){}
 
-void MyThing::Init( const std::vector<std::string>& args ) {
-   MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
-}
+void MyThing::Init( const std::vector<std::string>& args ) {}
     
 void MyThing::Display() 
 {
@@ -120,9 +119,13 @@ void MyThing::solve()
          double theta = 2.0*3.14159265*drand48();
          pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
          P *= std::pow( drand48(), 1.0/6.0 );
-         MyThing_PSYS->GetParticle(i).position = P;
-         MyThing_PSYS->GetParticle(i).color = pba::Color(drand48(),drand48(),drand48(),0);
-         MyThing_PSYS->GetParticle(i).velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+         
+         pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
+         pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      
+         MyThing_PSYS->SetPos(i, P);
+         MyThing_PSYS->SetVel(i, inVec);
+         MyThing_PSYS->SetCol(i, inCol);
       }
    }
 }
@@ -139,9 +142,13 @@ void MyThing::Reset()
       double theta = 2.0*3.14159265*drand48();
       pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
       P *= std::pow( drand48(), 1.0/6.0 );
-      MyThing_PSYS->GetParticle(i).position = P;
-      MyThing_PSYS->GetParticle(i).color = pba::Color(drand48(),drand48(),drand48(),0);
-      MyThing_PSYS->GetParticle(i).velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      
+      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
+      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      
+      MyThing_PSYS->SetPos(i, P);
+      MyThing_PSYS->SetVel(i, inVec);
+      MyThing_PSYS->SetCol(i, inCol);
    }
 }
 
