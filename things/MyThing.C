@@ -44,10 +44,10 @@ void MyThing::Display()
 {
    glPointSize(5.0);
    glBegin(GL_POINTS);
-   for( size_t i=0;i<particles.size();i++ )
+   for( size_t i=0;i<MyThing_PSYS->Psize();i++ )
    {
-      const Vector& P = particles[i].position;
-      const Color& ci = particles[i].color;
+      const Vector& P = MyThing_PSYS->GetParticle(i).position;
+      const Color& ci = MyThing_PSYS->GetParticle(i).color;
       glColor3f( ci.red(), ci.green(), ci.blue() );
       glVertex3f( P.X(), P.Y(), P.Z() );
    }
@@ -67,9 +67,9 @@ void MyThing::solve()
    // in several steps.
 
    // Step 1: Advance the particle positions in time
-   for(size_t i=0;i<particles.size();i++)
+   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      particles[i].position += particles[i].velocity * dt;
+      MyThing_PSYS->GetParticle(i).position += MyThing_PSYS->GetParticle(i).velocity * dt;
    }
 
    //////////////////////////////////////////////////////////////////////////////////////////
@@ -81,20 +81,20 @@ void MyThing::solve()
 
    // Step 2.1: find the center
    Vector center;
-   for(size_t i=0;i<particles.size();i++)
+   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      center += particles[i].position;
+      center += MyThing_PSYS->GetParticle(i).position;
    }
-   center = center/particles.size();
+   center = center/MyThing_PSYS->Psize();
 
    // Step 2.2: update velocities to be perpendicular to the line from the particle to the center
-   for(size_t i=0;i<particles.size();i++)
+   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      Vector n = particles[i].position - center;
+      Vector n = MyThing_PSYS->GetParticle(i).position - center;
       n.normalize();  // make it a unit vector
-      double vmag = particles[i].velocity.magnitude();
-      particles[i].velocity -= n*(n*particles[i].velocity);
-      particles[i].velocity *= vmag/particles[i].velocity.magnitude(); // keep it the same magnitude
+      double vmag = MyThing_PSYS->GetParticle(i).velocity.magnitude();
+      MyThing_PSYS->GetParticle(i).velocity -= n*(n*MyThing_PSYS->GetParticle(i).velocity);
+      MyThing_PSYS->GetParticle(i).velocity *= vmag/MyThing_PSYS->GetParticle(i).velocity.magnitude(); // keep it the same magnitude
    }
    //
    //
@@ -109,20 +109,20 @@ void MyThing::solve()
    if(emit)
    {
       size_t nbincrease = 10;
-      particles.resize(particles.size()+nbincrease);
+      MyThing_PSYS->AddParticles(nbincrease);
       Vector P, V;
       Color C;
-      std::cout << "Total Points " << particles.size() << std::endl;
-      for(size_t i=particles.size()-nbincrease;i<particles.size();i++)
+      std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
+      for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
       {
          double s = 2.0*drand48() - 1.0;
          double ss = std::sqrt( 1.0 - s*s );
          double theta = 2.0*3.14159265*drand48();
          pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
          P *= std::pow( drand48(), 1.0/6.0 );
-         particles[i].position = P;
-         particles[i].color = pba::Color(drand48(),drand48(),drand48(),0);
-         particles[i].velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+         MyThing_PSYS->GetParticle(i).position = P;
+         MyThing_PSYS->GetParticle(i).color = pba::Color(drand48(),drand48(),drand48(),0);
+         MyThing_PSYS->GetParticle(i).velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
       }
    }
 }
@@ -130,18 +130,18 @@ void MyThing::solve()
 void MyThing::Reset()
 {
    // Distribute particles with random positions
-   particles.clear();
-   particles.resize(20);
-   for(size_t i=0;i<particles.size();i++)
+   MyThing_PSYS->Pclear();
+   MyThing_PSYS->AddParticles(20);
+   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
       double s = 2.0*drand48() - 1.0;
       double ss = std::sqrt( 1.0 - s*s );
       double theta = 2.0*3.14159265*drand48();
       pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
       P *= std::pow( drand48(), 1.0/6.0 );
-      particles[i].position = P;
-      particles[i].color = pba::Color(drand48(),drand48(),drand48(),0);
-      particles[i].velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      MyThing_PSYS->GetParticle(i).position = P;
+      MyThing_PSYS->GetParticle(i).color = pba::Color(drand48(),drand48(),drand48(),0);
+      MyThing_PSYS->GetParticle(i).velocity = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
    }
 }
 
@@ -153,8 +153,7 @@ void MyThing::Usage()
 }
 
 
-pba::PbaThing pba::CreateMyThing(){ return PbaThing( new MyThing() ); }
-// std::shared_ptr<MyThing> pba::CreateMyThing(){ return std::shared_ptr<MyThing> (new MyThing()); }
+pba::PbaThing pba::CreateMyThing() { return PbaThing( new MyThing() ); }
 
 
 
