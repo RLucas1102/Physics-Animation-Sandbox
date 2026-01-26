@@ -17,14 +17,13 @@
 #include <GL/glut.h> // GLUT support library.
 #include <iostream>
 
+#include "ParticleSystem.h"
+
 
 
 using namespace std;
 
 using namespace pba;
-
-
-
 
 
 MyThing::MyThing(const std::string nam) :
@@ -37,7 +36,9 @@ MyThing::MyThing(const std::string nam) :
 
 MyThing::~MyThing(){}
 
-void MyThing::Init( const std::vector<std::string>& args ) {}
+void MyThing::Init( const std::vector<std::string>& args ) {
+   MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
+}
     
 void MyThing::Display() 
 {

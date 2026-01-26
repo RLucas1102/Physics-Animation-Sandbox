@@ -15,6 +15,8 @@
 #include "Color.h"
 #include "PbaThing.h"
 
+#include "ParticleSystem.h"
+
 
 
 using namespace std;
@@ -74,6 +76,8 @@ class MyThing: public PbaThingyDingy
     // flag for whether to create more particles
     bool emit;
    
+    PSYS MyThing_PSYS;
+
     ////////////////////////////////////////////////
     //
     //      PARTICLE STATE
@@ -87,17 +91,18 @@ class MyThing: public PbaThingyDingy
     {
       public:
         ParticleState() :
-         position(Vector(0,0,0)),
-	 velocity(Vector(0,0,0)),
-	 color(Color(1,1,1,1)),
-	 mass(1.0)
-	{};
-       ~ParticleState(){};	   
+          position(Vector(0,0,0)),
+	        velocity(Vector(0,0,0)),
+	        color(Color(1,1,1,1)),
+	        mass(1.0)
+	        {};
+       
+        ~ParticleState(){};	   
 
-       Vector position;
-       Vector velocity;
-       Color color;
-       float mass;
+        Vector position;
+        Vector velocity;
+        Color color;
+        float mass;
     };
 
     // This is all of the particles in the system
@@ -113,8 +118,6 @@ class MyThing: public PbaThingyDingy
 // smart pointer called a PbaThing. 
 // You need not alter this.
 pba::PbaThing CreateMyThing();
-// std::shared_ptr<MyThing> CreateMyThing();
-
 
 
 
