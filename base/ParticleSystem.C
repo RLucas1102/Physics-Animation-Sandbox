@@ -21,6 +21,30 @@ ParticleState ParticleSystem::GetParticle(const size_t p) {
     return particles[p];
 }
 
+Vector const ParticleSystem::GetPos(const size_t p) {
+    return particles[p].position;
+}
+
+Vector const ParticleSystem::GetVel(const size_t p) {
+    return particles[p].velocity; 
+}
+
+Color const ParticleSystem::GetCol(const size_t p) {
+    return particles[p].color;    
+}
+
+void ParticleSystem::SetPos(const size_t p, Vector& inPos) {
+    particles[p].position = inPos;
+}
+
+void ParticleSystem::SetVel(const size_t p, Vector& inVel) {
+    particles[p].velocity = inVel;
+}
+
+void ParticleSystem::SetCol(const size_t p, Color& inCol) {
+    particles[p].color = inCol;
+}
+
 size_t const ParticleSystem::Psize() {
     return particles.size();
 } 

@@ -51,6 +51,18 @@ namespace pba {
 
             ParticleState GetParticle(const size_t p);
 
+            Vector const GetPos(const size_t p);
+
+            Vector const GetVel(const size_t p);
+
+            Color const GetCol(const size_t p);
+
+            void SetPos(const size_t p, Vector& inPos);
+
+            void SetVel(const size_t p, Vector& inVel);
+
+            void SetCol(const size_t p, Color& inCol);
+
             size_t const Psize();
 
             void Pclear();
