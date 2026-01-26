@@ -36,7 +36,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
-#include "PbaViewer.h"
+#include <PbaViewer.h>
 #include <omp.h>
 
 
