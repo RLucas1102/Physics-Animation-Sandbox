@@ -4,7 +4,7 @@ OFILES = base/PbaViewer.o \
          base/PbaThing.o \
          base/Matrix.o \
          base/LinearAlgebra.o \
-		 base/DynamicalState.o \
+		 base/ParticleSystem.o\
 	 things/MyThing.o 
 
 
