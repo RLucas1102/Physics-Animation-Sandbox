@@ -17,10 +17,6 @@ void ParticleSystem::AddParticles(const size_t p) {
     
 }
 
-ParticleState ParticleSystem::GetParticle(const size_t p) {
-    return particles[p];
-}
-
 Vector const ParticleSystem::GetPos(const size_t p) {
     return particles[p].position;
 }

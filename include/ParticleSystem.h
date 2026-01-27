@@ -49,8 +49,6 @@ namespace pba {
 
             void AddParticles(const size_t p);
 
-            ParticleState GetParticle(const size_t p);
-
             Vector const GetPos(const size_t p);
 
             Vector const GetVel(const size_t p);
