@@ -68,7 +68,12 @@ void MyThing::solve()
    // Step 1: Advance the particle positions in time
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      MyThing_PSYS->GetParticle(i).position += MyThing_PSYS->GetParticle(i).velocity * dt;
+      Vector P = MyThing_PSYS->GetPos(i);
+      Vector V = MyThing_PSYS->GetVel(i);
+
+      P += V * dt;
+
+      MyThing_PSYS->SetPos(i, P);
    }
 
    //////////////////////////////////////////////////////////////////////////////////////////
@@ -82,18 +87,24 @@ void MyThing::solve()
    Vector center;
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      center += MyThing_PSYS->GetParticle(i).position;
+      center += MyThing_PSYS->GetPos(i);
    }
    center = center/MyThing_PSYS->Psize();
 
    // Step 2.2: update velocities to be perpendicular to the line from the particle to the center
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      Vector n = MyThing_PSYS->GetParticle(i).position - center;
+      Vector n = MyThing_PSYS->GetPos(i) - center;
       n.normalize();  // make it a unit vector
-      double vmag = MyThing_PSYS->GetParticle(i).velocity.magnitude();
-      MyThing_PSYS->GetParticle(i).velocity -= n*(n*MyThing_PSYS->GetParticle(i).velocity);
-      MyThing_PSYS->GetParticle(i).velocity *= vmag/MyThing_PSYS->GetParticle(i).velocity.magnitude(); // keep it the same magnitude
+      double vmag = MyThing_PSYS->GetVel(i).magnitude();
+
+      Vector V = MyThing_PSYS->GetVel(i);
+
+      V -= n*(n*V);
+      V *= vmag/V.magnitude();
+
+      MyThing_PSYS->SetVel(i, V);
+
    }
    //
    //
