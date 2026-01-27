@@ -46,8 +46,8 @@ void MyThing::Display()
    glBegin(GL_POINTS);
    for( size_t i=0;i<MyThing_PSYS->Psize();i++ )
    {
-      const Vector& P = MyThing_PSYS->GetParticle(i).position;
-      const Color& ci = MyThing_PSYS->GetParticle(i).color;
+      const Vector& P = MyThing_PSYS->GetPos(i);
+      const Color& ci = MyThing_PSYS->GetCol(i);
       glColor3f( ci.red(), ci.green(), ci.blue() );
       glVertex3f( P.X(), P.Y(), P.Z() );
    }
