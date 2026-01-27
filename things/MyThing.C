@@ -30,14 +30,15 @@ MyThing::MyThing(const std::string nam) :
  PbaThingyDingy (nam),
  emit       (false)
 {
-    MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
-    Reset();
     std::cout << name << " constructed\n";
 }
 
 MyThing::~MyThing(){}
 
-void MyThing::Init( const std::vector<std::string>& args ) {}
+void MyThing::Init( const std::vector<std::string>& args ) {
+    MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
+    Reset(); 
+}
     
 void MyThing::Display() 
 {
