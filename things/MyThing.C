@@ -65,40 +65,11 @@ void MyThing::Display()
 void MyThing::Keyboard( unsigned char key, int x, int y )
 {
        PbaThingyDingy::Keyboard(key,x,y);
-       if( key == 'e' ){ emit = !emit; }
+       if( key == 'e' ){ Emit(); }
 }
 
 
-void MyThing::solve()
-{
-   
-   solver->solve(dt);
-   
-   // This is where we can add more particles
-   if(emit)
-   {
-      size_t nbincrease = 10;
-      MyThing_PSYS->AddParticles(nbincrease);
-      Vector P, V;
-      Color C;
-      std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
-      for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
-      {
-         double s = 2.0*drand48() - 1.0;
-         double ss = std::sqrt( 1.0 - s*s );
-         double theta = 2.0*3.14159265*drand48();
-         pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
-         P *= std::pow( drand48(), 1.0/6.0 );
-         
-         pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-         pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
-      
-         MyThing_PSYS->SetPos(i, P);
-         MyThing_PSYS->SetVel(i, inVec);
-         MyThing_PSYS->SetCol(i, inCol);
-      }
-   }
-}
+void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
@@ -126,7 +97,32 @@ void MyThing::Usage()
 {
    PbaThingyDingy::Usage();
    cout << "=== " << name << " ===\n";
-   cout << "e            toggle particle emission on/off\n";
+   cout << "e            Create 100 new particles\n";
+}
+
+void MyThing::Emit() {
+      
+   size_t nbincrease = 100;
+   MyThing_PSYS->AddParticles(nbincrease);
+   Vector P, V;
+   Color C;
+   std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
+   for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
+   {
+      double s = 2.0*drand48() - 1.0;
+      double ss = std::sqrt( 1.0 - s*s );
+      double theta = 2.0*3.14159265*drand48();
+      pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
+      P *= std::pow( drand48(), 1.0/6.0 );
+      
+      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
+      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+   
+      MyThing_PSYS->SetPos(i, P);
+      MyThing_PSYS->SetVel(i, inVec);
+      MyThing_PSYS->SetCol(i, inCol);
+   }
+   
 }
 
 

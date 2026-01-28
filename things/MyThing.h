@@ -68,6 +68,8 @@ class MyThing: public PbaThingyDingy
     //! here as to what the keyboard option is.
     void Usage();
 
+    void Emit();
+
   private:
 
     // flag for whether to create more particles
