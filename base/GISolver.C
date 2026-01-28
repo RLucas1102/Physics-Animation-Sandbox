@@ -1,5 +1,6 @@
 #include "GISolver.h"
 #include "Vector.h"
+#include "Force.h"
 
 using namespace pba;
 
@@ -11,6 +12,15 @@ using namespace pba;
         PQ (pq)
         {}    
 
+    AdvancePosition::AdvancePosition(PSYS& pq) :
+        PQ (pq)
+        {}
+
+    AdvanceVelocity::AdvanceVelocity(PSYS& pq, Force& f) :
+        PQ (pq),
+        force (f)
+        {}
+        
     void AdvancePositionStarter::solve(const double dt) {
         for (size_t i=0; i< PQ->Psize(); i++) {
 
@@ -46,6 +56,34 @@ using namespace pba;
             PQ->SetVel(i, V);
         }
     }
+    
+    void AdvancePosition::solve(const double dt) {
+        for (size_t i=0; i< PQ->Psize(); i++) {
+
+            Vector P = PQ->GetPos(i);
+            Vector V = PQ->GetVel(i);
+
+            P += V * dt;
+
+            PQ->SetPos(i, P);
+
+        }
+    }
+
+    void AdvanceVelocity::solve(const double dt) {
+        force->compute(PQ, dt);
+
+        for (size_t i = 0; i < PQ->Psize(); i++) {
+            Vector V = PQ->GetVel(i);
+            Vector A = PQ->GetAcc(i);
+            
+            V += A * dt;
+
+            PQ->SetVel(i, V);
+
+        }
+        
+    }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
         return GISolver( new AdvancePositionStarter(pq) );
@@ -65,4 +103,12 @@ using namespace pba;
 
     GISolver pba::CreateLeapFrogSolver(GISolver& A, GISolver& B) {
         return GISolver( new LeapFrogSolver(A,B) );
+    }
+
+    GISolver pba::CreateAdvancePosition(PSYS &pq) {
+        return GISolver( new AdvancePosition(pq) );
+    }
+
+    GISolver pba::CreateAdvanceVelocity(PSYS &pq, Force& f) {
+        return GISolver( new AdvanceVelocity(pq, f) );
     }

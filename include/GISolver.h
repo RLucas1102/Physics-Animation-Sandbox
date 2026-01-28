@@ -16,6 +16,7 @@
  #include <memory>
 
  #include "ParticleSystem.h"
+ #include "Force.h"
   
  namespace pba{
   
@@ -40,7 +41,7 @@
  {
     public:
 
-      AdvancePositionStarter (PSYS& pq);
+      AdvancePositionStarter(PSYS& pq);
       ~AdvancePositionStarter() {};
 
       void init() {};
@@ -56,7 +57,7 @@ class AdvanceVelocityStarter : public GISolverBase
 {
   public:
   
-    AdvanceVelocityStarter (PSYS& pq);
+    AdvanceVelocityStarter(PSYS& pq);
     ~AdvanceVelocityStarter() {};
 
     void init() {};
@@ -65,6 +66,39 @@ class AdvanceVelocityStarter : public GISolverBase
   private:
 
     PSYS PQ;
+
+};
+
+ class AdvancePosition : public GISolverBase
+ {
+    public:
+
+      AdvancePosition(PSYS& pq);
+      ~AdvancePosition() {};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+
+      PSYS PQ;
+
+ };
+
+ class AdvanceVelocity : public GISolverBase
+{
+  public:
+  
+    AdvanceVelocity(PSYS& pq, Force& f);
+    ~AdvanceVelocity() {};
+
+    void init() {};
+    void solve(const double dt);
+
+  private:
+
+    PSYS PQ;
+    Force force;
 
 };
 
@@ -151,6 +185,8 @@ class AdvanceVelocityStarter : public GISolverBase
  GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);
  GISolver CreateAdvancePositionStarter(PSYS& pq);
  GISolver CreateAdvanceVelocityStarter(PSYS& pq);
+ GISolver CreateAdvancePosition(PSYS& pq);
+ GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
 
   
  }
