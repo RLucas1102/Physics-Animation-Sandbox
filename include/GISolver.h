@@ -14,6 +14,8 @@
   
  #include <cmath>
  #include <memory>
+
+ #include "ParticleSystem.h"
   
  namespace pba{
   
@@ -33,7 +35,39 @@
  };
   
  typedef std::shared_ptr<GISolverBase> GISolver;
+ 
+ class AdvancePositionStarter : public GISolverBase
+ {
+    public:
+
+      AdvancePositionStarter (PSYS& pq);
+      ~AdvancePositionStarter() {};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+
+      PSYS PQ;
+
+ };
+
+class AdvanceVelocityStarter : public GISolverBase
+{
+  public:
   
+    AdvanceVelocityStarter (PSYS& pq);
+    ~AdvanceVelocityStarter() {};
+
+    void init() {};
+    void solve(const double dt);
+
+  private:
+
+    PSYS PQ;
+
+};
+
  class LeapFrogSolver : public GISolverBase
  {
    public:
@@ -60,12 +94,6 @@
      GISolver a;
      GISolver b;
  };
-
- class AdvancePosition : public GISolverBase {
-    public:
-        AdvancePosition()
- }
-  
   
  class ForwardEulerSolver : public GISolverBase
  {
@@ -91,10 +119,38 @@
      GISolver a;
      GISolver b;
  };
+ 
+ class BackwardEulerSolver : public GISolverBase
+ {
+   public:
+  
+     BackwardEulerSolver( GISolver& A, GISolver& B ) :
+       a (A),
+       b (B)
+     {}
+  
+     ~BackwardEulerSolver(){}
+  
+     void init(){ a->init(); b->init(); }
+  
+     void solve( const double dt )
+     {
+        b->solve(dt);
+        a->solve(dt);
+     }
+  
+   private:
+  
+     GISolver a;
+     GISolver b;
+ };
   
   
  GISolver CreateLeapFrogSolver( GISolver& A, GISolver&  B );
  GISolver CreateForwardEulerSolver( GISolver& A, GISolver& B );
+ GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);
+ GISolver CreateAdvancePositionStarter(PSYS& pq);
+ GISolver CreateAdvanceVelocityStarter(PSYS& pq);
 
   
  }
