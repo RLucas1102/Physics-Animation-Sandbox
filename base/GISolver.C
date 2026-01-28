@@ -58,3 +58,11 @@ using namespace pba;
     GISolver pba::CreateForwardEulerSolver(GISolver& A, GISolver& B) {
         return GISolver( new ForwardEulerSolver(A,B) );
     }
+
+    GISolver pba::CreateBackwardEulerSolver(GISolver& A, GISolver& B) {
+        return GISolver( new BackwardEulerSolver(A,B) );
+    }
+
+    GISolver pba::CreateLeapFrogSolver(GISolver& A, GISolver& B) {
+        return GISolver( new LeapFrogSolver(A,B) );
+    }
