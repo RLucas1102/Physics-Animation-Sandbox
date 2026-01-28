@@ -29,6 +29,10 @@ Color const ParticleSystem::GetCol(const size_t p) {
     return particles[p].color;    
 }
 
+Vector const ParticleSystem::GetAcc(const size_t p) {
+    return particles[p].acceleration;
+}
+
 void ParticleSystem::SetPos(const size_t p, Vector& inPos) {
     particles[p].position = inPos;
 }
@@ -39,6 +43,10 @@ void ParticleSystem::SetVel(const size_t p, Vector& inVel) {
 
 void ParticleSystem::SetCol(const size_t p, Color& inCol) {
     particles[p].color = inCol;
+}
+
+void ParticleSystem::SetAcc(const size_t p, Vector& inAcc) {
+    particles[p].acceleration = inAcc;
 }
 
 size_t const ParticleSystem::Psize() {

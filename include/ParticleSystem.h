@@ -33,6 +33,7 @@ namespace pba {
 
             Vector position;
             Vector velocity;
+            Vector acceleration;
             Color color;
             float mass;
     };
@@ -55,11 +56,15 @@ namespace pba {
 
             Color const GetCol(const size_t p);
 
+            Vector const GetAcc(const size_t p);
+
             void SetPos(const size_t p, Vector& inPos);
 
             void SetVel(const size_t p, Vector& inVel);
 
             void SetCol(const size_t p, Color& inCol);
+
+            void SetAcc(const size_t p, Vector& inAcc);
 
             size_t const Psize();
 
