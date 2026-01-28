@@ -42,7 +42,11 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
     GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
-    solver = CreateForwardEulerSolver(solverA, solverB);
+    FESolver = CreateForwardEulerSolver(solverA, solverB);
+    BESolver = CreateBackwardEulerSolver(solverA, solverB);
+    LFSolver = CreateLeapFrogSolver(solverA, solverB);
+
+    currentSolver = FESolver;
 
     Reset(); 
 
@@ -66,10 +70,13 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
 {
        PbaThingyDingy::Keyboard(key,x,y);
        if( key == 'e' ){ Emit(); }
+       if( key == 'b' ){ currentSolver = BESolver; }
+       if( key == 'B' ){ currentSolver = FESolver; }
+       if( key == 'L' ){ currentSolver = LFSolver; }
 }
 
 
-void MyThing::solve() { solver->solve(dt); }
+void MyThing::solve() { currentSolver->solve(dt); }
 
 void MyThing::Reset()
 {
@@ -98,6 +105,9 @@ void MyThing::Usage()
    PbaThingyDingy::Usage();
    cout << "=== " << name << " ===\n";
    cout << "e            Create 100 new particles\n";
+   cout << "b            Use Backward Euler Solver\n";
+   cout << "B            Use Forward Euler Solver\n";
+   cout << "L            Use Leap Frog Solver\n";
 }
 
 void MyThing::Emit() {
