@@ -5,6 +5,7 @@ OFILES = base/PbaViewer.o \
          base/Matrix.o \
          base/LinearAlgebra.o \
 		 base/ParticleSystem.o\
+		 base/GISolver.o \
 	 things/MyThing.o 
 
 
