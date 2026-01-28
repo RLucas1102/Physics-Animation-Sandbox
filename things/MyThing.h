@@ -76,7 +76,10 @@ class MyThing: public PbaThingyDingy
     bool emit;
    
     PSYS MyThing_PSYS;
-    GISolver solver;
+    GISolver currentSolver;
+    GISolver FESolver;
+    GISolver BESolver;
+    GISolver LFSolver;
 
 };
 
