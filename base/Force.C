@@ -9,7 +9,12 @@ GravityForce::GravityForce(const Vector& g) :
     {}
 
 void GravityForce::compute( PSYS& psys, const double dt) {
+
+    Vector initA = Vector(0, 0, 0);
     for (size_t i = 0; i < psys->Psize(); i++) {
+
+        psys->SetAcc(i, initA);
+
         Vector A = psys->GetAcc(i);
 
         A += gravity;
