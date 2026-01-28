@@ -54,3 +54,7 @@ using namespace pba;
     GISolver pba::CreateAdvanceVelocityStarter(PSYS& pq) {
         return GISolver( new AdvanceVelocityStarter(pq) );
     }
+
+    GISolver pba::CreateForwardEulerSolver(GISolver& A, GISolver& B) {
+        return GISolver( new ForwardEulerSolver(A,B) );
+    }
