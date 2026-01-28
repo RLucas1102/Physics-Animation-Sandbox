@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "ParticleSystem.h"
+#include "GISolver.h"
 
 
 
@@ -36,8 +37,15 @@ MyThing::MyThing(const std::string nam) :
 MyThing::~MyThing(){}
 
 void MyThing::Init( const std::vector<std::string>& args ) {
+
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
+
+    GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
+    GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
+    solver = CreateForwardEulerSolver(solverA, solverB);
+
     Reset(); 
+
 }
     
 void MyThing::Display() 
@@ -63,59 +71,9 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
 
 void MyThing::solve()
 {
-   // This is where the particle state - position and velocity - are updated
-   // in several steps.
-
-   // Step 1: Advance the particle positions in time
-   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
-   {
-      Vector P = MyThing_PSYS->GetPos(i);
-      Vector V = MyThing_PSYS->GetVel(i);
-
-      P += V * dt;
-
-      MyThing_PSYS->SetPos(i, P);
-   }
-
-   //////////////////////////////////////////////////////////////////////////////////////////
-   //
-   //           THIS PART IS NOT A TYPICAL VELOCITY UPDATE
-   //
-   // Next the velocity is updated.  For most situations, this update comes
-   // from forces on the particles. Here we do a simple, non-force, example.
-
-   // Step 2.1: find the center
-   Vector center;
-   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
-   {
-      center += MyThing_PSYS->GetPos(i);
-   }
-   center = center/MyThing_PSYS->Psize();
-
-   // Step 2.2: update velocities to be perpendicular to the line from the particle to the center
-   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
-   {
-      Vector n = MyThing_PSYS->GetPos(i) - center;
-      n.normalize();  // make it a unit vector
-      double vmag = MyThing_PSYS->GetVel(i).magnitude();
-
-      Vector V = MyThing_PSYS->GetVel(i);
-
-      V -= n*(n*V);
-      V *= vmag/V.magnitude();
-
-      MyThing_PSYS->SetVel(i, V);
-
-   }
-   //
-   //
-   //////////////////////////////////////////////////////////////////////////////////////////////////
-
-   // This concludes the solver action
-   //
-   //
-   //
-   //
+   
+   solver->solve(dt);
+   
    // This is where we can add more particles
    if(emit)
    {
