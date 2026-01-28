@@ -16,6 +16,7 @@
 #include "PbaThing.h"
 
 #include "ParticleSystem.h"
+#include "GISolver.h"
 
 
 
@@ -73,6 +74,7 @@ class MyThing: public PbaThingyDingy
     bool emit;
    
     PSYS MyThing_PSYS;
+    GISolver solver;
 
 };
 
