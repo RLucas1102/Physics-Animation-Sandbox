@@ -40,10 +40,10 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
-   //  GForce = CreateGravityForce()
+    GForce = CreateGravityForce(Vector(0, -1, 0));
 
-    GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
-    GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
+    GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
+    GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
 
     Reset(); 
@@ -69,20 +69,20 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
        PbaThingyDingy::Keyboard(key,x,y);
        if( key == 'e' ){ Emit(); }
        if( key == 'b' ){ 
-         GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
-         GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
+         GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateBackwardEulerSolver(solverA, solverB);
          cout << "Using Backward Euler Solver\n";
       }
        if( key == 'B' ){ 
-         GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
-         GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
+         GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateForwardEulerSolver(solverA, solverB);
          cout << "Using Forward Euler Solver\n";
       }
        if( key == 'L' ){ 
-         GISolver solverA = CreateAdvancePositionStarter(MyThing_PSYS);
-         GISolver solverB = CreateAdvanceVelocityStarter(MyThing_PSYS);
+         GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateLeapFrogSolver(solverA, solverB);
          cout << "Using Leap Frog Solver\n";
       }
