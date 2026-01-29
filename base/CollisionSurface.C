@@ -96,7 +96,20 @@ void CollisionSurfaceRaw::MakeBox(const double& m) {
 
     CollisionTriangle Bot1   = MakeCollisionTriangle(FrontBR, FrontBL, BackBR);
     CollisionTriangle Bot2   = MakeCollisionTriangle(FrontBL, BackBL, BackBR);
-    
+   
+    Front1->SetColor(Color(1.0, 0.0, 0.0, 1.0));
+    Front2->SetColor(Color(0.0, 1.0, 0.0, 1.0));
+    Back1->SetColor(Color( 0.0, 0.0, 1.0, 1.0));
+    Back2->SetColor(Color( 1.0, 1.0, 0.0, 1.0));
+    Left1->SetColor(Color( 1.0, 0.0, 1.0, 1.0));
+    Left2->SetColor(Color( 0.0, 1.0, 1.0, 1.0));
+    Right1->SetColor(Color(1.0, 1.0, 0.5, 1.0));
+    Right2->SetColor(Color(1.0, 0.5, 1.0, 1.0));
+    Top1->SetColor(Color(  0.5, 1.0, 1.0, 1.0));
+    Top2->SetColor(Color(  0.0, 0.5, 1.0, 1.0));
+    Bot1->SetColor(Color(  1.0, 0.5, 0.0, 1.0));
+    Bot2->SetColor(Color(  0.5, 1.0, 0.5, 1.0));
+
     triangles.push_back(Front1);
     triangles.push_back(Front2);
     triangles.push_back(Back1);
@@ -116,11 +129,11 @@ void CollisionSurfaceRaw::Display() {
 
     for (size_t i = 0; i < triangles.size(); i++) {
         glBegin(GL_TRIANGLES);
-            glColor3f(1.0, 0.0, 0.0);
+            glColor3f(triangles[i]->GetColor(0), triangles[i]->GetColor(1), triangles[i]->GetColor(2));
             glVertex3f(triangles[i]->GetP0(0), triangles[i]->GetP0(1), triangles[i]->GetP0(2));
-            glColor3f(0.0, 1.0, 0.0);
+            glColor3f(triangles[i]->GetColor(0), triangles[i]->GetColor(1), triangles[i]->GetColor(2));
             glVertex3f(triangles[i]->GetP1(0), triangles[i]->GetP1(1), triangles[i]->GetP1(2));
-            glColor3f(0.0, 0.0, 1.0);
+            glColor3f(triangles[i]->GetColor(0), triangles[i]->GetColor(1), triangles[i]->GetColor(2));
             glVertex3f(triangles[i]->GetP2(0), triangles[i]->GetP2(1), triangles[i]->GetP2(2));
         glEnd();
 
