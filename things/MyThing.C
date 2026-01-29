@@ -61,6 +61,14 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     
     Box->AddTriangle(t);
 
+    p0 = Vector(1.0, -1.0, -1.0);
+    p1 = Vector(1.0, 1.0, -1.0);     
+    p2 = Vector(1.0, -1.0, 1.0);
+
+    t = MakeCollisionTriangle(p0, p1, p2);
+    
+    Box->AddTriangle(t);
+
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
@@ -111,10 +119,20 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       if( key == 'g'){
          std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
          g->DecreaseGravityForce();
+         cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
       } 
       if( key == 'G'){
          std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
          g->IncreaseGravityForce();
+         cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
+      }
+      if( key == 'c'){
+         Box->DecreaseCoeffR();
+         cout << "Current coefficient of restitution: " << Box->GetCoeffR() << "\n";
+      }
+      if( key == 'C'){
+         Box->IncreaseCoeffR();
+         cout << "Current coefficient of restitution: " << Box->GetCoeffR() << "\n";
       }
 
 }
@@ -126,10 +144,10 @@ void MyThing::Reset()
 {
    // Distribute particles with random positions
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(20);
+   MyThing_PSYS->AddParticles(1);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      pba::Vector P(0, 0, 0);
+      pba::Vector P(drand48()-0.5, drand48()-0.5, drand48()-0.5);
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
    
@@ -147,6 +165,10 @@ void MyThing::Usage()
    cout << "b            Use Backward Euler Solver\n";
    cout << "B            Use Forward Euler Solver\n";
    cout << "L            Use Leap Frog Solver\n";
+   cout << "g            Decrease magnitude of gravity\n";
+   cout << "G            Increase magnitude of gravity\n";
+   cout << "c            Decrease coefficient of restitution\n";
+   cout << "C            Increase coefficient of restitution\n";
 }
 
 void MyThing::Emit() {
