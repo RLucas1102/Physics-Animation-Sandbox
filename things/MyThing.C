@@ -18,7 +18,7 @@
 #include <iostream>
 
 #include "ParticleSystem.h"
-#include "CollisionTriangle.h"
+#include "CollisionSurface.h"
 #include "GISolver.h"
 
 
@@ -45,29 +45,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     Box = MakeCollisionSurface();
 
-    Vector p0 = Vector(1.0, -1.0, 1.0);
-    Vector p1 = Vector(1.0, -1.0, -1.0);
-    Vector p2 = Vector(-1.0, -1.0, 1.0);
-
-    CollisionTriangle t = MakeCollisionTriangle(p0, p1, p2);
-
-    Box->AddTriangle(t);
-
-    p0 = Vector(1.0, -1.0, -1.0);
-    p1 = Vector(-1.0, -1.0, -1.0);     
-    p2 = Vector(-1.0, -1.0, 1.0);
-
-    t = MakeCollisionTriangle(p0, p1, p2);
-    
-    Box->AddTriangle(t);
-
-    p0 = Vector(1.0, -1.0, -1.0);
-    p1 = Vector(1.0, 1.0, -1.0);     
-    p2 = Vector(1.0, -1.0, 1.0);
-
-    t = MakeCollisionTriangle(p0, p1, p2);
-    
-    Box->AddTriangle(t);
+    Box->MakeBox(2);
 
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
@@ -79,6 +57,9 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     
 void MyThing::Display() 
 {
+
+   glEnable(GL_CULL_FACE);
+   glCullFace(GL_FRONT);
 
    Box->Display();
 
