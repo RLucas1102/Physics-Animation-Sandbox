@@ -66,26 +66,35 @@ void MyThing::Display()
 
 void MyThing::Keyboard( unsigned char key, int x, int y )
 {
-       PbaThingyDingy::Keyboard(key,x,y);
-       if( key == 'e' ){ Emit(); }
-       if( key == 'b' ){ 
+      PbaThingyDingy::Keyboard(key,x,y);
+      if( key == 'e' ){ Emit(); }
+      if( key == 'b' ){ 
          GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
          GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateBackwardEulerSolver(solverA, solverB);
          cout << "Using Backward Euler Solver\n";
       }
-       if( key == 'B' ){ 
+      if( key == 'B' ){ 
          GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
          GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateForwardEulerSolver(solverA, solverB);
          cout << "Using Forward Euler Solver\n";
       }
-       if( key == 'L' ){ 
+      if( key == 'L' ){ 
          GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
          GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
          solver = CreateLeapFrogSolver(solverA, solverB);
          cout << "Using Leap Frog Solver\n";
       }
+      if( key == 'g'){
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
+         g->DecreaseGravityForce();
+      } 
+      if( key == 'G'){
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
+         g->IncreaseGravityForce();
+      }
+
 }
 
 
