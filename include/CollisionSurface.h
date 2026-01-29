@@ -25,7 +25,11 @@ namespace pba {
             void handle(    const Vector& XS, const Vector& VS, 
                             const double& dt, const Vector& XH, 
                             const double& dtH, Vector& XR, Vector& VR,
-                            const CollisionTriangle& t) const;
+                            const size_t& i) const;
+
+            bool MultiTriangleHit(  const Vector& pos, const Vector& vel, 
+                                    const double& dt, Vector& XH, 
+                                    double& dtH, size_t& pH);
 
 
         private:
