@@ -44,6 +44,18 @@ bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double 
     return hit;
 }
 
+double CollisionTriangleRaw::GetP0(size_t i) {
+    return P0[i];
+}
+
+double CollisionTriangleRaw::GetP1(size_t i) {
+    return P1[i];
+}
+
+double CollisionTriangleRaw::GetP2(size_t i) {
+    return P2[i];
+}
+
 CollisionTriangle pba::MakeCollisionTriangle(const Vector& p0, const Vector& p1, const Vector& p2) {
     return CollisionTriangle(new CollisionTriangleRaw(p0, p1, p2));
 }

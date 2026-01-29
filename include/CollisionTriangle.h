@@ -13,6 +13,10 @@ namespace pba {
 
             bool hit( const Vector& XS, const Vector& VS, const double dt, Vector& XH, double& dtH);
 
+            double GetP0(size_t i);
+            double GetP1(size_t i);
+            double GetP2(size_t i);
+
         private:
 
             Vector P0;
