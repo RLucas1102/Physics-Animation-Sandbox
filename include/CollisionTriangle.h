@@ -3,6 +3,7 @@
 
 #include "Vector.h"
 #include "memory"
+#include "Color.h"
 
 namespace pba {
     class CollisionTriangleRaw {
@@ -20,6 +21,8 @@ namespace pba {
             double GetP0(size_t i);
             double GetP1(size_t i);
             double GetP2(size_t i);
+            void SetColor(const Color& inCol);
+            float const GetColor(size_t i);
 
         private:
 
@@ -29,6 +32,7 @@ namespace pba {
             Vector e1;
             Vector e2;
             Vector normal;
+            Color color;
 
     };
 

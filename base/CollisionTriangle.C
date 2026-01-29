@@ -68,6 +68,14 @@ double CollisionTriangleRaw::GetP2(size_t i) {
     return P2[i];
 }
 
+void CollisionTriangleRaw::SetColor(const Color& inCol) {
+    color = inCol;
+}
+
+float const CollisionTriangleRaw::GetColor(size_t i) {
+    return color[i];
+}
+
 CollisionTriangle pba::MakeCollisionTriangle(const Vector& p0, const Vector& p1, const Vector& p2) {
     return CollisionTriangle(new CollisionTriangleRaw(p0, p1, p2));
 }
