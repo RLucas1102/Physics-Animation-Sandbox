@@ -17,6 +17,7 @@
 
  #include "ParticleSystem.h"
  #include "Force.h"
+ #include "CollisionSurface.h"
   
  namespace pba{
   
@@ -83,6 +84,22 @@ class AdvanceVelocityStarter : public GISolverBase
 
       PSYS PQ;
 
+ };
+
+ class AdvancePositionWithCollision : public GISolverBase
+ {
+    public:
+
+      AdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
+      ~AdvancePositionWithCollision(){};
+
+      void init() {};
+      void solve(const double dt);
+
+      private:
+
+        PSYS PQ;
+        CollisionSurface C;
  };
 
  class AdvanceVelocity : public GISolverBase
@@ -187,6 +204,7 @@ class AdvanceVelocityStarter : public GISolverBase
  GISolver CreateAdvanceVelocityStarter(PSYS& pq);
  GISolver CreateAdvancePosition(PSYS& pq);
  GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
+ GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
 
   
  }
