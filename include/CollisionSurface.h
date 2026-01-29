@@ -22,6 +22,11 @@ namespace pba {
             void DecreaseCoeffR();
             double GetCoeffR();
             void Display();
+            void handle(    const Vector& XS, const Vector& VS, 
+                            const double& dt, const Vector& XH, 
+                            const double& dtH, Vector& XR, Vector& VR,
+                            const CollisionTriangle& t) const;
+
 
         private:
 

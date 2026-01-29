@@ -33,6 +33,16 @@ double CollisionSurfaceRaw::GetCoeffR() {
     return coeffR;
 }
 
+void CollisionSurfaceRaw::handle(  const Vector& XS, const Vector& VS, 
+                                    const double& dt, const Vector& XH, 
+                                    const double& dtH, Vector& XR, Vector& VR,
+                                    const CollisionTriangle& t) const 
+                                    {
+
+                                        t->handle(XS, VS, dt, XH, dtH, XR, VR, coeffR, coeffS);
+
+                                    }
+
 void CollisionSurfaceRaw::Display() {
 
     for (size_t i = 0; i < triangles.size(); i++) {

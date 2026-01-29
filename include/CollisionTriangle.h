@@ -12,6 +12,10 @@ namespace pba {
             ~CollisionTriangleRaw(){};
 
             bool hit( const Vector& XS, const Vector& VS, const double dt, Vector& XH, double& dtH);
+            void handle(    const Vector& XS, const Vector& VS, 
+                            const double& dt, const Vector& XH, 
+                            const double& dtH, Vector& XR, Vector& VR,
+                            const double Cr, const double Cs) const;
 
             double GetP0(size_t i);
             double GetP1(size_t i);

@@ -32,17 +32,29 @@ bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double 
         double v = normal * ((e1 ^ (XH_candidate - P0))) / (normal * normal);
         if ( (u >= 0 && u <= 1) &&
              (v >= 0 && v <= 1) &&
-             (u + v >= 0 && u + v <= 1) ) {
+             (u + v >= 0 && u + v <= 1) ) 
+             {
 
-            XH = XH_candidate;
-            dtH = dtH_candidate;
-            hit = true;
+                XH = XH_candidate;
+                dtH = dtH_candidate;
+                hit = true;
 
-        }
+             }
     }
 
     return hit;
 }
+
+void CollisionTriangleRaw::handle(  const Vector &XS, const Vector &VS, 
+                                    const double &dt, const Vector &XH, 
+                                    const double &dtH, Vector &XR, Vector &VR, 
+                                    const double Cr, const double Cs) const 
+                                    {
+                                        Vector Normal = normal / normal.magnitude();
+
+                                        VR = Cs * VS - (Cs + Cr) * Normal * (Normal * VS);
+                                        XR = XH + VR * (dt - dtH);
+                                    }
 
 double CollisionTriangleRaw::GetP0(size_t i) {
     return P0[i];
