@@ -7,6 +7,7 @@ OFILES = base/PbaViewer.o \
 		 base/ParticleSystem.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\
+		 base/CollisionSurface.o\
 		 base/GISolver.o \
 	 things/MyThing.o 
 
