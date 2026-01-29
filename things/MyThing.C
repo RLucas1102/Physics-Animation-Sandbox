@@ -98,15 +98,10 @@ void MyThing::Reset()
    MyThing_PSYS->AddParticles(20);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      double s = 2.0*drand48() - 1.0;
-      double ss = std::sqrt( 1.0 - s*s );
-      double theta = 2.0*3.14159265*drand48();
-      pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
-      P *= std::pow( drand48(), 1.0/6.0 );
-      
+      pba::Vector P(0, 0, 0);
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
-      
+   
       MyThing_PSYS->SetPos(i, P);
       MyThing_PSYS->SetVel(i, inVec);
       MyThing_PSYS->SetCol(i, inCol);
@@ -132,12 +127,8 @@ void MyThing::Emit() {
    std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
    for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
    {
-      double s = 2.0*drand48() - 1.0;
-      double ss = std::sqrt( 1.0 - s*s );
-      double theta = 2.0*3.14159265*drand48();
-      pba::Vector P( ss*std::cos(theta), s, ss*std::sin(theta) );
-      P *= std::pow( drand48(), 1.0/6.0 );
       
+      pba::Vector P(0, 0, 0);
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
    
