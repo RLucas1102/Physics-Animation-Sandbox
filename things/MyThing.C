@@ -18,6 +18,7 @@
 #include <iostream>
 
 #include "ParticleSystem.h"
+#include "CollisionTriangle.h"
 #include "GISolver.h"
 
 
@@ -42,6 +43,16 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     GForce = CreateGravityForce(Vector(0, -1, 0));
 
+    Box = MakeCollisionSurface();
+
+    Vector p0 = Vector(1.0, -1.0, 1.0);
+    Vector p1 = Vector(1.0, -1.0, -1.0);
+    Vector p2 = Vector(-1.0, -1.0, 1.0);
+
+    CollisionTriangle t = MakeCollisionTriangle(p0, p1, p2);
+
+    Box->AddTriangle(t);
+
     GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
@@ -52,6 +63,9 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     
 void MyThing::Display() 
 {
+
+   Box->Display();
+
    glPointSize(5.0);
    glBegin(GL_POINTS);
    for( size_t i=0;i<MyThing_PSYS->Psize();i++ )

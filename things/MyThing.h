@@ -17,7 +17,7 @@
 
 #include "ParticleSystem.h"
 #include "GISolver.h"
-
+#include "CollisionSurface.h"
 
 
 using namespace std;
@@ -78,6 +78,7 @@ class MyThing: public PbaThingyDingy
     PSYS MyThing_PSYS;
     GISolver solver;
     Force GForce;
+    CollisionSurface Box;
 
 };
 
