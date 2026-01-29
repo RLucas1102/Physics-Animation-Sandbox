@@ -67,6 +67,51 @@ bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel,
     
 }
 
+void CollisionSurfaceRaw::MakeBox(const double& m) {
+
+    Vector FrontBR = Vector( 1.0 * m, -1.0 * m, 1.0 * m);
+    Vector FrontBL = Vector(-1.0 * m, -1.0 * m, 1.0 * m);
+    Vector FrontTR = Vector( 1.0 * m,  1.0 * m, 1.0 * m);
+    Vector FrontTL = Vector(-1.0 * m,  1.0 * m, 1.0 * m);
+
+    Vector BackBR = Vector( 1.0 * m, -1.0 * m, -1.0 * m);
+    Vector BackBL = Vector(-1.0 * m, -1.0 * m, -1.0 * m);
+    Vector BackTR = Vector( 1.0 * m,  1.0 * m, -1.0 * m);
+    Vector BackTL = Vector(-1.0 * m,  1.0 * m, -1.0 * m);
+
+    CollisionTriangle Front1 = MakeCollisionTriangle(FrontTR, FrontBL, FrontBR);
+    CollisionTriangle Front2 = MakeCollisionTriangle(FrontTR, FrontTL, FrontBL);
+
+    CollisionTriangle Back1  = MakeCollisionTriangle(BackTR, BackBR, BackBL);
+    CollisionTriangle Back2  = MakeCollisionTriangle(BackTR, BackBL, BackTL);
+
+    CollisionTriangle Left1  = MakeCollisionTriangle(FrontTL, BackBL, FrontBL);
+    CollisionTriangle Left2  = MakeCollisionTriangle(FrontTL, BackTL, BackBL);
+
+    CollisionTriangle Right1 = MakeCollisionTriangle(FrontTR, FrontBR, BackBR);
+    CollisionTriangle Right2 = MakeCollisionTriangle(FrontTR, BackBR, BackTR);
+
+    CollisionTriangle Top1   = MakeCollisionTriangle(FrontTR, BackTR, FrontTL);
+    CollisionTriangle Top2   = MakeCollisionTriangle(BackTR, BackTL, FrontTL);
+
+    CollisionTriangle Bot1   = MakeCollisionTriangle(FrontBR, FrontBL, BackBR);
+    CollisionTriangle Bot2   = MakeCollisionTriangle(FrontBL, BackBL, BackBR);
+    
+    triangles.push_back(Front1);
+    triangles.push_back(Front2);
+    triangles.push_back(Back1);
+    triangles.push_back(Back2);
+    triangles.push_back(Left1);
+    triangles.push_back(Left2);
+    triangles.push_back(Right1);
+    triangles.push_back(Right2);
+    triangles.push_back(Top1);
+    triangles.push_back(Top2);
+    triangles.push_back(Bot1);
+    triangles.push_back(Bot2);
+
+}
+
 void CollisionSurfaceRaw::Display() {
 
     for (size_t i = 0; i < triangles.size(); i++) {

@@ -31,6 +31,7 @@ namespace pba {
                                     const double& dt, Vector& XH, 
                                     double& dtH, size_t& pH);
 
+            void MakeBox(const double& m);
 
         private:
 
