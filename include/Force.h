@@ -45,6 +45,10 @@
 
         void compute( PSYS& psys, const double dt);
 
+        void IncreaseGravityForce();
+
+        void DecreaseGravityForce();
+
     private:
         Vector gravity;
  };

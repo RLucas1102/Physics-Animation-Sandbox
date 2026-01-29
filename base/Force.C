@@ -24,6 +24,14 @@ void GravityForce::compute( PSYS& psys, const double dt) {
     
 }
 
+void GravityForce::IncreaseGravityForce() {
+    gravity *= 1.1;
+}
+
+void GravityForce::DecreaseGravityForce() {
+    gravity /= 1.1;
+}
+
 Force pba::CreateGravityForce(const Vector& g) {
     return Force( new GravityForce(g) );
 }
