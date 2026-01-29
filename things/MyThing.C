@@ -53,7 +53,15 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     Box->AddTriangle(t);
 
-    GISolver solverA = CreateAdvancePosition(MyThing_PSYS);
+    p0 = Vector(1.0, -1.0, -1.0);
+    p1 = Vector(-1.0, -1.0, -1.0);     
+    p2 = Vector(-1.0, -1.0, 1.0);
+
+    t = MakeCollisionTriangle(p0, p1, p2);
+    
+    Box->AddTriangle(t);
+
+    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
 
