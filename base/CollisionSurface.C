@@ -6,7 +6,7 @@ using namespace pba;
 
 CollisionSurfaceRaw::CollisionSurfaceRaw() :
     coeffR (1.0),
-    coeffS (0.0)
+    coeffS (1.0)
     {}
 
 void CollisionSurfaceRaw::AddTriangle(const CollisionTriangle& t) {
