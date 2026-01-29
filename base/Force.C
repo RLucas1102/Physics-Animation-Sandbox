@@ -32,6 +32,10 @@ void GravityForce::DecreaseGravityForce() {
     gravity /= 1.1;
 }
 
+double GravityForce::GetGravityMag() {
+    return gravity[1];
+}
+
 Force pba::CreateGravityForce(const Vector& g) {
     return Force( new GravityForce(g) );
 }

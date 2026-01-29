@@ -49,6 +49,8 @@
 
         void DecreaseGravityForce();
 
+        double GetGravityMag();
+
     private:
         Vector gravity;
  };
