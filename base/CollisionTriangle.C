@@ -16,7 +16,7 @@ CollisionTriangleRaw::CollisionTriangleRaw(const Vector& p0, const Vector& p1, c
     }
 
 bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double dt, Vector& XH, double& dtH) {
-    bool hit = false;
+    bool hitFound = false;
     
     Vector XU = XS + VS * dt;
 
@@ -37,12 +37,12 @@ bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double 
 
                 XH = XH_candidate;
                 dtH = dtH_candidate;
-                hit = true;
+                hitFound = true;
 
              }
     }
 
-    return hit;
+    return hitFound;
 }
 
 void CollisionTriangleRaw::handle(  const Vector &XS, const Vector &VS, 
