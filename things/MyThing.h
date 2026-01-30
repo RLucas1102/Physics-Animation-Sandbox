@@ -2,11 +2,12 @@
 //
 //  MyThing.h
 //
-//  PbaThing for a collection of particles
-//  each doing a random walk.
+//  PbaThing for a collection of particles to simulate
+//  gravity
 //
 //  Copyright (c) 2017 Jerry Tessendorf
 //
+//  Adapted by Lucas Robenolt
 //
 //--------------------------------------------------------
 
@@ -76,6 +77,7 @@ class MyThing: public PbaThingyDingy
     // flag for whether to create more particles
     bool emit;
    
+    // Class member variables to simulate gravity and collisions
     PSYS MyThing_PSYS;
     GISolver solver;
     Force GForce;

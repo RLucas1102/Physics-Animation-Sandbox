@@ -2,8 +2,8 @@
 //
 //  MyThing.C
 //
-//  PbaThing for a collection of particles
-//  each doing a random walk.
+//  PbaThing for a collection of particles to simulate
+//  gravity
 //
 //  Copyright (c) 2017 Jerry Tessendorf
 //
@@ -40,20 +40,27 @@ MyThing::~MyThing(){}
 
 void MyThing::Init( const std::vector<std::string>& args ) {
 
+    // Create a particle system object to hold particles and interact with them
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
+    // Create a Force object that is a gravity force
     GForce = CreateGravityForce(Vector(0, -1, 0));
 
+    // Create a CollisionSurface object to hold triangles to collide with
     Box = MakeCollisionSurface();
 
+    // MakeBox creates a box with 12 triangles
     Box->MakeBox(3);
 
+    // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
     
+    // Seed rand with time
     srand(time(NULL));
 
+    // Reset the particle system and start ball bounces
     Reset(); 
 
 }
@@ -61,11 +68,14 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 void MyThing::Display() 
 {
 
+   // Cull any front faces
    glEnable(GL_CULL_FACE);
    glCullFace(GL_FRONT);
 
+   // Displays all sides of the box with their specified color
    Box->Display();
 
+   // Display particles
    glPointSize(5.0);
    glBegin(GL_POINTS);
    for( size_t i=0;i<MyThing_PSYS->Psize();i++ )
@@ -80,6 +90,7 @@ void MyThing::Display()
 
 void MyThing::Keyboard( unsigned char key, int x, int y )
 {
+      // Keyboard presses specific to MyThing; self explanatory
       PbaThingyDingy::Keyboard(key,x,y);
       if( key == 'e' ){ Emit(); }
       if( key == 'b' ){ 
@@ -126,7 +137,7 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
-   // Distribute particles with random positions
+   // Create 1 particle with a random position, velocity, and color
    InitPos = Vector(rand() % 3 - 1.5, rand() % 3 - 1.5, rand() % 3 - 1.5);
    MyThing_PSYS->Pclear();
    MyThing_PSYS->AddParticles(1);
@@ -156,7 +167,8 @@ void MyThing::Usage()
 }
 
 void MyThing::Emit() {
-      
+   
+   // Emit 100 new particles at the initial position with random colors and velocities
    size_t nbincrease = 100;
    MyThing_PSYS->AddParticles(nbincrease);
    Vector V;

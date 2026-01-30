@@ -1,11 +1,12 @@
 //*******************************************************************
  //
- //   GISolver.h
+ //  GISolver.h
  //
- // Base class for Geometric Integration solvers
+ //  Base class for Geometric Integration solvers
  //
  //  Copyright (c) 2017 Jerry Tessendorf
  //
+ //  Adapted by Lucas Robenolt
  //
  //*******************************************************************
   
@@ -21,6 +22,7 @@
   
  namespace pba{
   
+ // Base class that all solvers will inherent from
  class GISolverBase
  {
    public:
@@ -37,7 +39,14 @@
  };
   
  typedef std::shared_ptr<GISolverBase> GISolver;
- 
+
+// -------------------------------------------------
+// STARTER CODE PARTIAL SOLVERS
+// These partial solvers were an adaptation of 
+// Jerry Tessendorf's starter solvers
+// These solvers move particles with a repeating 
+// pattern around a circle.
+
  class AdvancePositionStarter : public GISolverBase
  {
     public:
@@ -70,6 +79,13 @@ class AdvanceVelocityStarter : public GISolverBase
 
 };
 
+//---------------------------------------------------
+
+//---------------------------------------------------
+// SIMPLE POSITION PARTIAL SOLVER
+// This solver simply updates position based on 
+// velocity with no collisions
+// Mainly used for testing the velocity partial solver
  class AdvancePosition : public GISolverBase
  {
     public:
@@ -86,6 +102,14 @@ class AdvanceVelocityStarter : public GISolverBase
 
  };
 
+ //--------------------------------------------------
+
+ //--------------------------------------------------
+ // POSITION PARTIAL SOLVER WITH COLLISION
+ // This solver updates position with collision
+ // A collision surface is defined in MyThing and a
+ // smart pointer is handed to this class to use for
+ /// collision detection and handling
  class AdvancePositionWithCollision : public GISolverBase
  {
     public:
@@ -102,6 +126,14 @@ class AdvanceVelocityStarter : public GISolverBase
         CollisionSurface C;
  };
 
+ //---------------------------------------------------
+
+ //---------------------------------------------------
+ // VELOCITY PARTIAL SOLVER WITH FORCE
+ // This solver updates velocity bsed on some force
+ // acting on the system. Force is defined in MyThing
+ // and passed in. This is used when there is only one
+ // force acting on the system
  class AdvanceVelocity : public GISolverBase
 {
   public:
@@ -119,6 +151,15 @@ class AdvanceVelocityStarter : public GISolverBase
 
 };
 
+//----------------------------------------------------
+
+//----------------------------------------------------
+// COMPOSITE SOLVERS
+// - LeapFrog: Solving position at dt/2, velocity at dt,
+//   and position at dt/2
+
+// - ForwardEuler: Solving position then velocity
+// - BackwardEuler: Solving velocity then position
  class LeapFrogSolver : public GISolverBase
  {
    public:
@@ -195,8 +236,11 @@ class AdvanceVelocityStarter : public GISolverBase
      GISolver a;
      GISolver b;
  };
+
+ //------------------------------------------------------
   
-  
+
+ // Create solver functions to create smart pointers of each solver
  GISolver CreateLeapFrogSolver( GISolver& A, GISolver&  B );
  GISolver CreateForwardEulerSolver( GISolver& A, GISolver& B );
  GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);

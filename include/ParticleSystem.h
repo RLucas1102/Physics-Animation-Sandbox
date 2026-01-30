@@ -1,3 +1,13 @@
+//---------------------------------------------------------
+//
+//  Created by: Lucas Robenolt
+//
+//  Purpose: A class to hold particles for a certain system
+//  and useful functions to interact with the system
+//
+//
+//---------------------------------------------------------
+
 #ifndef PARTICLE_SYSTEM_H
 #define PARTICLE_SYSTEM_H
 
@@ -19,6 +29,8 @@ namespace pba {
     // (2) particle velocities
     // (3) particle masses
     // (4) particle colors - useful for display
+    //
+    // Adapted from Jerry Tessendorf
     ////////////////////////////////////////////////
     class ParticleState {
         public:
@@ -40,16 +52,21 @@ namespace pba {
 
     class ParticleSystem {
         public:
+        
             ParticleSystem (const std::string& nam = "ParticleSysNoName");
 
             ~ParticleSystem() {};
 
+            // Returns the name of particle system, if needed
             const std::string& Name() const {return name;}
 
+            // Add a single particle to the system
             void AddParticle();
 
+            // Add many particles to the system
             void AddParticles(const size_t p);
 
+            // Getter functions to obtain specific particle attributes
             Vector const GetPos(const size_t p);
 
             Vector const GetVel(const size_t p);
@@ -58,6 +75,7 @@ namespace pba {
 
             Vector const GetAcc(const size_t p);
 
+            // Setter functions to change specific particle attributes
             void SetPos(const size_t p, Vector& inPos);
 
             void SetVel(const size_t p, Vector& inVel);
@@ -66,11 +84,11 @@ namespace pba {
 
             void SetAcc(const size_t p, Vector& inAcc);
 
+            // Returns the number of particles in the system
             size_t const Psize();
 
+            // Clears all particles from the system
             void Pclear();
-
-            void const ShowParticles();
 
         private:
             const std::string name;
@@ -82,6 +100,7 @@ namespace pba {
 
     typedef std::shared_ptr<ParticleSystem> PSYS;
 
+    // Create a shared pointer to particle system
     PSYS CreateParticleSystem(const std::string& nam = "ParticleSysNoName");
 
 }

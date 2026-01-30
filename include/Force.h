@@ -6,6 +6,7 @@
  //
  //  Copyright (c) 2017 Jerry Tessendorf
  //
+ //  Adapted by Lucas Robenolt
  //
  //--------------------------------------------------------
   
@@ -20,7 +21,7 @@
  namespace pba
  {
   
-  
+ // Base Force class that all Forces will inherit from
  class ForceBase
  {
    public:
@@ -36,6 +37,10 @@
   
  typedef std::shared_ptr<ForceBase> Force;
   
+ //------------------------------------------------
+ // GRAVITY FORCE
+ // Computes a new acceleration for each a particle
+ // based on the current set gravity
  class GravityForce : public ForceBase {
 
     public: 
@@ -55,6 +60,9 @@
         Vector gravity;
  };
 
+//-------------------------------------------------
+
+ // Create a smart pointer to gravity force
  Force CreateGravityForce(const Vector& g);
   
   
