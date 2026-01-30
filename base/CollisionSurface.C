@@ -22,7 +22,12 @@ CollisionTriangle CollisionSurfaceRaw::GetTriangle(size_t i) {
 }
 
 void CollisionSurfaceRaw::IncreaseCoeffR() {
-    coeffR *= 1.1;
+    if (coeffR >= 1) {
+        coeffR = 1;
+    }
+    else {
+        coeffR *= 1.1;
+    }
 }
 
 void CollisionSurfaceRaw::DecreaseCoeffR() {
