@@ -57,12 +57,6 @@ void ParticleSystem::Pclear() {
     particles.clear();
 }
 
-void const ParticleSystem::ShowParticles() {
-    for (particles_it = particles.begin(); particles_it != particles.end(); particles_it++) {
-        std::cout << particles_it->mass << std::endl;
-    }
-}
-
 PSYS pba::CreateParticleSystem(const std::string& nam) {
     PSYS outSys = PSYS( new ParticleSystem(nam) );
     std::cout << "ParticleSystem Created: " << outSys->Name() << std::endl;    
