@@ -12,6 +12,7 @@
 
 
 #include <Vector.h>
+#include <time.h>
 #include "Color.h"
 #include "PbaThing.h"
 
@@ -29,7 +30,7 @@ class MyThing: public PbaThingyDingy
   public:
 
     // Feel free to customize the name of this thing.
-    MyThing(const std::string nam = "Lecture_02_thing");
+    MyThing(const std::string nam = "BouncingBalls");
    ~MyThing();
 
     //! Initialization, including GLUT initialization.
@@ -79,6 +80,7 @@ class MyThing: public PbaThingyDingy
     GISolver solver;
     Force GForce;
     CollisionSurface Box;
+    Vector InitPos;
 
 };
 

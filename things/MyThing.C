@@ -16,6 +16,7 @@
 #include <GL/glu.h>  // GLU support library.
 #include <GL/glut.h> // GLUT support library.
 #include <iostream>
+#include <time.h>
 
 #include "ParticleSystem.h"
 #include "CollisionSurface.h"
@@ -45,11 +46,13 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     Box = MakeCollisionSurface();
 
-    Box->MakeBox(2);
+    Box->MakeBox(3);
 
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
     solver = CreateForwardEulerSolver(solverA, solverB);
+    
+    srand(time(NULL));
 
     Reset(); 
 
@@ -124,15 +127,15 @@ void MyThing::solve() { solver->solve(dt); }
 void MyThing::Reset()
 {
    // Distribute particles with random positions
+   InitPos = Vector(rand() % 3 - 1.5, rand() % 3 - 1.5, rand() % 3 - 1.5);
    MyThing_PSYS->Pclear();
    MyThing_PSYS->AddParticles(1);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
-      pba::Vector P(drand48()-0.5, drand48()-0.5, drand48()-0.5);
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
    
-      MyThing_PSYS->SetPos(i, P);
+      MyThing_PSYS->SetPos(i, InitPos);
       MyThing_PSYS->SetVel(i, inVec);
       MyThing_PSYS->SetCol(i, inCol);
    }
@@ -156,17 +159,16 @@ void MyThing::Emit() {
       
    size_t nbincrease = 100;
    MyThing_PSYS->AddParticles(nbincrease);
-   Vector P, V;
+   Vector V;
    Color C;
    std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
    for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
    {
       
-      pba::Vector P(0, 0, 0);
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
    
-      MyThing_PSYS->SetPos(i, P);
+      MyThing_PSYS->SetPos(i, InitPos);
       MyThing_PSYS->SetVel(i, inVec);
       MyThing_PSYS->SetCol(i, inCol);
    }
