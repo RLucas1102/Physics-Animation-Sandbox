@@ -128,6 +128,10 @@ using namespace pba;
         return GISolver( new AdvanceVelocityStarter(pq) );
     }
 
+    GISolver pba::CreateSixthOrderSolver(GISolver& s) {
+        return GISolver( new SixthOrderSolver(s) );
+    }
+
     GISolver pba::CreateForwardEulerSolver(GISolver& A, GISolver& B) {
         return GISolver( new ForwardEulerSolver(A,B) );
     }

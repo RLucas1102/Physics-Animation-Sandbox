@@ -157,10 +157,42 @@ class AdvanceVelocityStarter : public GISolverBase
 // COMPOSITE SOLVERS
 // - LeapFrog: Solving position at dt/2, velocity at dt,
 //   and position at dt/2
-
+// - Sixth order solver: Does 5 calls to a given solver
+//   at different time steps
 // - ForwardEuler: Solving position then velocity
 // - BackwardEuler: Solving velocity then position
- class LeapFrogSolver : public GISolverBase
+ 
+class SixthOrderSolver : public GISolverBase
+{
+  public:
+
+    SixthOrderSolver( GISolver& s) :
+      solver(s)
+      {
+        a = 1.0/(4.0 - std::pow(4.0, 1.0/3.0));
+        b = 1.0 - 4.0*a;
+      }
+    
+    ~SixthOrderSolver(){}
+
+    void init(){ solver->init(); }
+
+    void solve(const double dt) {
+      const double dta = a * dt;
+      const double dtb = b * dt;
+      solver->solve(dta);
+      solver->solve(dta);
+      solver->solve(dtb);
+      solver->solve(dta);
+      solver->solve(dta);
+    }
+
+    private:
+      GISolver solver;
+      double a, b;
+
+};
+class LeapFrogSolver : public GISolverBase
  {
    public:
   
@@ -241,6 +273,7 @@ class AdvanceVelocityStarter : public GISolverBase
   
 
  // Create solver functions to create smart pointers of each solver
+ GISolver CreateSixthOrderSolver(GISolver& s);
  GISolver CreateLeapFrogSolver( GISolver& A, GISolver&  B );
  GISolver CreateForwardEulerSolver( GISolver& A, GISolver& B );
  GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);
