@@ -80,7 +80,7 @@ class MyThing: public PbaThingyDingy
     // Class member variables to simulate gravity and collisions
     PSYS MyThing_PSYS;
     GISolver solver;
-    Force GForce;
+    Force accumulator;
     CollisionSurface Box;
     Vector InitPos;
 

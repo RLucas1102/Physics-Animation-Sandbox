@@ -44,7 +44,12 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
     // Create a Force object that is a gravity force
-    GForce = CreateGravityForce(Vector(0, -1, 0));
+    Force GForce = CreateGravityForce(Vector(0, -1, 0));
+
+    // Create a Force object that is an accumulating force
+    accumulator = CreateAccumulatingForce();
+    std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+    f->AddForce(GForce);
 
     // Create a CollisionSurface object to hold triangles to collide with
     Box = MakeCollisionSurface();
@@ -54,7 +59,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-    GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
+    GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
     solver = CreateForwardEulerSolver(solverA, solverB);
     
     // Seed rand with time
@@ -95,29 +100,31 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       if( key == 'e' ){ Emit(); }
       if( key == 'b' ){ 
          GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
          solver = CreateBackwardEulerSolver(solverA, solverB);
          cout << "Using Backward Euler Solver\n";
       }
       if( key == 'B' ){ 
          GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
          solver = CreateForwardEulerSolver(solverA, solverB);
          cout << "Using Forward Euler Solver\n";
       }
       if( key == 'L' ){ 
          GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, GForce);
+         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
          solver = CreateLeapFrogSolver(solverA, solverB);
          cout << "Using Leap Frog Solver\n";
       }
       if( key == 'g'){
-         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
          g->DecreaseGravityForce();
          cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
       } 
       if( key == 'G'){
-         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(GForce);
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
          g->IncreaseGravityForce();
          cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
       }
