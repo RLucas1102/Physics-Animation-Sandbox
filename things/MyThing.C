@@ -60,7 +60,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
     GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-    solver = CreateForwardEulerSolver(solverA, solverB);
+    GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
+    solver = CreateSixthOrderSolver(LFSolver);
     
     // Seed rand with time
     srand(time(NULL));
@@ -98,24 +99,6 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       // Keyboard presses specific to MyThing; self explanatory
       PbaThingyDingy::Keyboard(key,x,y);
       if( key == 'e' ){ Emit(); }
-      if( key == 'b' ){ 
-         GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-         solver = CreateBackwardEulerSolver(solverA, solverB);
-         cout << "Using Backward Euler Solver\n";
-      }
-      if( key == 'B' ){ 
-         GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-         solver = CreateForwardEulerSolver(solverA, solverB);
-         cout << "Using Forward Euler Solver\n";
-      }
-      if( key == 'L' ){ 
-         GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-         GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-         solver = CreateLeapFrogSolver(solverA, solverB);
-         cout << "Using Leap Frog Solver\n";
-      }
       if( key == 'g'){
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
@@ -164,9 +147,6 @@ void MyThing::Usage()
    PbaThingyDingy::Usage();
    cout << "=== " << name << " ===\n";
    cout << "e            Create 100 new particles\n";
-   cout << "b            Use Backward Euler Solver\n";
-   cout << "B            Use Forward Euler Solver\n";
-   cout << "L            Use Leap Frog Solver\n";
    cout << "g            Decrease magnitude of gravity\n";
    cout << "G            Increase magnitude of gravity\n";
    cout << "c            Decrease coefficient of restitution\n";
