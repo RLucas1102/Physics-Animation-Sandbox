@@ -4,16 +4,34 @@
 
 using namespace pba;
 
+void AccumulatingForce::compute( PSYS& psys, const double dt) {
+    
+    Vector resetForce = Vector(0,0,0);
+    for (size_t i = 0; i < psys->Psize(); i++) {
+        psys->SetAcc(i, resetForce);
+    }
+
+    for (size_t i = 0; i < forces.size(); i++) {
+        forces[i]->compute(psys, dt);
+    }
+    
+}
+
+void AccumulatingForce::AddForce( Force& f) {
+    forces.push_back(f);
+}
+
+Force AccumulatingForce::GetForce( const size_t i) {
+    return forces[i];
+}
+
 GravityForce::GravityForce(const Vector& g) :
     gravity (g)
     {}
 
 void GravityForce::compute( PSYS& psys, const double dt) {
 
-    Vector initA = Vector(0, 0, 0);
     for (size_t i = 0; i < psys->Psize(); i++) {
-
-        psys->SetAcc(i, initA);
 
         Vector A = psys->GetAcc(i);
 
@@ -38,4 +56,8 @@ double GravityForce::GetGravityMag() {
 
 Force pba::CreateGravityForce(const Vector& g) {
     return Force( new GravityForce(g) );
+}
+
+Force pba::CreateAccumulatingForce() {
+    return Force( new AccumulatingForce() );
 }

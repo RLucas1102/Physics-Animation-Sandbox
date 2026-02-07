@@ -16,6 +16,7 @@
  #include "ParticleSystem.h"
  #include "Vector.h"
  #include <iostream>
+ #include <vector>
   
   
  namespace pba
@@ -33,10 +34,35 @@
   
  };
   
-  
-  
  typedef std::shared_ptr<ForceBase> Force;
-  
+
+ //------------------------------------------------
+ // ACCUMULATING FORCE
+ // Computes all forces acting on a system by
+ // tracking a vector of forces and iterating
+ // through the vector to calculate the 
+ // cumulative force of all forces in
+class AccumulatingForce : public ForceBase {
+    
+    public:
+        AccumulatingForce(){};
+        ~AccumulatingForce(){};
+
+        void compute( PSYS& psys, const double dt);
+
+        // Build up the collection of forces to accumulate
+        void AddForce( Force& f);
+
+        // Get Force from accumulator
+        Force GetForce(const size_t i); 
+
+    private:
+        std::vector<Force> forces;
+
+
+};
+//-------------------------------------------------
+
  //------------------------------------------------
  // GRAVITY FORCE
  // Computes a new acceleration for each a particle
@@ -64,7 +90,7 @@
 
  // Create a smart pointer to gravity force
  Force CreateGravityForce(const Vector& g);
-  
+ Force CreateAccumulatingForce();
   
  }
  #endif
