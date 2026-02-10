@@ -38,7 +38,8 @@ namespace pba {
                 position(Vector(0,0,0)),
                 velocity(Vector(0,0,0)),
                 color(Color(1,1,1,1)),
-                mass(1.0)
+                mass(1.0),
+                density(1.0)
                 {};
         
             ~ParticleState(){};	   
@@ -47,7 +48,8 @@ namespace pba {
             Vector velocity;
             Vector acceleration;
             Color color;
-            float mass;
+            double mass;
+            double density;
     };
 
     class ParticleSystem {
@@ -75,6 +77,12 @@ namespace pba {
 
             Vector const GetAcc(const size_t p);
 
+            double const GetMass(const size_t p);
+
+            double const GetRho(const size_t p);
+
+            double const GetH();
+
             // Setter functions to change specific particle attributes
             void SetPos(const size_t p, Vector& inPos);
 
@@ -83,6 +91,12 @@ namespace pba {
             void SetCol(const size_t p, Color& inCol);
 
             void SetAcc(const size_t p, Vector& inAcc);
+
+            void SetMass(const size_t p, double inMass);
+
+            void SetRho(const size_t p, double inDensity);
+
+            void SetH(const double inH);
 
             // Returns the number of particles in the system
             size_t const Psize();
@@ -96,6 +110,9 @@ namespace pba {
             // This is all of the particles in the system
             std::vector<ParticleState> particles;
             std::vector<ParticleState>::iterator particles_it;
+
+            // Radius of influence
+            double h;
     };
 
     typedef std::shared_ptr<ParticleSystem> PSYS;
