@@ -25,6 +25,11 @@ using namespace pba;
         PQ (pq),
         C (c)
         {}
+
+    AdvancePositionWithCollisionSPH::AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c) :
+        PQ (pq),
+        C (c)
+        {}
         
     void AdvancePositionStarter::solve(const double dt) {
         for (size_t i=0; i< PQ->Psize(); i++) {
@@ -120,6 +125,10 @@ using namespace pba;
         
     }
 
+    void AdvancePositionWithCollisionSPH::solve(const double dt)   {
+        
+    }
+
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
         return GISolver( new AdvancePositionStarter(pq) );
     }
@@ -154,4 +163,8 @@ using namespace pba;
 
     GISolver pba::CreateAdvancePositionWithCollision(PSYS &pq, CollisionSurface& c) {
         return GISolver( new AdvancePositionWithCollision(pq, c) );
+    }
+    
+    GISolver pba::CreateAdvancePositionWithCollisionSPH(PSYS &pq, CollisionSurface& c) {
+        return GISolver( new AdvancePositionWithCollisionSPH(pq, c) );
     }

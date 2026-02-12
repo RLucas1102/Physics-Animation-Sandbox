@@ -128,6 +128,20 @@ class AdvanceVelocityStarter : public GISolverBase
 
  //---------------------------------------------------
 
+ class AdvancePositionWithCollisionSPH : public GISolverBase 
+ {
+    public:
+      AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
+      ~AdvancePositionWithCollisionSPH(){};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+      PSYS PQ;
+      CollisionSurface C;
+ };
+
  //---------------------------------------------------
  // VELOCITY PARTIAL SOLVER WITH FORCE
  // This solver updates velocity bsed on some force
@@ -282,7 +296,7 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePosition(PSYS& pq);
  GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
-
+ GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
   
  }
   
