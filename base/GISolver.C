@@ -136,6 +136,10 @@ using namespace pba;
         
     }
 
+    void AdvanceVelocitySPH::solve(const double dt) {
+
+    }
+
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
         return GISolver( new AdvancePositionStarter(pq) );
     }
@@ -180,7 +184,7 @@ using namespace pba;
         return GISolver( new AdvanceVelocitySPH(pq, f, userArray));
     }
  
- double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
+ double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
     double term1 = Pbar / rhoBar;
     double term2 = std::pow(density / rhoBar, (gamma - 1) );
     double C = std::pow(gamma * term1 * term2, 0.5);
