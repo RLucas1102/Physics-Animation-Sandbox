@@ -34,7 +34,7 @@ using namespace pba;
     AdvanceVelocitySPH::AdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]) :
         PQ (pq),
         force (f),
-        Pb (userArray[0]), rhoB (userArray[1]), gamma (userArray[2]),
+        Pbar (userArray[0]), rhoBar (userArray[1]), gamma (userArray[2]),
         alpha (userArray[3]), beta (userArray[4]), eps (userArray[5])
         {}
         
@@ -176,7 +176,14 @@ using namespace pba;
         return GISolver( new AdvancePositionWithCollisionSPH(pq, c) );
     }
 
-    GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6])
-    {
+    GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]) {
         return GISolver( new AdvanceVelocitySPH(pq, f, userArray));
     }
+ 
+ double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
+    double term1 = Pbar / rhoBar;
+    double term2 = std::pow(density / rhoBar, (gamma - 1) );
+    double C = std::pow(gamma * term1 * term2, 0.5);
+    
+    return C;
+ }

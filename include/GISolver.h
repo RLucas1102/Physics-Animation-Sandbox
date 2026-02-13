@@ -128,6 +128,12 @@ class AdvanceVelocityStarter : public GISolverBase
 
  //---------------------------------------------------
 
+
+ //---------------------------------------------------
+ // POSITION PARTIAL SOLVER WITH COLLISION FOR SPH
+ // This solver updates the position of paticles
+ // with collision based on fluid dynamics implemented 
+ // with SPH
  class AdvancePositionWithCollisionSPH : public GISolverBase 
  {
     public:
@@ -142,6 +148,15 @@ class AdvanceVelocityStarter : public GISolverBase
       CollisionSurface C;
  };
 
+
+// --------------------------------------------------
+
+// --------------------------------------------------
+// VELOCITY PARTIAL SOLVER FOR SPH
+// This solver updates the velocity of particles
+// based on SPH forces like viscosity and pressure.
+// There are user defined values that need to be
+// defined for SPH systems, thus they are stored here
  class AdvanceVelocitySPH : public GISolverBase
  {
     public:
@@ -154,7 +169,7 @@ class AdvanceVelocityStarter : public GISolverBase
     private:
       PSYS PQ;
       Force force;
-      double Pb, rhoB, gamma, alpha, beta, eps; // These are user-defined variables
+      double Pbar, rhoBar, gamma, alpha, beta, eps; // These are user-defined variables
 
  };
 
@@ -315,7 +330,14 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]);
   
- }
+
+ // Utility Functions
+ // ------------------------------------------------------
+ 
+ // Calculates the speed of sound using user defined values
+ double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density);
   
-  
+
+
+}
  #endif
