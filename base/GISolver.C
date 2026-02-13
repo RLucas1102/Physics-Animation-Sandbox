@@ -191,3 +191,12 @@ using namespace pba;
     
     return C;
  }
+
+ double pba::CalcMuab(const double h, Vector &P1, Vector &P2, Vector& V1, Vector&V2, const double eps) {
+    double term1 = h * (V1 - V2) * (P1 - P2);
+    double term2 = std::pow((P1 - P2).magnitude(), 2);
+    double term3 = term2 + (eps * h * h);
+    double Muab  = term1 / term3;
+    
+    return Muab;
+ }

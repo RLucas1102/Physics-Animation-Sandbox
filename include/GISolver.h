@@ -336,7 +336,7 @@ class LeapFrogSolver : public GISolverBase
  
  // Calculates the speed of sound using user defined values
  double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density);
-  
+ double CalcMuab(const double h, Vector& P1, Vector& P2, Vector& V1, Vector& V2, const double eps); 
 
 
 }
