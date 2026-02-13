@@ -200,3 +200,13 @@ using namespace pba;
     
     return Muab;
  }
+
+ double pba::CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb) {
+    double term1 = -alpha * C * muab;
+    double term2 = beta * muab * muab;
+    double term3 = term1 + term2;
+    double term4 = densitya + densityb;
+    double term5 = term3 / term4;
+
+    return term5;
+}
