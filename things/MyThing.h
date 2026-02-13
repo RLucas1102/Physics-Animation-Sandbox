@@ -77,7 +77,7 @@ class MyThing: public PbaThingyDingy
     // flag for whether to create more particles
     bool emit;
    
-    // Class member variables to simulate gravity and collisions
+    // Class member variables
     PSYS MyThing_PSYS;
     GISolver solver;
     Force accumulator;
