@@ -210,3 +210,26 @@ using namespace pba;
 
     return term5;
 }
+
+double pba::CalcWeightKernel(Vector &P, const double h) {
+    double q = P.magnitude() / h;
+    double sigma = 1/(M_PI * (h * h * h));
+    double result;
+    
+    if (q >= 0 && q < 1) {
+        double term1 = ((3/2) * q * q);
+        double term2 = 1 - (q/2);
+        double term3 = 1 - (term1 * term2);
+        result = sigma * term3;
+    }
+    else if (q > 1 && q <= 2) {
+        double term1 = 2 - q;
+        double term2 = sigma / 4;
+        result = term2 * (term1 * term1 * term1);
+    }
+    else {
+        result = 0;
+    }
+    
+    return result;
+}
