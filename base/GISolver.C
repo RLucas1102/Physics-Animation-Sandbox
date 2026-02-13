@@ -233,3 +233,24 @@ double pba::CalcWeightKernel(Vector &P, const double h) {
     
     return result;
 }
+
+Vector pba::CalcGradWeightKernel(Vector &P, const double h) {
+    double q = P.magnitude() / h;
+    double sigma = 1/(M_PI * (h * h * h));
+    Vector term1 = (1/h) * (P / P.magnitude());
+    double result;
+    
+    if (q >= 0 && q < 1) {
+        double term2 = 1 - ((3/4) * q);
+        result = -3 * sigma * q * term2;
+    }
+    else if (q > 1 && q <= 2) {
+        double term2 = (2 - q) * (2 - q);
+        result = -(3/4) * sigma * term2;
+    }
+    else {
+        result = 0;
+    }
+    
+    return term1 * result;
+}

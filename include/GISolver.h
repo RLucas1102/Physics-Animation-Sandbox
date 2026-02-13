@@ -339,7 +339,7 @@ class LeapFrogSolver : public GISolverBase
  double CalcMuab(const double h, Vector& P1, Vector& P2, Vector& V1, Vector& V2, const double eps); 
  double CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb);
  double CalcWeightKernel(Vector& P, const double h);
-
+ Vector CalcGradWeightKernel(Vector& P, const double h);
 
 }
  #endif
