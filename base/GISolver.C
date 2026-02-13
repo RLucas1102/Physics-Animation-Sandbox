@@ -30,6 +30,13 @@ using namespace pba;
         PQ (pq),
         C (c)
         {}
+
+    AdvanceVelocitySPH::AdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]) :
+        PQ (pq),
+        force (f),
+        Pb (userArray[0]), rhoB (userArray[1]), gamma (userArray[2]),
+        alpha (userArray[3]), beta (userArray[4]), eps (userArray[5])
+        {}
         
     void AdvancePositionStarter::solve(const double dt) {
         for (size_t i=0; i< PQ->Psize(); i++) {
@@ -167,4 +174,9 @@ using namespace pba;
     
     GISolver pba::CreateAdvancePositionWithCollisionSPH(PSYS &pq, CollisionSurface& c) {
         return GISolver( new AdvancePositionWithCollisionSPH(pq, c) );
+    }
+
+    GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6])
+    {
+        return GISolver( new AdvanceVelocitySPH(pq, f, userArray));
     }
