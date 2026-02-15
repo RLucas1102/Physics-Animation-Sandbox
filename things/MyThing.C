@@ -50,6 +50,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     double alpha = 1.0;
     double beta = 1.0;
     double eps = 1.0;
+    MyThing_PSYS->SetH(1.0);
 
     // Create SPH forces
     Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps);
@@ -144,7 +145,7 @@ void MyThing::Reset()
    // Create 1000 particles with a random position, velocity of 0, and random color
    Vector initVel = Vector(0, 0, 0);
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(2);
+   MyThing_PSYS->AddParticles(100);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
