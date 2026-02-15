@@ -88,9 +88,52 @@ class AccumulatingForce : public ForceBase {
 
 //-------------------------------------------------
 
+//-------------------------------------------------
+// VISCOSITY FORCE
+// Computes a new acceleration for each particle
+// based on the calculated viscosity for SPH sim
+class ViscosityForce : public ForceBase {
+
+    public:
+        ViscosityForce(const double Pbar, const double rhoBar, const double gamma,
+                       const double alpha, const double beta, const double eps);
+        ~ViscosityForce(){};
+
+        void compute(PSYS& psys, const double dt);
+};
+
+//------------------------------------------------
+
+//------------------------------------------------
+// PRESSURE FORCE
+// Computes a new acceleration for each particle
+// based on the calculated pressure for SPH sim
+class PressureForce : public ForceBase {
+
+    public:
+        PressureForce(const double Pbar, const double rhoBar, const double gamma);
+        ~PressureForce(){};
+
+        void compute(PSYS& psys, const double dt);
+};
+
+//------------------------------------------------
+
  // Create a smart pointer to gravity force
  Force CreateGravityForce(const Vector& g);
  Force CreateAccumulatingForce();
   
+
+
+ // Utility Functions
+ // ------------------------------------------------------
+ // Many of these functions are used to calculate specific values for pressure and viscosity in SPH forces
+ double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density);
+ double CalcMuab(const double h, Vector& P1, Vector& P2, Vector& V1, Vector& V2, const double eps); 
+ double CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb);
+ double CalcWeightKernel(Vector& P, const double h);
+ Vector CalcGradWeightKernel(Vector& P, const double h);
+ double CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density);
+
  }
  #endif

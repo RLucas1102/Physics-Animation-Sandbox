@@ -42,6 +42,22 @@ void GravityForce::compute( PSYS& psys, const double dt) {
     
 }
 
+pba::ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, const double alpha, const double beta, const double eps)
+{
+}
+
+void pba::ViscosityForce::compute(PSYS &psys, const double dt)
+{
+}
+
+pba::PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma)
+{
+}
+
+void pba::PressureForce::compute(PSYS &psys, const double dt)
+{
+}
+
 void GravityForce::IncreaseGravityForce() {
     gravity *= 1.1;
 }
@@ -60,4 +76,83 @@ Force pba::CreateGravityForce(const Vector& g) {
 
 Force pba::CreateAccumulatingForce() {
     return Force( new AccumulatingForce() );
+}
+
+double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
+    double term1 = Pbar / rhoBar;
+    double term2 = std::pow(density / rhoBar, (gamma - 1) );
+    double C = std::pow(gamma * term1 * term2, 0.5);
+    
+    return C;
+ }
+
+ double pba::CalcMuab(const double h, Vector &P1, Vector &P2, Vector& V1, Vector&V2, const double eps) {
+    double term1 = h * (V1 - V2) * (P1 - P2);
+    double term2 = std::pow((P1 - P2).magnitude(), 2);
+    double term3 = term2 + (eps * h * h);
+    double Muab  = term1 / term3;
+    
+    return Muab;
+ }
+
+ double pba::CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb) {
+    double term1 = -alpha * C * muab;
+    double term2 = beta * muab * muab;
+    double term3 = term1 + term2;
+    double term4 = densitya + densityb;
+    double term5 = term3 / term4;
+
+    return term5;
+}
+
+double pba::CalcWeightKernel(Vector &P, const double h) {
+    double q = P.magnitude() / h;
+    double sigma = 1/(M_PI * (h * h * h));
+    double result;
+    
+    if (q >= 0 && q < 1) {
+        double term1 = ((3/2) * q * q);
+        double term2 = 1 - (q/2);
+        double term3 = 1 - (term1 * term2);
+        result = sigma * term3;
+    }
+    else if (q > 1 && q <= 2) {
+        double term1 = 2 - q;
+        double term2 = sigma / 4;
+        result = term2 * (term1 * term1 * term1);
+    }
+    else {
+        result = 0;
+    }
+    
+    return result;
+}
+
+Vector pba::CalcGradWeightKernel(Vector &P, const double h) {
+    double q = P.magnitude() / h;
+    double sigma = 1/(M_PI * (h * h * h));
+    Vector term1 = (1/h) * (P / P.magnitude());
+    double result;
+    
+    if (q >= 0 && q < 1) {
+        double term2 = 1 - ((3/4) * q);
+        result = -3 * sigma * q * term2;
+    }
+    else if (q > 1 && q <= 2) {
+        double term2 = (2 - q) * (2 - q);
+        result = -(3/4) * sigma * term2;
+    }
+    else {
+        result = 0;
+    }
+    
+    return term1 * result;
+}
+
+double pba::CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density) {
+    double term1 = density / rhoBar;
+    double term2 = std::pow(term1, gamma) - 1;
+    double result = Pbar * term2;
+
+    return result;
 }
