@@ -254,3 +254,11 @@ Vector pba::CalcGradWeightKernel(Vector &P, const double h) {
     
     return term1 * result;
 }
+
+double pba::CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density) {
+    double term1 = density / rhoBar;
+    double term2 = std::pow(term1, gamma) - 1
+    double result = Pbar * term2;
+
+    return result;
+}

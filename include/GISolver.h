@@ -340,6 +340,7 @@ class LeapFrogSolver : public GISolverBase
  double CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb);
  double CalcWeightKernel(Vector& P, const double h);
  Vector CalcGradWeightKernel(Vector& P, const double h);
+ double CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density);
 
 }
  #endif
