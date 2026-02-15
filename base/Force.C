@@ -69,12 +69,12 @@ void ViscosityForce::compute(PSYS &psys, const double dt) {
                 double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(j));
 
                 Vector AB = psys->GetPos(i) - psys->GetPos(j);
-                viscosity += -1 * psys->GetMass(j) * Piab * CalcGradWeightKernel(AB, psys->GetH());
+                viscosity += psys->GetMass(j) * Piab * CalcGradWeightKernel(AB, psys->GetH());
             
             }
         }
 
-        A += viscosity;
+        A -= viscosity;
 
         psys->SetAcc(i, A);
 
@@ -99,11 +99,11 @@ void PressureForce::compute(PSYS &psys, const double dt) {
                 double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(j))/std::pow(psys->GetRho(j), 2);
                 Vector AB = psys->GetPos(i) - psys->GetPos(j);
 
-                pressure += -1 * psys->GetMass(j) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
+                pressure += psys->GetMass(j) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
             }
         }
 
-        A += pressure;
+        A -= pressure;
 
         psys->SetAcc(i, A);
 
