@@ -1,6 +1,7 @@
 #include "GISolver.h"
 #include "Vector.h"
 #include "Force.h"
+#include <iostream>
 
 using namespace pba;
 
@@ -175,8 +176,18 @@ using namespace pba;
         for (size_t i = 0; i < PQ->Psize(); i++) {
             Vector V = PQ->GetVel(i);
             Vector A = PQ->GetAcc(i);
-            
+           
+            // if(V.magnitude() > 1.0) {
+                // V = V * (1.0/V.magnitude());
+            // }
+
+            // if(A.magnitude() > 1.0) {
+                // A = A * (1.0/A.magnitude());
+            // }
+
             V += A * dt;
+
+            std::cout << V[0] << V[1] << V[2] << "\n";
 
             PQ->SetVel(i, V);
 
