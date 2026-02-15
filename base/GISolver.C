@@ -177,17 +177,15 @@ using namespace pba;
             Vector V = PQ->GetVel(i);
             Vector A = PQ->GetAcc(i);
            
-            // if(V.magnitude() > 1.0) {
-                // V = V * (1.0/V.magnitude());
-            // }
+            if(V.magnitude() > 1.0) {
+                V = V * (1.0/V.magnitude());
+            }
 
-            // if(A.magnitude() > 1.0) {
-                // A = A * (1.0/A.magnitude());
-            // }
+            if(A.magnitude() > 1.0) {
+                A = A * (1.0/A.magnitude());
+            }
 
             V += A * dt;
-
-            std::cout << V[0] << V[1] << V[2] << "\n";
 
             PQ->SetVel(i, V);
 
