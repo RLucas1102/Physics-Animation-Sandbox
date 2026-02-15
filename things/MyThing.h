@@ -82,7 +82,6 @@ class MyThing: public PbaThingyDingy
     GISolver solver;
     Force accumulator;
     CollisionSurface Box;
-    Vector InitPos;
 
 };
 

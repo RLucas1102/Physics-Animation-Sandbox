@@ -43,6 +43,18 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     // Create a particle system object to hold particles and interact with them
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
+    // Create parameters for SPH forces (these will vary)
+    double Pbar = 1.0;
+    double rhoBar = 1.0;
+    double gamma = 1.0;
+    double alpha = 1.0;
+    double beta = 1.0;
+    double eps = 1.0;
+
+    // Create SPH forces
+    Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps);
+    Force PForce = CreatePressureForce(Pbar, rhoBar, gamma);
+
     // Create a Force object that is a gravity force
     Force GForce = CreateGravityForce(Vector(0, -1, 0));
 
@@ -50,6 +62,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     accumulator = CreateAccumulatingForce();
     std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
     f->AddForce(GForce);
+    f->AddForce(PForce);
+    f->AddForce(VForce);
 
     // Create a CollisionSurface object to hold triangles to collide with
     Box = MakeCollisionSurface();
@@ -58,8 +72,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Box->MakeBox(3);
 
     // Create two partial solvers and set the initial solver to forward euler
-    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
-    GISolver solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
+    GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box);
+    GISolver solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
     
@@ -127,17 +141,17 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
-   // Create 1 particle with a random position, velocity, and color
-   InitPos = Vector(rand() % 3 - 1.5, rand() % 3 - 1.5, rand() % 3 - 1.5);
+   // Create 1000 particles with a random position, velocity of 0, and random color
+   Vector initVel = Vector(0, 0, 0);
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(1);
+   MyThing_PSYS->AddParticles(2);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      pba::Vector inPos = pba::Vector(drand48() * 3 - 1.5,drand48() * 3 - 1.5,drand48() * 3 - 1.5);
    
-      MyThing_PSYS->SetPos(i, InitPos);
-      MyThing_PSYS->SetVel(i, inVec);
+      MyThing_PSYS->SetPos(i, inPos);
+      MyThing_PSYS->SetVel(i, initVel);
       MyThing_PSYS->SetCol(i, inCol);
    }
 }
@@ -160,15 +174,16 @@ void MyThing::Emit() {
    MyThing_PSYS->AddParticles(nbincrease);
    Vector V;
    Color C;
+   Vector initVel = Vector(0, 0, 0);
    std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
    for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
    {
       
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      pba::Vector inPos = pba::Vector(drand48() * 3 - 1.5,drand48() * 3 - 1.5,drand48() * 3 - 1.5);
    
-      MyThing_PSYS->SetPos(i, InitPos);
-      MyThing_PSYS->SetVel(i, inVec);
+      MyThing_PSYS->SetPos(i, inPos);
+      MyThing_PSYS->SetVel(i, initVel);
       MyThing_PSYS->SetCol(i, inCol);
    }
    
