@@ -42,20 +42,42 @@ void GravityForce::compute( PSYS& psys, const double dt) {
     
 }
 
-pba::ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, const double alpha, const double beta, const double eps)
-{
+ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, 
+                               const double alpha, const double beta, const double eps) 
+                               _Pbar (Pbar), _rhoBar(rhoBar), _gamma(gamma),
+                               _alpha(alpha), _beta(beta), _eps(eps)
+                               {}
+
+void ViscosityForce::compute(PSYS &psys, const double dt) {
 }
 
-void pba::ViscosityForce::compute(PSYS &psys, const double dt)
-{
-}
+PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma)
+    _Pbar(Pbar), 
+    _rhoBar(rhoBar), 
+    _gamma(gamma)
+    {}
 
-pba::PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma)
-{
-}
+void PressureForce::compute(PSYS &psys, const double dt) {
+    for (size_t i = 0; i < psys->Psize(); i++) {
+        Vector A = psys->GetAcc(i);
+        double pressure = 0;
+        
+        for (size_t j = 0; j < psys->Psize(); j++) {
+            if(i != j) {
+                Vector term1 = psys->GetPos(i)/psys->GetRho(i);
+                Vector term2 = psys->GetPos(j)/psys->GetRho(j);
+                Vector AB = psys->GetPos(i) - psys->GetPos(j);
 
-void pba::PressureForce::compute(PSYS &psys, const double dt)
-{
+                pressure += psys->GetMass(j) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
+            }
+        }
+
+        A += pressure;
+
+        psys->SetAcc(i, A);
+
+    }
+        
 }
 
 void GravityForce::IncreaseGravityForce() {

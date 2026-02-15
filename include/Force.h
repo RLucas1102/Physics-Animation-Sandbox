@@ -100,6 +100,9 @@ class ViscosityForce : public ForceBase {
         ~ViscosityForce(){};
 
         void compute(PSYS& psys, const double dt);
+
+    private:
+        double _Pbar, _rhoBar, _gamma, _alpha, _beta, _eps;
 };
 
 //------------------------------------------------
@@ -115,6 +118,9 @@ class PressureForce : public ForceBase {
         ~PressureForce(){};
 
         void compute(PSYS& psys, const double dt);
+
+    private:
+        double _Pbar, _rhoBar, _gamma;
 };
 
 //------------------------------------------------
