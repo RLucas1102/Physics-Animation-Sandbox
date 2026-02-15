@@ -43,15 +43,46 @@ void GravityForce::compute( PSYS& psys, const double dt) {
 }
 
 ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, 
-                               const double alpha, const double beta, const double eps) 
+                               const double alpha, const double beta, const double eps) :
                                _Pbar (Pbar), _rhoBar(rhoBar), _gamma(gamma),
                                _alpha(alpha), _beta(beta), _eps(eps)
                                {}
 
 void ViscosityForce::compute(PSYS &psys, const double dt) {
+    for (size_t i = 0; i < psys->Psize(); i++) {
+        Vector A = psys->GetAcc(i);
+        Vector viscosity = Vector(0,0,0);
+        
+        double Ca = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(i));
+
+        for (size_t j = 0; j < psys->Psize(); j++) {
+            if(i != j) {
+                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(j));
+                double Cab = Ca + Cb;
+
+                Vector Pa = psys->GetPos(i);
+                Vector Pb = psys->GetPos(j);
+                Vector Va = psys->GetVel(i);
+                Vector Vb = psys->GetVel(j);
+
+                double muab = CalcMuab(psys->GetH(), Pa, Pb, Va, Vb, _eps);
+                double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(j));
+
+                Vector AB = psys->GetPos(i) - psys->GetPos(j);
+                viscosity += -1 * psys->GetMass(j) * Piab * CalcGradWeightKernel(AB, psys->GetH());
+            
+            }
+        }
+
+        A += viscosity;
+
+        psys->SetAcc(i, A);
+
+    }
+        
 }
 
-PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma)
+PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma) :
     _Pbar(Pbar), 
     _rhoBar(rhoBar), 
     _gamma(gamma)
@@ -60,15 +91,15 @@ PressureForce::PressureForce(const double Pbar, const double rhoBar, const doubl
 void PressureForce::compute(PSYS &psys, const double dt) {
     for (size_t i = 0; i < psys->Psize(); i++) {
         Vector A = psys->GetAcc(i);
-        double pressure = 0;
+        Vector pressure = Vector(0,0,0);
         
         for (size_t j = 0; j < psys->Psize(); j++) {
             if(i != j) {
-                Vector term1 = psys->GetPos(i)/psys->GetRho(i);
-                Vector term2 = psys->GetPos(j)/psys->GetRho(j);
+                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(i))/std::pow(psys->GetRho(i), 2);
+                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(j))/std::pow(psys->GetRho(j), 2);
                 Vector AB = psys->GetPos(i) - psys->GetPos(j);
 
-                pressure += psys->GetMass(j) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
+                pressure += -1 * psys->GetMass(j) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
             }
         }
 
