@@ -160,7 +160,7 @@ class AdvanceVelocityStarter : public GISolverBase
  class AdvanceVelocitySPH : public GISolverBase
  {
     public:
-      AdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]);
+      AdvanceVelocitySPH(PSYS& pq, Force& f);
       ~AdvanceVelocitySPH(){};
 
       void init() {};
@@ -169,7 +169,6 @@ class AdvanceVelocityStarter : public GISolverBase
     private:
       PSYS PQ;
       Force force;
-      double Pbar, rhoBar, gamma, alpha, beta, eps; // These are user-defined variables
 
  };
 
@@ -328,19 +327,9 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
- GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f, const double userArray[6]);
+ GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
   
 
- // Utility Functions
- // ------------------------------------------------------
- 
- // Calculates the speed of sound using user defined values
- double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density);
- double CalcMuab(const double h, Vector& P1, Vector& P2, Vector& V1, Vector& V2, const double eps); 
- double CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb);
- double CalcWeightKernel(Vector& P, const double h);
- Vector CalcGradWeightKernel(Vector& P, const double h);
- double CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density);
 
 }
  #endif
