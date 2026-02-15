@@ -131,6 +131,14 @@ Force pba::CreateAccumulatingForce() {
     return Force( new AccumulatingForce() );
 }
 
+Force pba::CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma, const double alpha, const double beta, const double eps) {
+    return Force( new ViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps) );
+}
+
+Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const double gamma) {
+    return Force( new PressureForce(Pbar, rhoBar, gamma) );
+}
+
 double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
     double term1 = Pbar / rhoBar;
     double term2 = std::pow(density / rhoBar, (gamma - 1) );

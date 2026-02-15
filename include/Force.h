@@ -125,9 +125,12 @@ class PressureForce : public ForceBase {
 
 //------------------------------------------------
 
- // Create a smart pointer to gravity force
+ // Create a smart pointer to forces
  Force CreateGravityForce(const Vector& g);
  Force CreateAccumulatingForce();
+ Force CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma,
+                            const double alpha, const double beta, const double eps);
+ Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma);
   
 
 
