@@ -4,6 +4,7 @@ OFILES = base/PbaViewer.o \
          base/PbaThing.o \
          base/Matrix.o \
          base/LinearAlgebra.o \
+		 base/OccupancyVolume.o \
 		 base/ParticleSystem.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\
