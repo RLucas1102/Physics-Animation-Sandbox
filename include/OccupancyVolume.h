@@ -1,8 +1,10 @@
 #ifndef OCCUPANCY_VOLUME_H
 #define OCCUPANCY_VOLUME_H
 
-#include "Vector.h"
 #include <vector>
+
+#include "Vector.h"
+#include "ParticleSystem.h"
 
 namespace pba {
     
@@ -10,6 +12,8 @@ namespace pba {
         public: 
             OccupancyVolume(const Vector& llc, const Vector& urc, const int R);
             ~OccupancyVolume(){};
+
+            void populate(const PSYS& psys);
 
         private:
             Vector _llc;
@@ -20,6 +24,7 @@ namespace pba {
             int _cellsize;
 
             std::vector<std::vector<size_t>> contents;
+            std::mdspan volume3D;
 
     };
 
