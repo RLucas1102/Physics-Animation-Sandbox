@@ -134,6 +134,7 @@ using namespace pba;
     }
 
     void AdvancePositionWithCollisionSPH::solve(const double dt)   {
+        #pragma omp parallel for
         for (size_t i = 0; i < PQ->Psize(); i++) {
             Vector X0 = PQ->GetPos(i);
             Vector V0 = PQ->GetVel(i);
@@ -166,27 +167,32 @@ using namespace pba;
         O->ClearCells();
         O->Populate(PQ);
 
-        double newRho = 0;
-        for (size_t i = 0; i < O->Gsize(); i++) {
-            std::vector<size_t> neighborhood = O->GetNeighborhood(i);
-            for (size_t j = 0; j < neighborhood.size(); j++) {
-                for (size_t k = 0; k < neighborhood.size(); k++) {
-                    if (j != k) {
-                        Vector AB = PQ->GetPos(j) - PQ->GetPos(k);
-                        newRho += PQ->GetMass(k) * CalcWeightKernel(AB, PQ->GetH());
+        #pragma omp parallel for
+        for (size_t i = 0; i < PQ->Psize(); i++) {
+            double newRho = 0;
+            size_t cell = O->FindPosInVolume(PQ->GetPos(i));
+            std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
+            
+            for (size_t cell : neighborhood) {
+                std::vector<size_t> cellContents = O->GetCellContents(cell);
+                
+                for (size_t particle : cellContents) {
+                    if (i != particle) {
+                        Vector AB = PQ->GetPos(i) - PQ->GetPos(particle);
+                        newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, PQ->GetH());
                     }
                 }
-
-                PQ->SetRho(j, newRho);
-
             }
-        }
 
+            PQ->SetRho(i, newRho);
+
+        }
     }
 
     void AdvanceVelocitySPH::solve(const double dt) {
         force->compute(PQ, dt);
 
+        #pragma omp parallel for
         for (size_t i = 0; i < PQ->Psize(); i++) {
             Vector V = PQ->GetVel(i);
             Vector A = PQ->GetAcc(i);
