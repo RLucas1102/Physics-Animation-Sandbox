@@ -16,6 +16,7 @@ OccupancyVolume::OccupancyVolume(const Vector& llc, const Vector& urc, const int
         _cellsize = 2*R;
         _nxyz = Vector(int(_Lxyz[0]/_cellsize) + 1, int(_Lxyz[1]/_cellsize) + 1, int(_Lxyz[2])/_cellsize + 1);
         contents = std::vector<std::vector<size_t>>(_nxyz[0] * _nxyz[1] * _nxyz[2]); 
+        neighbors = std::vector<std::vector<size_t>>(_nxyz[0] * _nxyz[1] * _nxyz[2]); 
     }
 
 void OccupancyVolume::Populate(const PSYS& psys) {
@@ -28,7 +29,7 @@ void OccupancyVolume::Populate(const PSYS& psys) {
         int k = int(w[2]);
 
         int index = Get_idx(i, j, k);
-        
+
         contents[index].push_back(num);
     }
     
