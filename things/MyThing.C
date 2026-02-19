@@ -73,7 +73,11 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Create occupancy grid
     int R = 1;
-    OV occVol = CreateOccupancyVolume(Box->GetLLC(), Box->GetURC(), R);
+    Vector llc = Box->GetLLC();
+    Vector urc = Box->GetURC();
+
+    OV occVol = CreateOccupancyVolume(llc, urc, R);
+    occVol->GetNeighbors();
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
