@@ -2,6 +2,7 @@
 #include "Vector.h"
 #include "Force.h"
 #include <iostream>
+#include <vector>
 
 using namespace pba;
 
@@ -157,20 +158,30 @@ using namespace pba;
                 }
             }
 
-            O->Populate(PQ);
-
-            double newRho = 0;
-            for (size_t j = 0; j < PQ->Psize(); j++) {
-                if(i != j) {
-                    Vector AB = PQ->GetPos(i) - PQ->GetPos(j);
-                    newRho += PQ->GetMass(j) * CalcWeightKernel(AB, PQ->GetH());
-                }
-            }
 
             PQ->SetPos(i, XR);
             PQ->SetVel(i, VR);
-            PQ->SetRho(i, newRho);
-        } 
+        }
+
+        O->ClearCells();
+        O->Populate(PQ);
+
+        double newRho = 0;
+        for (size_t i = 0; i < O->Gsize(); i++) {
+            std::vector<size_t> neighborhood = O->GetNeighborhood(i);
+            for (size_t j = 0; j < neighborhood.size(); j++) {
+                for (size_t k = 0; k < neighborhood.size(); k++) {
+                    if (j != k) {
+                        Vector AB = PQ->GetPos(j) - PQ->GetPos(k);
+                        newRho += PQ->GetMass(k) * CalcWeightKernel(AB, PQ->GetH());
+                    }
+                }
+
+                PQ->SetRho(j, newRho);
+
+            }
+        }
+
     }
 
     void AdvanceVelocitySPH::solve(const double dt) {
