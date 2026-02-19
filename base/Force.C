@@ -43,9 +43,9 @@ void GravityForce::compute( PSYS& psys, const double dt) {
 }
 
 ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, 
-                               const double alpha, const double beta, const double eps) :
+                               const double alpha, const double beta, const double eps, const OV& o) :
                                _Pbar (Pbar), _rhoBar(rhoBar), _gamma(gamma),
-                               _alpha(alpha), _beta(beta), _eps(eps)
+                               _alpha(alpha), _beta(beta), _eps(eps), O(o)
                                {}
 
 void ViscosityForce::compute(PSYS &psys, const double dt) {
@@ -82,10 +82,11 @@ void ViscosityForce::compute(PSYS &psys, const double dt) {
         
 }
 
-PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma) :
+PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o) :
     _Pbar(Pbar), 
     _rhoBar(rhoBar), 
-    _gamma(gamma)
+    _gamma(gamma),
+    O (o)
     {}
 
 void PressureForce::compute(PSYS &psys, const double dt) {
@@ -131,12 +132,12 @@ Force pba::CreateAccumulatingForce() {
     return Force( new AccumulatingForce() );
 }
 
-Force pba::CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma, const double alpha, const double beta, const double eps) {
-    return Force( new ViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps) );
+Force pba::CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma, const double alpha, const double beta, const double eps, const OV& o) {
+    return Force( new ViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps, o) );
 }
 
-Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const double gamma) {
-    return Force( new PressureForce(Pbar, rhoBar, gamma) );
+Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o) {
+    return Force( new PressureForce(Pbar, rhoBar, gamma, o) );
 }
 
 double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {

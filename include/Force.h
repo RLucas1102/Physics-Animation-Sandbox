@@ -15,6 +15,7 @@
   
  #include "ParticleSystem.h"
  #include "Vector.h"
+ #include "OccupancyVolume.h"
  #include <iostream>
  #include <vector>
   
@@ -96,13 +97,15 @@ class ViscosityForce : public ForceBase {
 
     public:
         ViscosityForce(const double Pbar, const double rhoBar, const double gamma,
-                       const double alpha, const double beta, const double eps);
+                       const double alpha, const double beta, const double eps,
+                       const OV& o);
         ~ViscosityForce(){};
 
         void compute(PSYS& psys, const double dt);
 
     private:
         double _Pbar, _rhoBar, _gamma, _alpha, _beta, _eps;
+        OV O;
 };
 
 //------------------------------------------------
@@ -114,13 +117,14 @@ class ViscosityForce : public ForceBase {
 class PressureForce : public ForceBase {
 
     public:
-        PressureForce(const double Pbar, const double rhoBar, const double gamma);
+        PressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
         ~PressureForce(){};
 
         void compute(PSYS& psys, const double dt);
 
     private:
         double _Pbar, _rhoBar, _gamma;
+        OV O;
 };
 
 //------------------------------------------------
@@ -129,8 +133,8 @@ class PressureForce : public ForceBase {
  Force CreateGravityForce(const Vector& g);
  Force CreateAccumulatingForce();
  Force CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma,
-                            const double alpha, const double beta, const double eps);
- Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma);
+                            const double alpha, const double beta, const double eps, const OV& o);
+ Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
   
 
 

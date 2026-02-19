@@ -39,6 +39,20 @@ MyThing::~MyThing(){}
 
 void MyThing::Init( const std::vector<std::string>& args ) {
 
+    // Create a CollisionSurface object to hold triangles to collide with
+    Box = MakeCollisionSurface();
+
+    // MakeBox creates a box with 12 triangles
+    Box->MakeBox(3);
+    
+    // Create occupancy grid
+    int R = 1;
+    Vector llc = Box->GetLLC();
+    Vector urc = Box->GetURC();
+
+    OV occVol = CreateOccupancyVolume(llc, urc, R);
+    occVol->ComputeNeighbors();
+
     // Create a particle system object to hold particles and interact with them
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
@@ -52,8 +66,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     MyThing_PSYS->SetH(1.0);
 
     // Create SPH forces
-    Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps);
-    Force PForce = CreatePressureForce(Pbar, rhoBar, gamma);
+    Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps, occVol);
+    Force PForce = CreatePressureForce(Pbar, rhoBar, gamma, occVol);
 
     // Create a Force object that is a gravity force
     Force GForce = CreateGravityForce(Vector(0, -1, 0));
@@ -64,20 +78,6 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     f->AddForce(GForce);
     f->AddForce(PForce);
     f->AddForce(VForce);
-
-    // Create a CollisionSurface object to hold triangles to collide with
-    Box = MakeCollisionSurface();
-
-    // MakeBox creates a box with 12 triangles
-    Box->MakeBox(3);
-
-    // Create occupancy grid
-    int R = 1;
-    Vector llc = Box->GetLLC();
-    Vector urc = Box->GetURC();
-
-    OV occVol = CreateOccupancyVolume(llc, urc, R);
-    occVol->ComputeNeighbors();
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
