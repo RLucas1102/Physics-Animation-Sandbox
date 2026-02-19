@@ -84,8 +84,8 @@ void CollisionSurfaceRaw::MakeBox(const double& m) {
     Vector BackTR = Vector( 1.0 * m,  1.0 * m, -1.0 * m);
     Vector BackTL = Vector(-1.0 * m,  1.0 * m, -1.0 * m);
 
-    _llc = FrontBL;
-    _urc = BackTR;
+    _llc = BackBL;
+    _urc = FrontTR;
 
     CollisionTriangle Front1 = MakeCollisionTriangle(FrontTR, FrontBL, FrontBR);
     CollisionTriangle Front2 = MakeCollisionTriangle(FrontTR, FrontTL, FrontBL);
