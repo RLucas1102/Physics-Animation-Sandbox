@@ -76,7 +76,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     OV occVol = CreateOccupancyVolume(Box->GetLLC(), Box->GetURC(), R);
 
     // Create two partial solvers and set the initial solver to forward euler
-    GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box);
+    GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
     GISolver solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);

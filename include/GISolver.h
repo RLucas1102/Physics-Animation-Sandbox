@@ -19,6 +19,7 @@
  #include "ParticleSystem.h"
  #include "Force.h"
  #include "CollisionSurface.h"
+ #include "OccupancyVolume.h"
   
  namespace pba{
   
@@ -137,7 +138,7 @@ class AdvanceVelocityStarter : public GISolverBase
  class AdvancePositionWithCollisionSPH : public GISolverBase 
  {
     public:
-      AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
+      AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
       ~AdvancePositionWithCollisionSPH(){};
 
       void init() {};
@@ -146,6 +147,7 @@ class AdvanceVelocityStarter : public GISolverBase
     private:
       PSYS PQ;
       CollisionSurface C;
+      OV O; // Occupancy Volume
  };
 
 
@@ -326,7 +328,7 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePosition(PSYS& pq);
  GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
- GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c);
+ GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
   
 

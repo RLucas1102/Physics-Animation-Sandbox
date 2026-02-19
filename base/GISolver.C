@@ -27,9 +27,10 @@ using namespace pba;
         C (c)
         {}
 
-    AdvancePositionWithCollisionSPH::AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c) :
+    AdvancePositionWithCollisionSPH::AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o) :
         PQ (pq),
-        C (c)
+        C (c),
+        O (o)
         {}
 
     AdvanceVelocitySPH::AdvanceVelocitySPH(PSYS& pq, Force& f) :
@@ -229,8 +230,8 @@ using namespace pba;
         return GISolver( new AdvancePositionWithCollision(pq, c) );
     }
     
-    GISolver pba::CreateAdvancePositionWithCollisionSPH(PSYS &pq, CollisionSurface& c) {
-        return GISolver( new AdvancePositionWithCollisionSPH(pq, c) );
+    GISolver pba::CreateAdvancePositionWithCollisionSPH(PSYS &pq, CollisionSurface& c, OV& o) {
+        return GISolver( new AdvancePositionWithCollisionSPH(pq, c, o) );
     }
 
     GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f) {
