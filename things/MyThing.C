@@ -21,8 +21,7 @@
 #include "ParticleSystem.h"
 #include "CollisionSurface.h"
 #include "GISolver.h"
-
-
+#include "OccupancyVolume.h"
 
 using namespace std;
 
@@ -71,6 +70,10 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     // MakeBox creates a box with 12 triangles
     Box->MakeBox(3);
+
+    // Create occupancy grid
+    int R = 1;
+    OV occVol = CreateOccupancyVolume(Box->GetLLC(), Box->GetURC(), R);
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box);
