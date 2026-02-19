@@ -77,7 +77,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Vector urc = Box->GetURC();
 
     OV occVol = CreateOccupancyVolume(llc, urc, R);
-    occVol->GetNeighbors();
+    occVol->ComputeNeighbors();
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
