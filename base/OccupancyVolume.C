@@ -7,7 +7,7 @@
 
 using namespace pba;
 
-OccupancyVolume::OccupancyVolume(const Vector& llc, const Vector& urc, const int R) :
+OccupancyVolume::OccupancyVolume(const Vector& llc, const Vector& urc, const double R) :
     _llc (llc),
     _urc (urc),
     _R (R)
@@ -99,6 +99,6 @@ void OccupancyVolume::ClearCells() {
     
 }
 
-OV pba::CreateOccupancyVolume(const Vector &LLC, const Vector URC, const int R) {
+OV pba::CreateOccupancyVolume(const Vector &LLC, const Vector URC, const double R) {
     return std::make_shared<OccupancyVolume>(OccupancyVolume(LLC, URC, R));
 }

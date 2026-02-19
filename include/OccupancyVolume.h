@@ -11,7 +11,7 @@ namespace pba {
     
     class OccupancyVolume {
         public: 
-            OccupancyVolume(const Vector& llc, const Vector& urc, const int R);
+            OccupancyVolume(const Vector& llc, const Vector& urc, const double R);
             ~OccupancyVolume(){};
 
             void Populate(const PSYS& psys);
@@ -35,8 +35,8 @@ namespace pba {
             Vector _urc;
             Vector _Lxyz;
             Vector _nxyz;
-            int _R;
-            int _cellsize;
+            double _R;
+            double _cellsize;
 
             std::vector<std::vector<size_t>> contents;
             std::vector<std::vector<size_t>> neighbors;
@@ -59,7 +59,7 @@ namespace pba {
 
     typedef std::shared_ptr<OccupancyVolume> OV;
 
-    OV CreateOccupancyVolume(const Vector& LLC, const Vector URC, const int R);
+    OV CreateOccupancyVolume(const Vector& LLC, const Vector URC, const double R);
 
 }
 
