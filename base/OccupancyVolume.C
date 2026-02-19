@@ -3,6 +3,7 @@
 #include "ParticleSystem.h"
 
 #include <vector>
+#include <memory>
 
 using namespace pba;
 
@@ -64,4 +65,8 @@ void OccupancyVolume::GetNeighbors() {
             }
         }
     }
+}
+
+std::shared_ptr<OccupancyVolume> pba::CreateOccupancyVolume(const Vector &LLC, const Vector URC, const int R) {
+    return std::make_shared<OccupancyVolume>(OccupancyVolume(LLC, URC, R));
 }

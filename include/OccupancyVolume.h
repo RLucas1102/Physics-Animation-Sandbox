@@ -2,6 +2,7 @@
 #define OCCUPANCY_VOLUME_H
 
 #include <vector>
+#include <memory>
 
 #include "Vector.h"
 #include "ParticleSystem.h"
@@ -45,6 +46,8 @@ namespace pba {
             };
 
     };
+
+    std::shared_ptr<OccupancyVolume> CreateOccupancyVolume(const Vector& LLC, const Vector URC, const int R);
 
 }
 
