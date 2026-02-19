@@ -46,7 +46,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Box->MakeBox(3);
     
     // Create occupancy grid
-    int R = 1;
+    int R = 1000;
     Vector llc = Box->GetLLC();
     Vector urc = Box->GetURC();
 
@@ -152,11 +152,11 @@ void MyThing::Reset()
    // Create 1000 particles with a random position, velocity of 0, and random color
    Vector initVel = Vector(0, 0, 0);
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(100);
+   MyThing_PSYS->AddParticles(1000);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inPos = pba::Vector(drand48() * 3 - 1.5,drand48() * 3 - 1.5,drand48() * 3 - 1.5);
+      pba::Vector inPos = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
    
       MyThing_PSYS->SetPos(i, inPos);
       MyThing_PSYS->SetVel(i, initVel);
@@ -188,7 +188,7 @@ void MyThing::Emit() {
    {
       
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inPos = pba::Vector(drand48() * 3 - 1.5,drand48() * 3 - 1.5,drand48() * 3 - 1.5);
+      pba::Vector inPos = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
    
       MyThing_PSYS->SetPos(i, inPos);
       MyThing_PSYS->SetVel(i, initVel);
