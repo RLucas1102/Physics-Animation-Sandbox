@@ -46,7 +46,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Box->MakeBox(3);
     
     // Create occupancy grid
-    int R = 1000;
+    double h = 0.1;
+    double R = h;
     Vector llc = Box->GetLLC();
     Vector urc = Box->GetURC();
 
@@ -63,7 +64,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     double alpha = 1.0;
     double beta = 1.0;
     double eps = 1.0;
-    MyThing_PSYS->SetH(1.0);
+    MyThing_PSYS->SetH(h);
 
     // Create SPH forces
     Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps, occVol);
