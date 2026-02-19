@@ -18,7 +18,13 @@ namespace pba {
 
             int Get_idx(int i, int j, int k);
 
-            void GetNeighbors();
+            void ComputeNeighbors();
+
+            std::vector<size_t> GetNeighborhood(const size_t i) const;
+
+            size_t Gsize();
+
+            void ClearCells();
 
         private:
             Vector _llc;

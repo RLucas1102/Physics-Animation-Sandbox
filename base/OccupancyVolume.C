@@ -29,7 +29,6 @@ void OccupancyVolume::Populate(const PSYS& psys) {
         int k = int(w[2]);
 
         int index = Get_idx(i, j, k);
-
         contents[index].push_back(num);
     }
     
@@ -39,7 +38,11 @@ int OccupancyVolume::Get_idx(int i, int j, int k) {
     return i + _nxyz[0] * (j + (_nxyz[1] * k));
 }
 
-void OccupancyVolume::GetNeighbors() {
+size_t OccupancyVolume::Gsize() {
+    return contents.size();
+}
+
+void OccupancyVolume::ComputeNeighbors() {
     for (size_t i = 0; i < _nxyz[0]; i++) {
         for (size_t j = 0; j < _nxyz[1]; j++) {
             for (size_t k = 0; k < _nxyz[2]; k++) {
@@ -66,6 +69,26 @@ void OccupancyVolume::GetNeighbors() {
             }
         }
     }
+}
+
+std::vector<size_t> OccupancyVolume::GetNeighborhood(const size_t i) const {
+    std::vector<size_t> neighborhood;
+    for (size_t neighbor : neighbors[i]) {
+        std::vector<size_t> neighbor_contents = contents[neighbor];
+        for (size_t particle : neighbor_contents) {
+            neighborhood.push_back(particle);
+        }
+    }
+
+    return neighborhood;
+
+}
+
+void OccupancyVolume::ClearCells() {
+    for (size_t i = 0; i < Gsize(); i++) {
+        contents[i].clear();
+    }
+    
 }
 
 OV pba::CreateOccupancyVolume(const Vector &LLC, const Vector URC, const int R) {
