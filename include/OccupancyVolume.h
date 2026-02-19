@@ -47,7 +47,9 @@ namespace pba {
 
     };
 
-    std::shared_ptr<OccupancyVolume> CreateOccupancyVolume(const Vector& LLC, const Vector URC, const int R);
+    typedef std::shared_ptr<OccupancyVolume> OV;
+
+    OV CreateOccupancyVolume(const Vector& LLC, const Vector URC, const int R);
 
 }
 
