@@ -42,6 +42,19 @@ size_t OccupancyVolume::Gsize() {
     return contents.size();
 }
 
+int OccupancyVolume::FindPosInVolume(const Vector &p) {
+    Vector P = p;
+    Vector y = P - _llc;
+    Vector w = y / _cellsize;
+    int i = int(w[0]);
+    int j = int(w[1]);
+    int k = int(w[2]);
+
+    int index = Get_idx(i, j, k);
+
+    return index;
+}
+
 void OccupancyVolume::ComputeNeighbors() {
     for (size_t i = 0; i < _nxyz[0]; i++) {
         for (size_t j = 0; j < _nxyz[1]; j++) {
@@ -72,16 +85,11 @@ void OccupancyVolume::ComputeNeighbors() {
 }
 
 std::vector<size_t> OccupancyVolume::GetNeighborhood(const size_t i) const {
-    std::vector<size_t> neighborhood;
-    for (size_t neighbor : neighbors[i]) {
-        std::vector<size_t> neighbor_contents = contents[neighbor];
-        for (size_t particle : neighbor_contents) {
-            neighborhood.push_back(particle);
-        }
-    }
+    return neighbors[i];
+}
 
-    return neighborhood;
-
+std::vector<size_t> pba::OccupancyVolume::GetCellContents(const size_t i) const {
+    return contents[i];
 }
 
 void OccupancyVolume::ClearCells() {
