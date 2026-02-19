@@ -177,10 +177,8 @@ using namespace pba;
                 std::vector<size_t> cellContents = O->GetCellContents(cell);
                 
                 for (size_t particle : cellContents) {
-                    if (i != particle) {
-                        Vector AB = PQ->GetPos(i) - PQ->GetPos(particle);
-                        newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, PQ->GetH());
-                    }
+                    Vector AB = PQ->GetPos(i) - PQ->GetPos(particle);
+                    newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, PQ->GetH());
                 }
             }
 

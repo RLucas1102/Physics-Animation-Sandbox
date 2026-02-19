@@ -64,22 +64,20 @@ void ViscosityForce::compute(PSYS &psys, const double dt) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                if(i != particle) {
-                    double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(particle));
-                    double Cab = Ca + Cb;
+                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(particle));
+                double Cab = Ca + Cb;
 
-                    Vector Pa = psys->GetPos(i);
-                    Vector Pb = psys->GetPos(particle);
-                    Vector Va = psys->GetVel(i);
-                    Vector Vb = psys->GetVel(particle);
+                Vector Pa = psys->GetPos(i);
+                Vector Pb = psys->GetPos(particle);
+                Vector Va = psys->GetVel(i);
+                Vector Vb = psys->GetVel(particle);
 
-                    double muab = CalcMuab(psys->GetH(), Pa, Pb, Va, Vb, _eps);
-                    double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(particle));
+                double muab = CalcMuab(psys->GetH(), Pa, Pb, Va, Vb, _eps);
+                double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(particle));
 
-                    Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                    viscosity += psys->GetMass(particle) * Piab * CalcGradWeightKernel(AB, psys->GetH());
+                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
+                viscosity += psys->GetMass(particle) * Piab * CalcGradWeightKernel(AB, psys->GetH());
                     
-                }
             }
         }
 
@@ -110,13 +108,11 @@ void PressureForce::compute(PSYS &psys, const double dt) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                if (i != particle) {
-                    double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(i))/std::pow(psys->GetRho(i), 2);
-                    double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(particle))/std::pow(psys->GetRho(particle), 2);
+                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(i))/std::pow(psys->GetRho(i), 2);
+                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(particle))/std::pow(psys->GetRho(particle), 2);
 
-                    Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                    pressure += psys->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
-                }
+                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
+                pressure += psys->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
             }
         }
 
@@ -211,6 +207,10 @@ Vector pba::CalcGradWeightKernel(Vector &P, const double h) {
     Vector term1 = (1/h) * (P / P.magnitude());
     double result;
     
+    if (P.magnitude() == 0) {
+        return Vector(0,0,0);
+    }
+
     if (q >= 0 && q < 1) {
         double term2 = 1 - ((3/4) * q);
         result = -3 * sigma * q * term2;
