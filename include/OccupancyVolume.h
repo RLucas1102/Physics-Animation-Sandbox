@@ -20,9 +20,9 @@ namespace pba {
 
             void ComputeNeighbors();
 
-            std::vector<size_t> GetNeighborhood(const size_t i) const;
+            const std::vector<size_t>& GetNeighborhood(const size_t i) const;
 
-            std::vector<size_t> GetCellContents(const size_t i) const;
+            const std::vector<size_t>& GetCellContents(const size_t i) const;
 
             int FindPosInVolume(const Vector& p);
 

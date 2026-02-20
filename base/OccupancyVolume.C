@@ -84,11 +84,11 @@ void OccupancyVolume::ComputeNeighbors() {
     }
 }
 
-std::vector<size_t> OccupancyVolume::GetNeighborhood(const size_t i) const {
+const std::vector<size_t>& OccupancyVolume::GetNeighborhood(const size_t i) const {
     return neighbors[i];
 }
 
-std::vector<size_t> pba::OccupancyVolume::GetCellContents(const size_t i) const {
+const std::vector<size_t>& pba::OccupancyVolume::GetCellContents(const size_t i) const {
     return contents[i];
 }
 
