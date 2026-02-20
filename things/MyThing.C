@@ -46,7 +46,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Box->MakeBox(3);
     
     // Create occupancy grid
-    double h = 0.1;
+    double h = 0.05;
     double R = h;
     Vector llc = Box->GetLLC();
     Vector urc = Box->GetURC();
