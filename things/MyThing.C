@@ -85,7 +85,11 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
-    
+
+    std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
+    vs->SetVT(1.0);
+    vs->SetAT(1.0);
+
     // Seed rand with time
     srand(time(NULL));
 
@@ -146,57 +150,69 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<ViscosityForce> v = dynamic_pointer_cast<ViscosityForce>(a->GetForce(2));
          v->ChangeVStrength(-0.1);
+         cout << "Current viscosity strength: " << v->GetStrength() << "\n";
       }
       if (key == 'V') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<ViscosityForce> v = dynamic_pointer_cast<ViscosityForce>(a->GetForce(2));
          v->ChangeVStrength(0.1);
+         cout << "Current viscosity strength: " << v->GetStrength() << "\n";
       }
       if (key == 'p') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangePStrength(-0.1);
+         cout << "Current pressure strength: " << p->GetPStrength() << "\n";
       }
       if (key == 'P') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangePStrength(0.1);
+         cout << "Current pressure strength: " << p->GetPStrength() << "\n";
       }
       if (key == 'd') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangeBaseDensity(-0.1);
+         cout << "Current base density: " << p->GetBaseDensity() << "\n";
       }
       if (key == 'D') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangeBaseDensity(0.1);
+         cout << "Current base density: " << p->GetBaseDensity() << "\n";
       }
       if (key == 'b') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangePower(-0.1);
+         cout << "Current power: " << p->GetPower() << "\n";
       }
       if (key == 'B') {
          std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
          std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
          p->ChangePower(0.1);
+         cout << "Current power: " << p->GetPower() << "\n";
       }
       if (key == 's') {
          std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
          vs->ChangeVDampening(-0.1);
+         cout << "Current velocity dampening: " << vs->GetVT() << "\n";
       }
       if (key == 'S') {
          std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
          vs->ChangeVDampening(0.1);
+         cout << "Current velocity dampening: " << vs->GetVT() << "\n";
       }
       if (key == 'a') {
          std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
          vs->ChangeADampening(-0.1);
+         cout << "Current acceleration dampening: " << vs->GetAT() << "\n";
       }
       if (key == 'A') {
          std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
          vs->ChangeADampening(0.1);
+         cout << "Current acceleration dampening: " << vs->GetAT() << "\n";
       }
 
 }
