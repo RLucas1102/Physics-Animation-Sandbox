@@ -87,6 +87,10 @@ void ViscosityForce::compute(PSYS &psys, const double dt) {
     }
 }
 
+void ViscosityForce::ChangeVStrength(const double alpha) {
+    _alpha += alpha;
+}
+
 PressureForce::PressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o) :
     _Pbar(Pbar), 
     _rhoBar(rhoBar), 
@@ -121,6 +125,18 @@ void PressureForce::compute(PSYS &psys, const double dt) {
         
     }
 
+}
+
+void PressureForce::ChangePStrength(const double Pbar) {
+    _Pbar += Pbar;
+}
+
+void PressureForce::ChangeBaseDensity(const double rhoBar) {
+    _rhoBar += rhoBar;
+}
+
+void PressureForce::ChangePower(const double gamma) {
+    _gamma += gamma;
 }
 
 void GravityForce::IncreaseGravityForce() {
