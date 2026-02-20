@@ -195,12 +195,12 @@ using namespace pba;
             Vector V = PQ->GetVel(i);
             Vector A = PQ->GetAcc(i);
            
-            if(V.magnitude() > 1.0) {
-                V = V * (1.0/V.magnitude());
+            if(V.magnitude() > _VT) {
+                V = V * (_VT/V.magnitude());
             }
 
-            if(A.magnitude() > 1.0) {
-                A = A * (1.0/A.magnitude());
+            if(A.magnitude() > _AT) {
+                A = A * (_AT/A.magnitude());
             }
 
             V += A * dt;
