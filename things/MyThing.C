@@ -80,12 +80,13 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     f->AddForce(PForce);
     f->AddForce(VForce);
 
-    // Create two partial solvers and set the initial solver to forward euler
+    // Create two partial solvers and set the initial solver to the sixth order solver
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
     solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
 
+    // Adjust initial clamping of velocity and acceleration
     std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
     vs->SetVT(5.0);
     vs->SetAT(5.0);
