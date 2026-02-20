@@ -211,6 +211,14 @@ using namespace pba;
 
     }
 
+    void AdvanceVelocitySPH::ChangeADampening(const double AT) {
+        _AT += AT;
+    }
+
+    void pba::AdvanceVelocitySPH::ChangeVDampening(const double VT) {
+        _VT += VT;
+    }
+
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
         return GISolver( new AdvancePositionStarter(pq) );
     }
