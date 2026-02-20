@@ -174,8 +174,8 @@ class AdvanceVelocityStarter : public GISolverBase
       double GetAT() const { return _AT; }
       double GetVT() const { return _VT; }
 
-      double SetAT(const double AT) { _AT = AT; }
-      double SetVT(const double VT) { _VT = VT;} 
+      void SetAT(const double AT) { _AT = AT; }
+      void SetVT(const double VT) { _VT = VT;} 
 
     private:
       PSYS PQ;
