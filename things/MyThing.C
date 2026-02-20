@@ -250,6 +250,19 @@ void MyThing::Usage()
    cout << "G            Increase magnitude of gravity\n";
    cout << "c            Decrease coefficient of restitution\n";
    cout << "C            Increase coefficient of restitution\n";
+   cout << "v            Decrease viscosity strength\n";
+   cout << "V            Increase viscosity strength\n";
+   cout << "p            Decrease pressure strength\n";
+   cout << "P            Increase pressure strength\n";
+   cout << "d            Decrease base density\n";
+   cout << "D            Increase base density\n";
+   cout << "b            Decrease power\n";
+   cout << "B            Increase power\n";
+   cout << "s            Decrease velocity dampening\n";
+   cout << "S            Increase velocity dampening\n";
+   cout << "a            Decrease acceleration dampening\n";
+   cout << "A            Increase acceleration dampening\n";
+
 }
 
 void MyThing::Emit() {
