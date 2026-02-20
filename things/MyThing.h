@@ -80,6 +80,7 @@ class MyThing: public PbaThingyDingy
     // Class member variables
     PSYS MyThing_PSYS;
     GISolver solver;
+    GISolver solverB;
     Force accumulator;
     CollisionSurface Box;
 

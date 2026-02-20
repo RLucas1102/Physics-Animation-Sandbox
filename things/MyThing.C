@@ -82,7 +82,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Create two partial solvers and set the initial solver to forward euler
     GISolver solverA = CreateAdvancePositionWithCollisionSPH(MyThing_PSYS, Box, occVol);
-    GISolver solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
+    solverB = CreateAdvanceVelocitySPH(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
     
@@ -141,6 +141,62 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       if( key == 'C'){
          Box->IncreaseCoeffR();
          cout << "Current coefficient of restitution: " << Box->GetCoeffR() << "\n";
+      }
+      if (key == 'v') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<ViscosityForce> v = dynamic_pointer_cast<ViscosityForce>(a->GetForce(2));
+         v->ChangeVStrength(-0.1);
+      }
+      if (key == 'V') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<ViscosityForce> v = dynamic_pointer_cast<ViscosityForce>(a->GetForce(2));
+         v->ChangeVStrength(0.1);
+      }
+      if (key == 'p') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangePStrength(-0.1);
+      }
+      if (key == 'P') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangePStrength(0.1);
+      }
+      if (key == 'd') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangeBaseDensity(-0.1);
+      }
+      if (key == 'D') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangeBaseDensity(0.1);
+      }
+      if (key == 'b') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangePower(-0.1);
+      }
+      if (key == 'B') {
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<PressureForce> p = dynamic_pointer_cast<PressureForce>(a->GetForce(1));
+         p->ChangePower(0.1);
+      }
+      if (key == 's') {
+         std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
+         vs->ChangeVDampening(-0.1);
+      }
+      if (key == 'S') {
+         std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
+         vs->ChangeVDampening(0.1);
+      }
+      if (key == 'a') {
+         std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
+         vs->ChangeADampening(-0.1);
+      }
+      if (key == 'A') {
+         std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
+         vs->ChangeADampening(0.1);
       }
 
 }
