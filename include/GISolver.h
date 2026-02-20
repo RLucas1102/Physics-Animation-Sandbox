@@ -171,6 +171,12 @@ class AdvanceVelocityStarter : public GISolverBase
       void ChangeVDampening(const double VT);
       void ChangeADampening(const double AT);
 
+      double GetAT() const { return _AT; }
+      double GetVT() const { return _VT; }
+
+      double SetAT(const double AT) { _AT = AT; }
+      double SetVT(const double VT) { _VT = VT;} 
+
     private:
       PSYS PQ;
       Force force;

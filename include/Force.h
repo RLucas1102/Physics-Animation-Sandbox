@@ -104,6 +104,8 @@ class ViscosityForce : public ForceBase {
         void compute(PSYS& psys, const double dt);
 
         void ChangeVStrength(const double alpha);
+        
+        double GetStrength() const { return _alpha; }
 
     private:
         double _Pbar, _rhoBar, _gamma, _alpha, _beta, _eps;
@@ -127,6 +129,10 @@ class PressureForce : public ForceBase {
         void ChangePStrength(const double Pbar);
         void ChangeBaseDensity(const double rhoBar);
         void ChangePower(const double gamma);
+
+        double GetPStrength() const { return _Pbar; }
+        double GetBaseDensity() const  { return _rhoBar; }
+        double GetPower() const { return _gamma; }
 
     private:
         double _Pbar, _rhoBar, _gamma;
