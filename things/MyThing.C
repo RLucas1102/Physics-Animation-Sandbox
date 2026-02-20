@@ -46,7 +46,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     Box->MakeBox(3);
     
     // Create occupancy grid
-    double h = 0.05;
+    double h = 0.075;
     double R = h;
     Vector llc = Box->GetLLC();
     Vector urc = Box->GetURC();
@@ -58,10 +58,10 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
 
     // Create parameters for SPH forces (these will vary)
-    double Pbar = 1.0;
-    double rhoBar = 1.0;
-    double gamma = 1.0;
-    double alpha = 1.0;
+    double Pbar = 2.0;
+    double rhoBar = 5.5;
+    double gamma = 3.5;
+    double alpha = -10.0;
     double beta = 1.0;
     double eps = 1.0;
     MyThing_PSYS->SetH(h);
@@ -87,8 +87,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     solver = CreateSixthOrderSolver(LFSolver);
 
     std::shared_ptr<AdvanceVelocitySPH> vs = dynamic_pointer_cast<AdvanceVelocitySPH>(solverB);
-    vs->SetVT(1.0);
-    vs->SetAT(1.0);
+    vs->SetVT(5.0);
+    vs->SetAT(5.0);
 
     // Seed rand with time
     srand(time(NULL));
@@ -230,7 +230,11 @@ void MyThing::Reset()
    {
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
       pba::Vector inPos = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
-   
+      
+      if (i==0) {
+         initPos = inPos;
+      }
+
       MyThing_PSYS->SetPos(i, inPos);
       MyThing_PSYS->SetVel(i, initVel);
       MyThing_PSYS->SetCol(i, inCol);
@@ -253,18 +257,15 @@ void MyThing::Emit() {
    // Emit 100 new particles at the initial position with random colors and velocities
    size_t nbincrease = 100;
    MyThing_PSYS->AddParticles(nbincrease);
-   Vector V;
-   Color C;
-   Vector initVel = Vector(0, 0, 0);
    std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
    for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
    {
       
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inPos = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
+      pba::Vector inVel = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
    
-      MyThing_PSYS->SetPos(i, inPos);
-      MyThing_PSYS->SetVel(i, initVel);
+      MyThing_PSYS->SetPos(i, initPos);
+      MyThing_PSYS->SetVel(i, inVel);
       MyThing_PSYS->SetCol(i, inCol);
    }
    

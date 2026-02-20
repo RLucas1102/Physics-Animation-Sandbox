@@ -31,7 +31,7 @@ class MyThing: public PbaThingyDingy
   public:
 
     // Feel free to customize the name of this thing.
-    MyThing(const std::string nam = "BouncingBalls");
+    MyThing(const std::string nam = "Smoothed Particle Hydrodynamics");
    ~MyThing();
 
     //! Initialization, including GLUT initialization.
@@ -83,6 +83,7 @@ class MyThing: public PbaThingyDingy
     GISolver solverB;
     Force accumulator;
     CollisionSurface Box;
+    Vector initPos;
 
 };
 
