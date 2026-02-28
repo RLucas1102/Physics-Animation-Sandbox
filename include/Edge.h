@@ -25,5 +25,6 @@ class SoftEdgeData {
 
     };
 
+    typedef std::shared_ptr<SoftEdgeData> SoftEdge;
 
 #endif
