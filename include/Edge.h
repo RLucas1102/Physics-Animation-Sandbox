@@ -13,16 +13,14 @@
 #ifndef EDGE_H
 #define EDGE_H
 
+#include <memory>
+
 namespace pba{
     class SoftEdgeData {
         public:
 
-            SoftEdgeData(const size_t i, const size_t j, const double edgeLength) :
-                inode (i),
-                jnode (j),
-                length (edgeLength)
-                {}
-
+            SoftEdgeData(const size_t i, const size_t j, const double edgeLength);
+            
             ~SoftEdgeData(){}
 
             const size_t& GetFirstNode() const { return inode; }
@@ -39,6 +37,8 @@ namespace pba{
         };
 
         typedef std::shared_ptr<SoftEdgeData> SoftEdge;
+
+        SoftEdge CreateSoftEdge(const size_t i, const size_t j, const double edgeLength);
 
 }
 
