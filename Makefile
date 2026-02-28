@@ -6,6 +6,8 @@ OFILES = base/PbaViewer.o \
          base/LinearAlgebra.o \
 		 base/OccupancyVolume.o \
 		 base/ParticleSystem.o\
+		 base/SoftBodyState.o\
+		 base/Edge.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\
 		 base/CollisionSurface.o\
