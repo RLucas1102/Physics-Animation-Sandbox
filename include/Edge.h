@@ -13,30 +13,33 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-class SoftEdgeData {
-    public:
+namespace pba{
+    class SoftEdgeData {
+        public:
 
-        SoftEdgeData(const size_t i, const size_t j, const double edgeLength) :
-            inode (i),
-            jnode (j),
-            length (edgeLength)
-            {}
+            SoftEdgeData(const size_t i, const size_t j, const double edgeLength) :
+                inode (i),
+                jnode (j),
+                length (edgeLength)
+                {}
 
-        ~SoftEdgeData(){}
+            ~SoftEdgeData(){}
 
-        const size_t& GetFirstNode() const { return inode; }
+            const size_t& GetFirstNode() const { return inode; }
 
-        const size_t& GetSecondNode() const { return jnode; }
+            const size_t& GetSecondNode() const { return jnode; }
 
-        const double GetEdgeLength() const { return length; }
+            const double GetEdgeLength() const { return length; }
 
-        private:
+            private:
 
-            size_t inode, jnode;    // These are two particle indices
-            double length;          // Lab
+                size_t inode, jnode;    // These are two particle indices
+                double length;          // Lab
 
-    };
+        };
 
-    typedef std::shared_ptr<SoftEdgeData> SoftEdge;
+        typedef std::shared_ptr<SoftEdgeData> SoftEdge;
+
+}
 
 #endif
