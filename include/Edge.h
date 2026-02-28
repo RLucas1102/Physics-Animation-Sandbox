@@ -1,3 +1,15 @@
+ //-------------------------------------------------------
+ //
+ //  Edge.h
+ //
+ //  Class for creating edges
+ //
+ //  Copyright (c) 2017 Jerry Tessendorf
+ //
+ //  Adapted by Lucas Robenolt
+ //
+ //--------------------------------------------------------
+
 #ifndef EDGE_H
 #define EDGE_H
 
