@@ -18,7 +18,7 @@
 #include <iostream>
 #include <time.h>
 
-#include "ParticleSystem.h"
+#include "SPHSystem.h"
 #include "CollisionSurface.h"
 #include "GISolver.h"
 #include "OccupancyVolume.h"
@@ -54,8 +54,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     OV occVol = CreateOccupancyVolume(llc, urc, R);
     occVol->ComputeNeighbors();
 
-    // Create a particle system object to hold particles and interact with them
-    MyThing_PSYS = CreateParticleSystem("My_First_Particle_System");
+    // Create a SPH system object to hold particles and interact with them
+    MyThing_PSYS = CreateSPHSystem("My_First_SPH_System");
 
     // Create parameters for SPH forces (these will vary)
     double Pbar = 2.0;
@@ -64,7 +64,9 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     double alpha = -10.0;
     double beta = 1.0;
     double eps = 1.0;
-    MyThing_PSYS->SetH(h);
+
+    std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(MyThing_PSYS);
+    sph->SetH(h);
 
     // Create SPH forces
     Force VForce = CreateViscosityForce(Pbar, rhoBar, gamma, alpha, beta, eps, occVol);
