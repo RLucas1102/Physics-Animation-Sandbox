@@ -37,14 +37,6 @@ double const ParticleSystem::GetMass(const size_t p) {
     return particles[p].mass;
 }
 
-double const ParticleSystem::GetRho(const size_t p) {
-    return particles[p].density;
-}
-
-double const ParticleSystem::GetH() {
-    return h;
-}
-
 void ParticleSystem::SetPos(const size_t p, Vector& inPos) {
     particles[p].position = inPos;
 }
@@ -63,14 +55,6 @@ void ParticleSystem::SetAcc(const size_t p, Vector& inAcc) {
 
 void ParticleSystem::SetMass(const size_t p, double inMass) {
     particles[p].mass = inMass;
-}
-
-void ParticleSystem::SetRho(const size_t p, double inDensity) {
-    particles[p].density = inDensity;
-}
-
-void ParticleSystem::SetH(const double inH) {
-    h = inH;
 }
 
 size_t const ParticleSystem::Psize() {
