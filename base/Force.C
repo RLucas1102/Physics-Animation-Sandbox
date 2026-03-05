@@ -50,39 +50,41 @@ ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const dou
 
 void ViscosityForce::compute(PSYS &psys, const double dt) {
 
+    std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(psys);
+    
     #pragma omp parallel for
-    for(size_t i = 0; i < psys->Psize(); i++) {
-        Vector A = psys->GetAcc(i);
+    for(size_t i = 0; i < sph->Psize(); i++) {
+        Vector A = sph->GetAcc(i);
         Vector viscosity = Vector(0,0,0);
             
-        double Ca = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(i));
+        double Ca = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, sph->GetRho(i));
         
-        size_t cell = O->FindPosInVolume(psys->GetPos(i));
+        size_t cell = O->FindPosInVolume(sph->GetPos(i));
         std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
  
         for (size_t cell : neighborhood) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(particle));
+                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, sph->GetRho(particle));
                 double Cab = Ca + Cb;
 
-                Vector Pa = psys->GetPos(i);
-                Vector Pb = psys->GetPos(particle);
-                Vector Va = psys->GetVel(i);
-                Vector Vb = psys->GetVel(particle);
+                Vector Pa = sph->GetPos(i);
+                Vector Pb = sph->GetPos(particle);
+                Vector Va = sph->GetVel(i);
+                Vector Vb = sph->GetVel(particle);
 
-                double muab = CalcMuab(psys->GetH(), Pa, Pb, Va, Vb, _eps);
-                double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(particle));
+                double muab = CalcMuab(sph->GetH(), Pa, Pb, Va, Vb, _eps);
+                double Piab = CalcPiab(_alpha, _beta, Cab, muab, sph->GetRho(i), sph->GetRho(particle));
 
-                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                viscosity += psys->GetMass(particle) * Piab * CalcGradWeightKernel(AB, psys->GetH());
+                Vector AB = sph->GetPos(i) - sph->GetPos(particle);
+                viscosity += sph->GetMass(particle) * Piab * CalcGradWeightKernel(AB, sph->GetH());
                     
             }
         }
 
         A -= viscosity;
-        psys->SetAcc(i, A);
+        sph->SetAcc(i, A);
         
     }
 }
@@ -100,28 +102,30 @@ PressureForce::PressureForce(const double Pbar, const double rhoBar, const doubl
 
 void PressureForce::compute(PSYS &psys, const double dt) {
 
+    std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(psys);
+    
     #pragma omp parallel for
-    for(size_t i = 0; i < psys->Psize(); i++) {
-        Vector A = psys->GetAcc(i);
+    for(size_t i = 0; i < sph->Psize(); i++) {
+        Vector A = sph->GetAcc(i);
         Vector pressure = Vector(0,0,0);
         
-        size_t cell = O->FindPosInVolume(psys->GetPos(i));
+        size_t cell = O->FindPosInVolume(sph->GetPos(i));
         std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
  
         for (size_t cell : neighborhood) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(i))/std::pow(psys->GetRho(i), 2);
-                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(particle))/std::pow(psys->GetRho(particle), 2);
+                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, sph->GetRho(i))/std::pow(sph->GetRho(i), 2);
+                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, sph->GetRho(particle))/std::pow(sph->GetRho(particle), 2);
 
-                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                pressure += psys->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
+                Vector AB = sph->GetPos(i) - sph->GetPos(particle);
+                pressure += sph->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, sph->GetH());
             }
         }
 
         A -= pressure;
-        psys->SetAcc(i, A);
+        sph->SetAcc(i, A);
         
     }
 

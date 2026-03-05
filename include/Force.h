@@ -14,10 +14,12 @@
  #define ____PBA_FORCE_H____
   
  #include "ParticleSystem.h"
+ #include "SPHSystem.h"
  #include "Vector.h"
  #include "OccupancyVolume.h"
  #include <iostream>
  #include <vector>
+ #include <memory>
   
   
  namespace pba
