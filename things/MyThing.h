@@ -20,7 +20,9 @@
 #include "ParticleSystem.h"
 #include "GISolver.h"
 #include "CollisionSurface.h"
-
+#include "SPHSystem.h"
+#include "OccupancyVolume.h"
+#include "SoftBodySystem.h"
 
 using namespace std;
 
