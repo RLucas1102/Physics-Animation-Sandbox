@@ -5,7 +5,7 @@
 using namespace pba;
 
 CollisionSurfaceRaw::CollisionSurfaceRaw() :
-    coeffR (0.9),
+    coeffR (1.0),
     coeffS (1.0)
     {}
 
