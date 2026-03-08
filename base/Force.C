@@ -1,6 +1,4 @@
 #include "Force.h"
-#include "ParticleSystem.h"
-#include "Vector.h"
 
 using namespace pba;
 
@@ -40,6 +38,18 @@ void GravityForce::compute( PSYS& psys, const double dt) {
         psys->SetAcc(i, A);
     }
     
+}
+
+void GravityForce::IncreaseGravityForce() {
+    gravity *= 1.1;
+}
+
+void GravityForce::DecreaseGravityForce() {
+    gravity /= 1.1;
+}
+
+double GravityForce::GetGravityMag() {
+    return gravity[1];
 }
 
 ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, 
@@ -143,16 +153,36 @@ void PressureForce::ChangePower(const double gamma) {
     _gamma += gamma;
 }
 
-void GravityForce::IncreaseGravityForce() {
-    gravity *= 1.1;
-}
+AccumulatingStrutForce::AccumulatingStrutForce(const double g, const double f) :
+    _spring (g),
+    _friction(f)
+    {}
 
-void GravityForce::DecreaseGravityForce() {
-    gravity /= 1.1;
-}
+void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
 
-double GravityForce::GetGravityMag() {
-    return gravity[1];
+    std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(psys);
+
+    for(size_t i = 0; i < s->Pairs(); i++) {
+        const SoftEdge& se = s->GetConnectedPair(i);
+        const size_t& inode = se->GetFirstNode();
+        const size_t& jnode = se->GetSecondNode();
+        Vector dx = s->GetPos(inode) - s->GetPos(jnode);
+        Vector ff = s->GetVel(inode) - s->GetVel(jnode);
+
+        Vector F;
+        double separation = dx.magnitude() - se->GetEdgeLength();
+        dx.normalize();
+        F = dx * (separation * _spring);
+        F += dx * (dx*ff) * _friction;
+        
+
+        Vector jAcc = s->GetAcc(jnode) + F/s->GetMass(jnode);
+        Vector iAcc = s->GetAcc(inode) - F/s->GetMass(inode);
+        s->SetAcc(jnode, jAcc);
+        s->SetAcc(inode, iAcc);
+
+    }
+
 }
 
 Force pba::CreateGravityForce(const Vector& g) {
@@ -169,6 +199,10 @@ Force pba::CreateViscosityForce(const double Pbar, const double rhoBar, const do
 
 Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o) {
     return Force( new PressureForce(Pbar, rhoBar, gamma, o) );
+}
+
+Force pba::CreateAccumulatingStrutForce(const double g, const double f) {
+    return Force( new AccumulatingStrutForce(g, f) );
 }
 
 double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {

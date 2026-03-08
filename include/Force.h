@@ -15,8 +15,10 @@
   
  #include "ParticleSystem.h"
  #include "SPHSystem.h"
+ #include "SoftBodySystem.h"
  #include "Vector.h"
  #include "OccupancyVolume.h"
+ #include "Edge.h"
  #include <iostream>
  #include <vector>
  #include <memory>
@@ -143,12 +145,32 @@ class PressureForce : public ForceBase {
 
 //------------------------------------------------
 
+//------------------------------------------------
+//
+//
+//
+class AccumulatingStrutForce : public ForceBase {
+    
+    public:
+        AccumulatingStrutForce(const double g, const double f);
+        ~AccumulatingStrutForce(){};
+
+        void compute(PSYS& psys, const double dt);
+
+    private:
+        double _spring;
+        double _friction;
+};
+
+//------------------------------------------------
+
  // Create a smart pointer to forces
  Force CreateGravityForce(const Vector& g);
  Force CreateAccumulatingForce();
  Force CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma,
                             const double alpha, const double beta, const double eps, const OV& o);
  Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
+ Force CreateAccumulatingStrutForce(const double g, const double f);
   
 
 
