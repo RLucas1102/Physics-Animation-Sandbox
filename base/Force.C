@@ -166,8 +166,15 @@ void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
         const SoftEdge& se = s->GetConnectedPair(i);
         const size_t& inode = se->GetFirstNode();
         const size_t& jnode = se->GetSecondNode();
-        Vector dx = s->GetPos(inode) - s->GetPos(jnode);
-        Vector ff = s->GetVel(inode) - s->GetVel(jnode);
+
+        Vector iPos = s->GetPos(inode);
+        Vector jPos = s->GetPos(jnode);
+
+        Vector iVel = s->GetVel(inode);
+        Vector jVel = s->GetVel(jnode);
+        
+        Vector dx = iPos - jPos;
+        Vector ff = iVel - jVel;
 
         Vector F;
         double separation = dx.magnitude() - se->GetEdgeLength();
@@ -175,9 +182,11 @@ void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
         F = dx * (separation * _spring);
         F += dx * (dx*ff) * _friction;
         
+        Vector iAcc = s->GetAcc(inode);
+        Vector jAcc = s->GetAcc(jnode);
 
-        Vector jAcc = s->GetAcc(jnode) + F/s->GetMass(jnode);
-        Vector iAcc = s->GetAcc(inode) - F/s->GetMass(inode);
+        jAcc = jAcc + F/s->GetMass(jnode);
+        iAcc = iAcc - F/s->GetMass(inode);
         s->SetAcc(jnode, jAcc);
         s->SetAcc(inode, iAcc);
 
