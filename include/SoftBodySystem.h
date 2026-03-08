@@ -24,6 +24,8 @@ namespace pba {
 
             void AddPair( size_t i, size_t j );
 
+            void CreatePairs();
+
         private:
             const std::string name;
 
