@@ -22,7 +22,7 @@ OFILES = base/PbaViewer.o \
 ROOTDIR = .
 LIB = $(ROOTDIR)/lib/libpba.a 
 GLLDFLAGS     = -lglut -lGL -lm -lGLU
-CXX = g++ -Wall -g -O2 -fPIC $(DEFINES) -fopenmp -std=c++11
+CXX = g++ -Wall -g -O0 -fPIC $(DEFINES) -fopenmp -std=c++11
 INCLUDES =  -I ./include/ -I /usr/local/include/ -I/usr/include/ -I ./things
 
 
