@@ -24,10 +24,10 @@ namespace pba {
 
             void AddPair( size_t i, size_t j );
 
-            private:
-                const std::string name;
+        private:
+            const std::string name;
 
-                std::vector<SoftEdge> _connected_pairs;
+            std::vector<SoftEdge> _connected_pairs;
 
     };
 
