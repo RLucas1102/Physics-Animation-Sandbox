@@ -7,7 +7,7 @@ OFILES = base/PbaViewer.o \
 		 base/OccupancyVolume.o \
 		 base/ParticleSystem.o\
 		 base/SPHSystem.o\
-		 base/SoftBodyState.o\
+		 base/SoftBodySystem.o\
 		 base/Edge.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\

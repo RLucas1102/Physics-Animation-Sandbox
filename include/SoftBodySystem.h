@@ -1,5 +1,5 @@
-#ifndef SOFT_BODY_STATE_H
-#define SOFT_BODY_STATE_H
+#ifndef SOFT_BODY_SYSTEM_H
+#define SOFT_BODY_SYSTEM_H
 
 #include "ParticleSystem.h"
 #include "Edge.h"
@@ -8,11 +8,11 @@
 
 namespace pba {
     
-    class SoftBodyStateData : public ParticleSystem {
+    class SoftBodySystem : public ParticleSystem {
 
         public:
-            SoftBodyStateData(const std::string& nam = "SoftBodyDataNoName");
-            ~SoftBodyStateData(){};
+            SoftBodySystem(const std::string& nam = "SoftBodyDataNoName");
+            ~SoftBodySystem(){};
 
             const SoftEdge& GetConnectedPair( size_t p ) const { return _connected_pairs[p]; }
 
@@ -31,9 +31,9 @@ namespace pba {
 
     };
 
-    typedef std::shared_ptr<SoftBodyStateData> SoftBodyState;
+    typedef std::shared_ptr<SoftBodySystem> SoftBody;
 
-    SoftBodyState CreateSoftBody(const std::string& nam = "SoftBodyDataNoName");
+    SoftBody CreateSoftBody(const std::string& nam = "SoftBodyDataNoName");
 
 }
 
