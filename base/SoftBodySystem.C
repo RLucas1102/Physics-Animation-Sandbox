@@ -10,7 +10,11 @@ SoftBodySystem::SoftBodySystem(const std::string &nam) :
     {}
 
 void SoftBodySystem::AddPair(size_t i, size_t j) {
-    SoftEdge se = CreateSoftEdge(i, j, 0.5);
+    Vector iPos = GetPos(i);
+    Vector jPos = GetPos(j);
+    double diffMag = (iPos - jPos).magnitude();
+
+    SoftEdge se = CreateSoftEdge(i, j, diffMag);
     _connected_pairs.push_back(se);
 }
 
