@@ -71,6 +71,22 @@ bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel,
     return hitFound;
     
 }
+void CollisionSurfaceRaw::MakePlane(const double &m) {
+    Vector FrontBR = Vector( 1.0 * m, -1.0 * m, 1.0 * m);
+    Vector FrontBL = Vector(-1.0 * m, -1.0 * m, 1.0 * m);
+    Vector BackBR = Vector( 1.0 * m, -1.0 * m, -1.0 * m);
+    Vector BackBL = Vector(-1.0 * m, -1.0 * m, -1.0 * m);
+
+    CollisionTriangle Bot1   = MakeCollisionTriangle(FrontBR, FrontBL, BackBR);
+    CollisionTriangle Bot2   = MakeCollisionTriangle(FrontBL, BackBL, BackBR);
+
+    Bot1->SetColor(Color(  1.0, 0.5, 0.0, 1.0));
+    Bot2->SetColor(Color(  0.5, 1.0, 0.5, 1.0));
+    
+    triangles.push_back(Bot1);
+    triangles.push_back(Bot2);
+
+}
 
 void CollisionSurfaceRaw::MakeBox(const double& m) {
 

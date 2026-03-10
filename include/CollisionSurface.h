@@ -51,6 +51,9 @@ namespace pba {
             // Easy method to create a collision box
             void MakeBox(const double& m);
 
+            // Easy method to make collision plane
+            void MakePlane(const double& m);
+
             // Get upper right and bottom left corners of box
             Vector const GetLLC();
             Vector const GetURC();
