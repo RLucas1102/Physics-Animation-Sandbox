@@ -23,10 +23,13 @@ namespace pba{
             
             ~SoftEdgeData(){}
 
+            // Returns first particles index of the edge
             const size_t& GetFirstNode() const { return inode; }
 
+            // Return second particle index of the edge
             const size_t& GetSecondNode() const { return jnode; }
 
+            // Returns the length (Lab) of the edge
             const double GetEdgeLength() const { return length; }
 
             private:
