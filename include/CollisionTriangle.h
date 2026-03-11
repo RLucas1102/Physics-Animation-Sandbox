@@ -14,6 +14,8 @@
 #include "memory"
 #include "Color.h"
 
+#include <iostream>
+
 namespace pba {
     class CollisionTriangleRaw {
         public:
