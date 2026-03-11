@@ -33,7 +33,7 @@ class MyThing: public PbaThingyDingy
   public:
 
     // Feel free to customize the name of this thing.
-    MyThing(const std::string nam = "Smoothed Particle Hydrodynamics");
+    MyThing(const std::string nam = "Soft Body Dynamics");
    ~MyThing();
 
     //! Initialization, including GLUT initialization.
