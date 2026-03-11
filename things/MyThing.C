@@ -34,12 +34,17 @@ MyThing::~MyThing(){}
 void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Create a CollisionSurface object to hold triangles to collide with
-    Box = MakeCollisionSurface();
+    CollisionSurf = MakeCollisionSurface();
+
+    // Collision surface settings
+    double scale = 1;
+    Vector translation = Vector(0, -10, 0);
 
     // MakeBox creates a box with 12 triangles
     // Box->MakeBox(3);
-    Box->MakePlane(3);
-    
+    // Box->MakePlane(3);
+    CollisionSurf->MakeSurfFromModel("./misc/models/bigsphere.obj", scale, translation);
+
     // Set soft body properties (spring and friction constant)
     double ks = 20;
     double kf = 0.1;
@@ -58,7 +63,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     f->AddForce(SForce);
 
     // Create two partial solvers and set the initial solver to the sixth order solver
-    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, Box);
+    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, CollisionSurf);
     solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
@@ -76,10 +81,9 @@ void MyThing::Display()
 
    // Cull any front faces
    glEnable(GL_CULL_FACE);
-   glCullFace(GL_FRONT);
 
    // Displays all sides of the box with their specified color
-   Box->Display();
+   CollisionSurf->Display();
 
    // Display particles
    glPointSize(5.0);
@@ -118,17 +122,13 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
-   // Create 1000 particles with a random position, velocity of 0, and random color
-   // Vector initVel = Vector(drand48() * 3 - 1.5, drand48() * 3 - 1.5, drand48() * 3 - 1.5);
-   Vector initVel = Vector(0, 0, 0);
    MyThing_PSYS->Pclear();
-   
+
    MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
 
    std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(MyThing_PSYS);
    s->ClearPairs();
    s->CreatePairs();
-
 }
 
 void MyThing::Usage()
