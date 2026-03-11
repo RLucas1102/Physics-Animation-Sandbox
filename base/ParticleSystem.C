@@ -70,6 +70,8 @@ void ParticleSystem::GenParticlesFromModel(const char* FilePath) {
         std::cout << "Could not open file" << std::endl;
     }
 
+    Vector inVel = Vector(drand48() * 2 - 1, drand48() * 2 - 1, drand48() * 2 - 1);
+    
     while (std::getline(file, line)) {
 
         std::stringstream ss(line);
@@ -81,7 +83,6 @@ void ParticleSystem::GenParticlesFromModel(const char* FilePath) {
 
             ParticleState temp = ParticleState();
             Vector inPos = Vector(0, 0, 0);
-            Vector inVel = Vector(0, 0, 0);
             Color inCol  = Color(drand48(),drand48(),drand48(),0);
 
             ss >> inPos[0] >> inPos[1] >> inPos[2];
