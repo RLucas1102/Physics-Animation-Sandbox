@@ -17,6 +17,8 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 namespace pba {
 
@@ -92,6 +94,9 @@ namespace pba {
 
             // Returns the number of particles in the system
             size_t const Psize();
+
+            // Load particles based on a model
+            void GenParticlesFromModel(const char* FilePath);
 
             // Clears all particles from the system
             void Pclear();

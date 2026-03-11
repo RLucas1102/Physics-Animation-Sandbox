@@ -59,7 +59,46 @@ void ParticleSystem::SetMass(const size_t p, double inMass) {
 
 size_t const ParticleSystem::Psize() {
     return particles.size();
-} 
+}
+
+void ParticleSystem::GenParticlesFromModel(const char* FilePath) {
+
+    std::string line;
+
+    std::ifstream file(FilePath);
+    if (!file) {
+        std::cout << "Could not open file" << std::endl;
+    }
+
+    while (std::getline(file, line)) {
+
+        std::stringstream ss(line);
+        std::string type;
+        
+        ss >> type;
+
+        if(type.compare("v") == 0) {
+
+            ParticleState temp = ParticleState();
+            Vector inPos = Vector(0, 0, 0);
+            Vector inVel = Vector(0, 0, 0);
+            Color inCol  = Color(drand48(),drand48(),drand48(),0);
+
+            ss >> inPos[0] >> inPos[1] >> inPos[2];
+
+            temp.position = inPos;
+            temp.velocity = inVel;
+            temp.color    = inCol;
+
+            particles.push_back(temp);
+            
+        }
+
+
+    }
+    
+
+}
 
 void ParticleSystem::Pclear() {
     particles.clear();

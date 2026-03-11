@@ -42,7 +42,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     
     // Set soft body properties (spring and friction constant)
     double ks = 20;
-    double kf = 0.3;
+    double kf = 0.1;
 
     // Create a SPH system object to hold particles and interact with them
     MyThing_PSYS = CreateSoftBody("My_First_SoftBody_System");
@@ -122,21 +122,8 @@ void MyThing::Reset()
    // Vector initVel = Vector(drand48() * 3 - 1.5, drand48() * 3 - 1.5, drand48() * 3 - 1.5);
    Vector initVel = Vector(0, 0, 0);
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(250);
-
-   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
-   {
-      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inPos = pba::Vector(drand48() * 3 - 1.5, drand48() * 3 - 1.5 + 30, drand48() * 3 - 1.5);
-      
-      if (i==0) {
-         initPos = inPos;
-      }
-
-      MyThing_PSYS->SetPos(i, inPos);
-      MyThing_PSYS->SetVel(i, initVel);
-      MyThing_PSYS->SetCol(i, inCol);
-   }
+   
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
 
    std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(MyThing_PSYS);
    s->ClearPairs();
