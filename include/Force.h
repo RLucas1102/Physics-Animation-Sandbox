@@ -146,9 +146,10 @@ class PressureForce : public ForceBase {
 //------------------------------------------------
 
 //------------------------------------------------
-//
-//
-//
+// STRUT FORCE
+// Computes a new acceleration for each particle
+// base on the spring and friction forces on 
+// edges between particles
 class AccumulatingStrutForce : public ForceBase {
     
     public:
@@ -156,6 +157,12 @@ class AccumulatingStrutForce : public ForceBase {
         ~AccumulatingStrutForce(){};
 
         void compute(PSYS& psys, const double dt);
+
+        void SetSpring(const double g)   {_spring += g;};
+        void SetFriction(const double f) {_friction += f;};
+
+        double GetSpring() {return _spring;};
+        double GetFriction() {return _friction;};
 
     private:
         double _spring;

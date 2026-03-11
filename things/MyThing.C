@@ -40,23 +40,21 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     double scale = 1;
     Vector translation = Vector(0, -10, 0);
 
-    // MakeBox creates a box with 12 triangles
-    // Box->MakeBox(3);
-    // Box->MakePlane(3);
+    // Load in a model and create collision surface
     CollisionSurf->MakeSurfFromModel("./misc/models/bigsphere.obj", scale, translation);
 
     // Set soft body properties (spring and friction constant)
     double ks = 20;
     double kf = 0.1;
 
-    // Create a SPH system object to hold particles and interact with them
+    // Create a SBD system object to hold particles and interact with them
     MyThing_PSYS = CreateSoftBody("My_First_SoftBody_System");
  
-    // Create a Force object that is a gravity force
+    // Create a Force objects
     Force GForce = CreateGravityForce(Vector(0, -1, 0));
     Force SForce = CreateAccumulatingStrutForce(ks, kf);
 
-    // Create a Force object that is an accumulating force
+    // Create a Force object that is an accumulating force and add all forces
     accumulator = CreateAccumulatingForce();
     std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
     f->AddForce(GForce);
@@ -82,7 +80,7 @@ void MyThing::Display()
    // Cull any front faces
    glEnable(GL_CULL_FACE);
 
-   // Displays all sides of the box with their specified color
+   // Displays all sides of the surface with their specified color
    CollisionSurf->Display();
 
    // Display particles
@@ -115,6 +113,31 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
          g->IncreaseGravityForce();
          cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
       }
+      if( key == 's'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetSpring(-0.1);
+         cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+      } 
+      if( key == 'S'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetSpring(0.1);
+         cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+      } 
+      if( key == 'v'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetFriction(-0.01);
+         cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+      } 
+      if( key == 'V'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetFriction(0.01);
+         cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+      } 
+      
 }
 
 
@@ -122,8 +145,8 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
+   // Generate particles based on model vertices and then create pairs between each particle
    MyThing_PSYS->Pclear();
-
    MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
 
    std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(MyThing_PSYS);
@@ -138,6 +161,10 @@ void MyThing::Usage()
    cout << "e            Create 100 new particles\n";
    cout << "g            Decrease magnitude of gravity\n";
    cout << "G            Increase magnitude of gravity\n";
+   cout << "s            Decrease magnitude of spring\n";
+   cout << "S            Increase magnitude of spring\n";
+   cout << "v            Decrease magnitude of friction\n";
+   cout << "V            Increase magnitude of friction\n";
 }
 
 void MyThing::Emit() {
