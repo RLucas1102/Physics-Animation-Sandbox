@@ -42,6 +42,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Load in a model and create collision surface
     CollisionSurf->MakeSurfFromModel("./misc/models/bigsphere.obj", scale, translation);
+   //  CollisionSurf->MakeBox(3);
 
     // Set soft body properties (spring and friction constant)
     double ks = 20;
@@ -79,6 +80,7 @@ void MyThing::Display()
 
    // Cull any front faces
    glEnable(GL_CULL_FACE);
+   // glCullFace(GL_FRONT);
 
    // Displays all sides of the surface with their specified color
    CollisionSurf->Display();
