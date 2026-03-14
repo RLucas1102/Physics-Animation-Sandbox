@@ -110,6 +110,7 @@ using namespace pba;
             Vector XR = X0 + V0 * dt;
             Vector VR = V0;
             double running_dt = dt;
+            
             bool moreHits = true;
             while(moreHits) {
                 moreHits = false;
