@@ -1,0 +1,195 @@
+//-------------------------------------------------------
+//
+//  MyThing.C
+//
+//  PbaThing for a collection of particles to simulate
+//  gravity
+//
+//  Copyright (c) 2017 Jerry Tessendorf
+//
+//
+//--------------------------------------------------------
+
+#include "MyThing.h"
+#include <cstdlib>
+#include <GL/gl.h>   // OpenGL itself.
+#include <GL/glu.h>  // GLU support library.
+#include <GL/glut.h> // GLUT support library.
+#include <iostream>
+#include <time.h>
+
+using namespace std;
+
+using namespace pba;
+
+MyThing::MyThing(const std::string nam) :
+ PbaThingyDingy (nam),
+ emit       (false)
+{
+    std::cout << name << " constructed\n";
+}
+
+MyThing::~MyThing(){}
+
+void MyThing::Init( const std::vector<std::string>& args ) {
+
+    // Create a CollisionSurface object to hold triangles to collide with
+    CollisionSurf = MakeCollisionSurface();
+
+    // Collision surface settings
+    double scale = 1;
+    Vector translation = Vector(0, -10, 0);
+
+    // Load in a model and create collision surface
+    CollisionSurf->MakeSurfFromModel("./misc/models/bigsphere.obj", scale, translation);
+   //  CollisionSurf->MakeBox(3);
+
+    // Set soft body properties (spring and friction constant)
+    double ks = 20;
+    double kf = 0.1;
+
+    // Create a SBD system object to hold particles and interact with them
+    MyThing_PSYS = CreateSoftBody("My_First_SoftBody_System");
+ 
+    // Create a Force objects
+    Force GForce = CreateGravityForce(Vector(0, -1, 0));
+    Force SForce = CreateAccumulatingStrutForce(ks, kf);
+
+    // Create a Force object that is an accumulating force and add all forces
+    accumulator = CreateAccumulatingForce();
+    std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+    f->AddForce(GForce);
+    f->AddForce(SForce);
+
+    // Create two partial solvers and set the initial solver to the sixth order solver
+    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, CollisionSurf);
+    solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
+    GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
+    solver = CreateSixthOrderSolver(LFSolver);
+
+    // Seed rand with time
+    srand(time(NULL));
+
+    // Reset the particle system and start ball bounces
+    Reset(); 
+
+}
+    
+void MyThing::Display() 
+{
+
+   // Cull any front faces
+   glEnable(GL_CULL_FACE);
+   // glCullFace(GL_FRONT);
+
+   // Displays all sides of the surface with their specified color
+   CollisionSurf->Display();
+
+   // Display particles
+   glPointSize(5.0);
+   glBegin(GL_POINTS);
+   for( size_t i=0;i<MyThing_PSYS->Psize();i++ )
+   {
+      const Vector& P = MyThing_PSYS->GetPos(i);
+      const Color& ci = MyThing_PSYS->GetCol(i);
+      glColor3f( ci.red(), ci.green(), ci.blue() );
+      glVertex3f( P.X(), P.Y(), P.Z() );
+   }
+   glEnd();
+}
+
+void MyThing::Keyboard( unsigned char key, int x, int y )
+{
+      // Keyboard presses specific to MyThing; self explanatory
+      PbaThingyDingy::Keyboard(key,x,y);
+      if( key == 'e' ){ Emit(); }
+      if( key == 'g'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
+         g->DecreaseGravityForce();
+         cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
+      } 
+      if( key == 'G'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
+         g->IncreaseGravityForce();
+         cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
+      }
+      if( key == 's'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetSpring(-0.1);
+         cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+      } 
+      if( key == 'S'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetSpring(0.1);
+         cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+      } 
+      if( key == 'v'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetFriction(-0.01);
+         cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+      } 
+      if( key == 'V'){
+         std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+         std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(1));
+         s->SetFriction(0.01);
+         cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+      } 
+      
+}
+
+
+void MyThing::solve() { solver->solve(dt); }
+
+void MyThing::Reset()
+{
+   // Generate particles based on model vertices and then create pairs between each particle
+   MyThing_PSYS->Pclear();
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
+
+   std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(MyThing_PSYS);
+   s->ClearPairs();
+   s->CreatePairs();
+}
+
+void MyThing::Usage()
+{
+   PbaThingyDingy::Usage();
+   cout << "=== " << name << " ===\n";
+   cout << "e            Create 100 new particles\n";
+   cout << "g            Decrease magnitude of gravity\n";
+   cout << "G            Increase magnitude of gravity\n";
+   cout << "s            Decrease magnitude of spring\n";
+   cout << "S            Increase magnitude of spring\n";
+   cout << "v            Decrease magnitude of friction\n";
+   cout << "V            Increase magnitude of friction\n";
+}
+
+void MyThing::Emit() {
+   
+   // Emit 100 new particles at the initial position with random colors and velocities
+   size_t nbincrease = 100;
+   MyThing_PSYS->AddParticles(nbincrease);
+   std::cout << "Total Points " << MyThing_PSYS->Psize() << std::endl;
+   for(size_t i=MyThing_PSYS->Psize()-nbincrease;i<MyThing_PSYS->Psize();i++)
+   {
+      
+      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
+      pba::Vector inVel = pba::Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
+   
+      MyThing_PSYS->SetPos(i, initPos);
+      MyThing_PSYS->SetVel(i, inVel);
+      MyThing_PSYS->SetCol(i, inCol);
+   }
+   
+}
+
+
+pba::PbaThing pba::CreateMyThing() { return PbaThing( new MyThing() ); }
+
+
+
