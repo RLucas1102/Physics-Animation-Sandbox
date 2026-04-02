@@ -14,6 +14,7 @@
 
 #include "ParticleSystem.h"
 #include "Matrix.h"
+#include "LinearAlgebra.h"
 #include <vector>
 #include <memory>
 
