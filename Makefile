@@ -8,6 +8,7 @@ OFILES = base/PbaViewer.o \
 		 base/ParticleSystem.o\
 		 base/SPHSystem.o\
 		 base/SoftBodySystem.o\
+		 base/RigidBodySystem.o\
 		 base/Edge.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\
