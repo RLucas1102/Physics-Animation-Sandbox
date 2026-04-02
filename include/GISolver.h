@@ -219,14 +219,14 @@ class AdvanceVelocityStarter : public GISolverBase
 class AdvancePositionRBD : public GISolverBase 
 {
   public:
-    AdvancePositionRBD(RigidBody& pq);
+    AdvancePositionRBD(PSYS& pq);
     ~AdvancePositionRBD(){};
 
     void init() {};
     void solve(const double dt);
   
   private:
-    RigidBody PQ;
+    PSYS PQ;
 };
 //----------------------------------------------------
 
@@ -238,14 +238,14 @@ class AdvancePositionRBD : public GISolverBase
 class AdvanceVelocityRBD : public GISolverBase 
 {
   public:
-    AdvanceVelocityRBD(RigidBody& pq);
+    AdvanceVelocityRBD(PSYS& pq);
     ~AdvanceVelocityRBD(){};
 
     void init() {};
     void solve(const double dt);
   
   private:
-    RigidBody PQ;
+    PSYS PQ;
 };
 //----------------------------------------------------
 
@@ -380,8 +380,8 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
- GISolver CreateAdvancePositionRBD(RigidBody& pq);
- GISolver CreateAdvanceVelocityRBD(RigidBody& pq);
+ GISolver CreateAdvancePositionRBD(PSYS& pq);
+ GISolver CreateAdvanceVelocityRBD(PSYS& pq);
 
 }
  #endif

@@ -39,11 +39,11 @@ using namespace pba;
         force (f)
         {}
     
-    AdvancePositionRBD::AdvancePositionRBD(RigidBody& pq) :
+    AdvancePositionRBD::AdvancePositionRBD(PSYS& pq) :
         PQ (pq)
         {}    
 
-    AdvanceVelocityRBD::AdvanceVelocityRBD(RigidBody& pq) :
+    AdvanceVelocityRBD::AdvanceVelocityRBD(PSYS& pq) :
         PQ (pq)
         {}
     
@@ -233,12 +233,16 @@ using namespace pba;
 
     void AdvancePositionRBD::solve(const double dt)
     {
-        PQ->_COM += PQ->_linearVel * dt; // update COM position        
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+
+        rbd->_COM += rbd->_linearVel * dt; // update COM position        
     }    
 
     void pba::AdvanceVelocityRBD::solve(const double dt)
     {
-        PQ->_linearVel += Vector(1.0, 1.0, 1.0) * dt;
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+        
+        rbd->_linearVel += Vector(1.0, 1.0, 1.0) * dt;
     }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
@@ -285,12 +289,12 @@ using namespace pba;
         return GISolver( new AdvanceVelocitySPH(pq, f));
     }
 
-    GISolver pba::CreateAdvancePositionRBD(RigidBody& pq)
+    GISolver pba::CreateAdvancePositionRBD(PSYS& pq)
     {
         return GISolver( new AdvancePositionRBD(pq));
     }
 
-    GISolver pba::CreateAdvanceVelocityRBD(RigidBody& pq)
+    GISolver pba::CreateAdvanceVelocityRBD(PSYS& pq)
     {
         return GISolver( new AdvanceVelocityRBD(pq));
     }
