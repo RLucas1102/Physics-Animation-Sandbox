@@ -31,6 +31,17 @@ void RigidBodySystem::ComputeRBDData() {
         SetLeverArm(p, d);
     }
     
+    Vector initVel = Vector(0,0,0);
+    for (size_t p = 0; p < Psize(); p++)
+    {
+        initVel += GetVel(p);   
+    }
+
+    initVel.normalize();
+
+    _linearVel = initVel;
+
+    
 }
 
 void RigidBodySystem::ComputeM() {
