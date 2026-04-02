@@ -25,7 +25,7 @@ namespace pba {
             RigidBodySystem(const std::string& nam = "RigidBodyDataNoName");
             ~RigidBodySystem(){};
 
-            void ComputeRBDData();
+            void ComputeRBDData(); // Initialize COM, total mass, home state
             void ComputeM();
             void RecomputeMOI();
 
@@ -36,8 +36,8 @@ namespace pba {
             // Position of a vertex in current, rotated state
             Vector RBD_pos( const size_t p ) const;
 
-            Vector _COM;
-            Matrix _angularRot;
+            Vector _COM;            // Center of mass position
+            Matrix _angularRot;     // Rotation matrix R
             Vector _linearVel;
             Vector _angularVel;
             Vector _COMAcc;
@@ -45,6 +45,9 @@ namespace pba {
             Vector _angularMom;
 
         private:
+            const std::string name;
+
+
             Matrix _momentOfInertia;
             Matrix _inverseMomentOfInertia;
             float _totalMass;
@@ -53,7 +56,7 @@ namespace pba {
 
     typedef std::shared_ptr<RigidBodySystem> RigidBody;
 
-    RigidBody CreateRigidBody(const std:: string& nam = "RigidBodyDataNoName");
+    RigidBody CreateRigidBody(const std::string& nam = "RigidBodyDataNoName");
 
 }
 
