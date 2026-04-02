@@ -242,7 +242,7 @@ using namespace pba;
     {
         std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
         
-        rbd->_linearVel += Vector(1.0, 1.0, 1.0) * dt;
+        rbd->_linearVel += Vector(0.0, 0.0, 0.0) * dt;
     }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
