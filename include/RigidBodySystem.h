@@ -34,7 +34,10 @@ namespace pba {
             const float TotalMass() const { return _totalMass; }
 
             // Position of a vertex in current, rotated state
-            Vector RBD_pos( const size_t p ) const;
+            Vector RBD_pos( const size_t p );
+
+            Vector GetLeverArm( const size_t p) { return LeverArms[p]; }
+            void SetLeverArm( const size_t p, const Vector leverArm) { LeverArms[p] = leverArm; }
 
             Vector _COM;            // Center of mass position
             Matrix _angularRot;     // Rotation matrix R
@@ -47,7 +50,7 @@ namespace pba {
         private:
             const std::string name;
 
-
+            std::vector<Vector> LeverArms;
             Matrix _momentOfInertia;
             Matrix _inverseMomentOfInertia;
             float _totalMass;
