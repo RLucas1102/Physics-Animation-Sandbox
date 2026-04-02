@@ -37,7 +37,7 @@ namespace pba {
             Vector RBD_pos( const size_t p );
 
             Vector GetLeverArm( const size_t p) { return LeverArms[p]; }
-            void SetLeverArm( const size_t p, const Vector leverArm) { LeverArms[p] = leverArm; }
+            void SetLeverArm( const size_t p, const Vector leverArm) { LeverArms.push_back(leverArm); }
 
             Vector _COM;            // Center of mass position
             Matrix _angularRot;     // Rotation matrix R
