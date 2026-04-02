@@ -47,7 +47,7 @@ Vector RigidBodySystem::RBD_pos( const size_t p ) {
     return P;
 }
 
-RigidBody CreateRigidBody(const std::string& nam) {
+RigidBody pba::CreateRigidBody(const std::string& nam) {
     return std::make_shared<RigidBodySystem>(RigidBodySystem(nam));
 }
 
