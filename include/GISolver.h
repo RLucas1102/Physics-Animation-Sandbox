@@ -19,6 +19,7 @@
  #include "ParticleSystem.h"
  #include "RigidBodySystem.h"
  #include "Force.h"
+ #include "Torque.h"
  #include "CollisionSurface.h"
  #include "OccupancyVolume.h"
   
@@ -258,7 +259,7 @@ class AdvancePositionWithCollisionRBD : public GISolverBase
 class AdvanceVelocityRBD : public GISolverBase 
 {
   public:
-    AdvanceVelocityRBD(PSYS& pq);
+    AdvanceVelocityRBD(PSYS& pq, Force& f);
     ~AdvanceVelocityRBD(){};
 
     void init() {};
@@ -266,6 +267,7 @@ class AdvanceVelocityRBD : public GISolverBase
   
   private:
     PSYS PQ;
+    Torque tau;
 };
 //----------------------------------------------------
 
@@ -402,7 +404,7 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionRBD(PSYS& pq);
  GISolver CreateAdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c);
- GISolver CreateAdvanceVelocityRBD(PSYS& pq);
+ GISolver CreateAdvanceVelocityRBD(PSYS& pq, Force& f);
 
 }
  #endif
