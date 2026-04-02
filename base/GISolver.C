@@ -48,8 +48,9 @@ using namespace pba;
         C (c)
         {}
 
-    AdvanceVelocityRBD::AdvanceVelocityRBD(PSYS& pq) :
-        PQ (pq)
+    AdvanceVelocityRBD::AdvanceVelocityRBD(PSYS& pq, Force& f) :
+        PQ (pq),
+        tau (CreateTorqueFromForce(f))
         {}
     
     void AdvancePositionStarter::solve(const double dt) {
@@ -240,6 +241,11 @@ using namespace pba;
     {
         std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
 
+        Vector rotor =  rbd->_angularVel * dt;
+        rbd->_angularRot = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+
+        rbd->RecomputeMOI(); // Moment of inertia needs to be recomputed after rotation
+
         rbd->_COM += rbd->_linearVel * dt; // update COM position        
     }
     
@@ -257,7 +263,13 @@ using namespace pba;
     {
         std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
         
-        rbd->_linearVel += Vector(0.0, 0.0, 0.0) * dt;
+        // Compute tau (updates _angularAcc and _COMAcc)
+        tau->compute(PQ, dt);       
+
+        rbd->_angularMom += rbd->_angularAcc * dt;
+        rbd->_angularVel = rbd->InverseMOI() * rbd->_angularMom;
+
+        rbd->_linearVel += rbd->_COMAcc * dt;
     }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
@@ -314,7 +326,7 @@ using namespace pba;
         return GISolver( new AdvancePositionWithCollisionRBD(pq, c));
     }
 
-    GISolver pba::CreateAdvanceVelocityRBD(PSYS& pq)
+    GISolver pba::CreateAdvanceVelocityRBD(PSYS& pq, Force& f)
     {
-        return GISolver( new AdvanceVelocityRBD(pq));
+        return GISolver( new AdvanceVelocityRBD(pq, f));
     }
