@@ -40,16 +40,16 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     MyThing_PSYS = CreateRigidBody("My_First_RigidBody_System");
  
     // Create a Force objects
-    // Force GForce = CreateGravityForce(Vector(0, -1, 0));
+    Force GForce = CreateGravityForce(Vector(0, -1, 0));
 
     // Create a Force object that is an accumulating force and add all forces
-    //  accumulator = CreateAccumulatingForce();
-    //  std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-    //  f->AddForce(GForce);
+     accumulator = CreateAccumulatingForce();
+     std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+     f->AddForce(GForce);
 
     // Create two partial solvers and set the initial solver to the sixth order solver
     GISolver solverA = CreateAdvancePositionRBD(MyThing_PSYS);
-    solverB = CreateAdvanceVelocityRBD(MyThing_PSYS);
+    solverB = CreateAdvanceVelocityRBD(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
 
@@ -114,7 +114,7 @@ void MyThing::Reset()
 {
    // Generate particles based on model vertices and then create pairs between each particle
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/bunny_lo_scaled.obj");
 
    // Need to cast PSYS to RBD
    std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(MyThing_PSYS);
