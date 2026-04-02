@@ -11,6 +11,7 @@ OFILES = base/PbaViewer.o \
 		 base/RigidBodySystem.o\
 		 base/Edge.o\
 		 base/Force.o\
+		 base/Torque.o\
 		 base/CollisionTriangle.o\
 		 base/CollisionSurface.o\
 		 base/GISolver.o \
