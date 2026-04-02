@@ -38,7 +38,15 @@ using namespace pba;
         PQ (pq),
         force (f)
         {}
-        
+    
+    AdvancePositionRBD::AdvancePositionRBD(RigidBody& pq) :
+        PQ (pq)
+        {}    
+
+    AdvanceVelocityRBD::AdvanceVelocityRBD(RigidBody& pq) :
+        PQ (pq)
+        {}
+    
     void AdvancePositionStarter::solve(const double dt) {
         for (size_t i=0; i< PQ->Psize(); i++) {
 
@@ -219,8 +227,18 @@ using namespace pba;
         _AT += AT;
     }
 
-    void pba::AdvanceVelocitySPH::ChangeVDampening(const double VT) {
+    void AdvanceVelocitySPH::ChangeVDampening(const double VT) {
         _VT += VT;
+    }
+
+    void AdvancePositionRBD::solve(const double dt)
+    {
+        PQ->_COM += PQ->_linearVel * dt; // update COM position        
+    }    
+
+    void pba::AdvanceVelocityRBD::solve(const double dt)
+    {
+        PQ->_linearVel += Vector(1.0, 1.0, 1.0) * dt;
     }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
@@ -266,4 +284,13 @@ using namespace pba;
     GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f) {
         return GISolver( new AdvanceVelocitySPH(pq, f));
     }
- 
+
+    GISolver pba::CreateAdvancePositionRBD(RigidBody& pq)
+    {
+        return GISolver( new AdvancePositionRBD(pq));
+    }
+
+    GISolver pba::CreateAdvanceVelocityRBD(RigidBody& pq)
+    {
+        return GISolver( new AdvanceVelocityRBD(pq));
+    }

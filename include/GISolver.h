@@ -17,6 +17,7 @@
  #include <memory>
 
  #include "ParticleSystem.h"
+ #include "RigidBodySystem.h"
  #include "Force.h"
  #include "CollisionSurface.h"
  #include "OccupancyVolume.h"
@@ -211,6 +212,44 @@ class AdvanceVelocityStarter : public GISolverBase
 //----------------------------------------------------
 
 //----------------------------------------------------
+// POSITION PARTIAL SOLVER FOR RBD
+// This solver updates the position based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvancePositionRBD : public GISolverBase 
+{
+  public:
+    AdvancePositionRBD(RigidBody& pq);
+    ~AdvancePositionRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    RigidBody PQ;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
+// Velocity PARTIAL SOLVER FOR RBD
+// This solver updates the velocity based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvanceVelocityRBD : public GISolverBase 
+{
+  public:
+    AdvanceVelocityRBD(RigidBody& pq);
+    ~AdvanceVelocityRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    RigidBody PQ;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
 // COMPOSITE SOLVERS
 // - LeapFrog: Solving position at dt/2, velocity at dt,
 //   and position at dt/2
@@ -341,8 +380,8 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
-  
-
+ GISolver CreateAdvancePositionRBD(RigidBody& pq);
+ GISolver CreateAdvanceVelocityRBD(RigidBody& pq);
 
 }
  #endif
