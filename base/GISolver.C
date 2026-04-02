@@ -43,6 +43,11 @@ using namespace pba;
         PQ (pq)
         {}    
 
+    pba::AdvancePositionWithCollisionRBD::AdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c) : 
+        PQ (pq),
+        C (c)
+        {}
+
     AdvanceVelocityRBD::AdvanceVelocityRBD(PSYS& pq) :
         PQ (pq)
         {}
@@ -236,7 +241,17 @@ using namespace pba;
         std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
 
         rbd->_COM += rbd->_linearVel * dt; // update COM position        
-    }    
+    }
+    
+    void AdvancePositionWithCollisionRBD::solve(const double dt)
+    {
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+
+        double dteh = dt; // Expected hit time
+        size_t peh = -1; // Expected collision plane
+        size_t aeh = -1; // Expected collising particle
+
+    }
 
     void pba::AdvanceVelocityRBD::solve(const double dt)
     {
@@ -292,6 +307,11 @@ using namespace pba;
     GISolver pba::CreateAdvancePositionRBD(PSYS& pq)
     {
         return GISolver( new AdvancePositionRBD(pq));
+    }
+
+    GISolver pba::CreateAdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c)
+    {
+        return GISolver( new AdvancePositionWithCollisionRBD(pq, c));
     }
 
     GISolver pba::CreateAdvanceVelocityRBD(PSYS& pq)

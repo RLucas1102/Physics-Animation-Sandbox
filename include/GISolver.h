@@ -231,6 +231,26 @@ class AdvancePositionRBD : public GISolverBase
 //----------------------------------------------------
 
 //----------------------------------------------------
+// POSITION PARTIAL SOLVER WITH COLLISION FOR RBD
+// This solver updates the position based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvancePositionWithCollisionRBD : public GISolverBase 
+{
+  public:
+    AdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c);
+    ~AdvancePositionWithCollisionRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    PSYS PQ;
+    CollisionSurface C;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
 // Velocity PARTIAL SOLVER FOR RBD
 // This solver updates the velocity based on Rigid
 // body dynamics which includes center of mass,
@@ -381,6 +401,7 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionRBD(PSYS& pq);
+ GISolver CreateAdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvanceVelocityRBD(PSYS& pq);
 
 }
