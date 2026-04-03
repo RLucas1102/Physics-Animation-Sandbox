@@ -54,15 +54,15 @@ bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double 
     return hitFound;
 }
 
-bool pba::CollisionTriangleRaw::hit_RBD(RigidBodySystem &rbd, const size_t p, const double dt, Vector &XH, double &dtH)
+bool pba::CollisionTriangleRaw::hit_RBD(RigidBody &rbd, const size_t p, const double dt, Vector &XH, double &dtH)
 {
     bool hitFound = false;
 
-    Vector x_a = rbd._COM + rbd._angularRot * rbd.GetLeverArm(p);
+    Vector x_a = rbd->_COM + rbd->_angularRot * rbd->GetLeverArm(p);
 
-    Vector rotor =  rbd._angularVel * dt;
-    Matrix angularRot_Temp = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd._angularRot;
-    Vector x_a_prime = rbd._COM + rbd._linearVel * dt + angularRot_Temp * rbd.GetLeverArm(p);
+    Vector rotor =  rbd->_angularVel * dt;
+    Matrix angularRot_Temp = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+    Vector x_a_prime = rbd->_COM + rbd->_linearVel * dt + angularRot_Temp * rbd->GetLeverArm(p);
 
     Vector Normal = normal;
     Normal.normalize();
@@ -85,9 +85,9 @@ bool pba::CollisionTriangleRaw::hit_RBD(RigidBodySystem &rbd, const size_t p, co
             double dt_mid = (dt_1 + dt_2) / 2;
 
             // Create half-way position
-            Vector rotor_mid = rbd._angularVel * dt_mid;
-            Matrix angularRot_mid = pba::rotation(rotor_mid.unitvector(), -rotor_mid.magnitude()) * rbd._angularRot;
-            Vector x_mid = rbd._COM + rbd._linearVel * dt_mid + angularRot_mid * rbd.GetLeverArm(p);
+            Vector rotor_mid = rbd->_angularVel * dt_mid;
+            Matrix angularRot_mid = pba::rotation(rotor_mid.unitvector(), -rotor_mid.magnitude()) * rbd->_angularRot;
+            Vector x_mid = rbd->_COM + rbd->_linearVel * dt_mid + angularRot_mid * rbd->GetLeverArm(p);
 
             double f_mid = Normal * (x_mid - P0); // Create half-way plane
 
