@@ -251,12 +251,35 @@ using namespace pba;
     
     void AdvancePositionWithCollisionRBD::solve(const double dt)
     {
-        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);   
 
-        double dteh = dt; // Expected hit time
-        size_t peh = -1; // Expected collision plane
-        size_t aeh = -1; // Expected collising particle
+        double running_dt = dt;
+        bool moreHits = true;
+        while (moreHits)
+        {
+            moreHits = false;
+            
+            // Initialize expected hit time, collision plane, and colliding particle
+            Vector XH;
+            double dt_EH = dt;
+            size_t p_EH = -1;
+            size_t a_EH = -1;
 
+            for (size_t a = 0; a < PQ->Psize(); a++)
+            {
+                moreHits = C->MultiTriangleHit_RBD(rbd, a, running_dt, XH, a_EH, dt_EH, p_EH);
+            }
+            
+            // Now we must handle collisions
+
+            if (moreHits)
+            {
+                running_dt = dt - dt_EH;
+                if (running_dt <= 0.0) {
+                    moreHits = false;
+                }
+            }
+        }
     }
 
     void pba::AdvanceVelocityRBD::solve(const double dt)
