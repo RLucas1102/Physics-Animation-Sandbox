@@ -270,10 +270,11 @@ using namespace pba;
                 moreHits = C->MultiTriangleHit_RBD(rbd, a, running_dt, XH, a_EH, dt_EH, p_EH);
             }
             
-            // Now we must handle collisions
-
             if (moreHits)
             {
+
+                C->handle_RBD(rbd, a_EH, dt_EH, p_EH);
+
                 running_dt = dt - dt_EH;
                 if (running_dt <= 0.0) {
                     moreHits = false;
