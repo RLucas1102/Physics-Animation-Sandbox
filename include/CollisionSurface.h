@@ -10,6 +10,7 @@
 #define COLLISION_SURFACE_H
 
 #include "CollisionTriangle.h"
+#include "RigidBodySystem.h"
 
 #include <vector>
 #include <memory>
@@ -51,6 +52,12 @@ namespace pba {
                                     const double& dt, Vector& XH, 
                                     double& dtH, size_t& pH);
             
+            // A function to check if there are multiple hits within a
+            // given timestep for RBD system
+            bool MultiTriangleHit_RBD( RigidBody& rbd, const size_t pos,
+                                       const double& dt, Vector& XH, size_t aH,
+                                       double& dtH, size_t& pH);
+
             // Easy method to create a collision box
             void MakeBox(const double& m);
 
