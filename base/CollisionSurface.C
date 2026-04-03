@@ -48,6 +48,11 @@ void CollisionSurfaceRaw::handle(  const Vector& XS, const Vector& VS,
 
 }
 
+void pba::CollisionSurfaceRaw::handle_RBD(RigidBody &rbd, const size_t aH, const double &dtH, const size_t &pH)
+{
+    triangles[pH]->handle_RBD(rbd, aH, dtH);
+}
+
 
 bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel, 
                                                 const double &dt, Vector &XH, 

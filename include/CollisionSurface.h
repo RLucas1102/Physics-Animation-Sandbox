@@ -46,6 +46,9 @@ namespace pba {
                             const double& dt, const Vector& XH, 
                             const double& dtH, Vector& XR, Vector& VR,
                             const size_t& i) const;
+
+            // Calls a specific triangle's handle_rbd function
+            void handle_RBD (RigidBody& rbd, const size_t aH, const double& dtH, const size_t& pH);
             // A function to check if there are multiple hits within a 
             // given timestep
             bool MultiTriangleHit(  const Vector& pos, const Vector& vel, 
