@@ -30,7 +30,10 @@ namespace pba {
             // Returns bool and sets the hit position and hit time
             bool hit( const Vector& XS, const Vector& VS, const double dt, Vector& XH, double& dtH);
 
-            bool hit_RBD( RigidBodySystem& rbd, const size_t p, const double dt, Vector& XH, double& dtH);
+            // Same as above, but does bisection root finding to estimate dtH_candidate and XH_candidate
+            // before assessing barycentric coordinates
+            // Returns bool and sets the hit position and hit time
+            bool hit_RBD( RigidBody& rbd, const size_t p, const double dt, Vector& XH, double& dtH);
             
             // When a particle needs to move based on a collision that happened, the handle function
             // is called. This updates the reflected position and reflected velocity based on a
