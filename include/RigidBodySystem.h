@@ -47,6 +47,7 @@ namespace pba {
             Vector _COMAcc;
             Vector _angularAcc;
             Vector _angularMom;
+            float _totalMass;
 
         private:
             const std::string name;
@@ -54,7 +55,6 @@ namespace pba {
             std::vector<Vector> LeverArms;
             Matrix _momentOfInertia;
             Matrix _inverseMomentOfInertia;
-            float _totalMass;
 
     };
 
