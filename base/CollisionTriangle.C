@@ -146,6 +146,31 @@ void CollisionTriangleRaw::handle(  const Vector &XS, const Vector &VS,
                                         XR = XH + VR * (dt - dtH);
                                     }
 
+void pba::CollisionTriangleRaw::handle_RBD(RigidBody &rbd, const size_t aH, const double dtH)
+{
+    Vector Normal = normal;
+    Normal.normalize();
+
+    double mass = rbd->GetMass(aH);
+    double term1 = 2 * rbd->_linearVel * Normal;
+    Vector term2 = (mass / rbd->_totalMass) * rbd->_angularVel;
+    Vector term3 = Normal ^ (rbd->_angularRot * rbd->GetLeverArm(aH));
+    double term4 = 1 + (pow(mass, 2)/rbd->_totalMass);
+    
+    double A = -((term1 + term2 * term3) / (term4 * term3 * rbd->InverseMOI() * term3));
+
+    rbd->_linearVel = rbd->_linearVel + A * Normal;
+
+    rbd->_angularVel = rbd->_angularVel + A * mass * rbd->InverseMOI() * (Normal ^ (rbd->_angularRot * rbd->GetLeverArm(aH)));
+
+    Vector rotor =  rbd->_angularVel * dtH;
+    rbd->_angularRot = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+    
+    rbd->RecomputeMOI();
+    
+    rbd->_COM += rbd->_linearVel * dtH;
+}
+
 double CollisionTriangleRaw::GetP0(size_t i) {
     return P0[i];
 }

@@ -42,6 +42,8 @@ namespace pba {
                             const double& dtH, Vector& XR, Vector& VR,
                             const double Cr, const double Cs) const;
 
+            void handle_RBD( RigidBody& rbd, const size_t aH, const double dtH);
+
             // Getter functions for the vertices and color of a triangle
             double GetP0(size_t i);
             double GetP1(size_t i);
