@@ -34,7 +34,8 @@ MyThing::~MyThing(){}
 void MyThing::Init( const std::vector<std::string>& args ) {
 
     // Load in a model and create collision surface
-    //  CollisionSurf->MakeBox(3);
+    CollisionSurf = MakeCollisionSurface();
+    CollisionSurf->MakeBox(3);
 
     // Create a SBD system object to hold particles and interact with them
     MyThing_PSYS = CreateRigidBody("My_First_RigidBody_System");
@@ -48,7 +49,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
      f->AddForce(GForce);
 
     // Create two partial solvers and set the initial solver to the sixth order solver
-    GISolver solverA = CreateAdvancePositionRBD(MyThing_PSYS);
+    GISolver solverA = CreateAdvancePositionWithCollisionRBD(MyThing_PSYS, CollisionSurf);
     solverB = CreateAdvanceVelocityRBD(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
@@ -69,10 +70,10 @@ void MyThing::Display()
 
    // Cull any front faces
    glEnable(GL_CULL_FACE);
-   // glCullFace(GL_FRONT);
+   glCullFace(GL_FRONT);
 
    // Displays all sides of the surface with their specified color
-   // CollisionSurf->Display();
+   CollisionSurf->Display();
 
    // Display particles
    glPointSize(5.0);
@@ -91,7 +92,6 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
 {
    // Keyboard presses specific to MyThing; self explanatory
    PbaThingyDingy::Keyboard(key,x,y);
-   if( key == 'e' ){ Emit(); }
    if( key == 'g'){
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
       std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
@@ -114,7 +114,7 @@ void MyThing::Reset()
 {
    // Generate particles based on model vertices and then create pairs between each particle
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->GenParticlesFromModel("./misc/models/bunny_lo_scaled.obj");
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/bunny_superlo_scaled.obj");
 
    // Need to cast PSYS to RBD
    std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(MyThing_PSYS);
