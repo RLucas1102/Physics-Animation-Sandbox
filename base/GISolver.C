@@ -272,14 +272,21 @@ using namespace pba;
             
             if (moreHits)
             {
-
                 C->handle_RBD(rbd, a_EH, dt_EH, p_EH);
-
+                
                 running_dt = dt - dt_EH;
                 if (running_dt <= 0.0) {
                     moreHits = false;
                 }
             }
+
+            Vector rotor =  rbd->_angularVel * running_dt;
+            rbd->_angularRot = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+            
+            rbd->RecomputeMOI();
+            
+            rbd->_COM += rbd->_linearVel * running_dt;
+
         }
     }
 
