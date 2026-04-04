@@ -78,7 +78,7 @@ bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel,
 }
 
 bool CollisionSurfaceRaw::MultiTriangleHit_RBD(RigidBody &rbd, const size_t pos,
-                                               const double &dt, Vector &XH, size_t aH, 
+                                               const double &dt, Vector &XH, size_t& aH, 
                                                double &dtH, size_t &pH)
 {
     bool hitFound = false;
