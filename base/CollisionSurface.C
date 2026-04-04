@@ -38,6 +38,23 @@ double CollisionSurfaceRaw::GetCoeffR() {
     return coeffR;
 }
 
+void CollisionSurfaceRaw::IncreaseCoeffS() {
+    if (coeffS >= 1) {
+        coeffS = 1;
+    }
+    else {
+        coeffS *= 1.1;
+    }
+}
+
+void CollisionSurfaceRaw::DecreaseCoeffS() {
+    coeffS /= 1.1;
+}
+
+double CollisionSurfaceRaw::GetCoeffS() {
+    return coeffS;
+}
+
 void CollisionSurfaceRaw::handle(  const Vector& XS, const Vector& VS, 
                                     const double& dt, const Vector& XH, 
                                     const double& dtH, Vector& XR, Vector& VR,

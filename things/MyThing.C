@@ -104,6 +104,22 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       g->IncreaseGravityForce();
       cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
    }
+   if( key == 'c'){
+      CollisionSurf->DecreaseCoeffR();
+      cout << "Current coefficient of restitution: " << CollisionSurf->GetCoeffR() << "\n";
+   }
+   if( key == 'C'){
+      CollisionSurf->IncreaseCoeffR();
+      cout << "Current coefficient of restitution: " << CollisionSurf->GetCoeffR() << "\n";
+   }
+   if( key == 's'){
+      CollisionSurf->DecreaseCoeffS();
+      cout << "Current coefficient of sticky: " << CollisionSurf->GetCoeffS() << "\n";
+   }
+   if( key == 'S'){
+      CollisionSurf->IncreaseCoeffS();
+      cout << "Current coefficient of sticky: " << CollisionSurf->GetCoeffS() << "\n";
+   }
    
 }
 

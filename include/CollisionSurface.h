@@ -33,12 +33,15 @@ namespace pba {
             void SClear();
             // Get specific triangle of the surface
             CollisionTriangle GetTriangle(size_t i);
-            // Increase and decrease the coefficient of restitution
+            // Increase and decrease the coefficient of restitution and sticky
             // of the surface
             void IncreaseCoeffR();
             void DecreaseCoeffR();
-            // Return the current coefficient of restitution
+            void IncreaseCoeffS();
+            void DecreaseCoeffS();
+            // Return the current coefficient of restitution and sticky
             double GetCoeffR();
+            double GetCoeffS();
             // Displays all triangles in surface
             void Display();
             // Calls a specific triangle's handle function
