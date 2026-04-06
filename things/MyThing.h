@@ -34,7 +34,7 @@ class MyThing: public PbaThingyDingy
   public:
 
     // Feel free to customize the name of this thing.
-    MyThing(const std::string nam = "Rigid Body Dynamics");
+    MyThing(const std::string nam = "Flocking");
    ~MyThing();
 
     //! Initialization, including GLUT initialization.

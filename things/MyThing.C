@@ -38,7 +38,7 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     CollisionSurf->MakeBox(3);
 
     // Create a SBD system object to hold particles and interact with them
-    MyThing_PSYS = CreateRigidBody("My_First_RigidBody_System");
+    MyThing_PSYS = CreateParticleSystem("My_First_Flocking_System");
  
     // Create a Force objects
     Force GForce = CreateGravityForce(Vector(0, -1, 0));
@@ -49,8 +49,8 @@ void MyThing::Init( const std::vector<std::string>& args ) {
      f->AddForce(GForce);
 
     // Create two partial solvers and set the initial solver to the sixth order solver
-    GISolver solverA = CreateAdvancePositionWithCollisionRBD(MyThing_PSYS, CollisionSurf);
-    solverB = CreateAdvanceVelocityRBD(MyThing_PSYS, accumulator);
+    GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, CollisionSurf);
+    solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
     GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
     solver = CreateSixthOrderSolver(LFSolver);
 
@@ -65,9 +65,6 @@ void MyThing::Init( const std::vector<std::string>& args ) {
 void MyThing::Display() 
 {
 
-   // Need to cast PSYS to RBD
-   std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(MyThing_PSYS);
-
    // Cull any front faces
    glEnable(GL_CULL_FACE);
    glCullFace(GL_FRONT);
@@ -80,7 +77,7 @@ void MyThing::Display()
    glBegin(GL_POINTS);
    for( size_t i=0;i<MyThing_PSYS->Psize();i++ )
    {
-      const Vector& P = rbd->RBD_pos(i);
+      const Vector& P = MyThing_PSYS->GetPos(i);
       const Color& ci = MyThing_PSYS->GetCol(i);
       glColor3f( ci.red(), ci.green(), ci.blue() );
       glVertex3f( P.X(), P.Y(), P.Z() );
@@ -130,11 +127,7 @@ void MyThing::Reset()
 {
    // Generate particles based on model vertices and then create pairs between each particle
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->GenParticlesFromModel("./misc/models/bunny_superlo_scaled.obj");
-
-   // Need to cast PSYS to RBD
-   std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(MyThing_PSYS);
-   rbd->ComputeRBDData();
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
 
 }
 
