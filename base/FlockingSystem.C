@@ -83,7 +83,7 @@ Vector FlockingSystem::ComputeMAcc()
 
     for (size_t p = 0; p < CBsize(); p++) 
     {
-        M += DiffVelocities[p] * Range_Limiter[p] * FOV_Limiters[p];
+        M += DiffVelocities[p] * Range_Limiters[p] * FOV_Limiters[p];
     }
 
     return _Km * M;
