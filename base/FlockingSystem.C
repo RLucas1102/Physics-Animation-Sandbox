@@ -6,25 +6,25 @@ FlockingSystem::FlockingSystem(const std::string &nam) :
     name (nam)
     {}
 
-double FlockingSystem::ComputeDistance(const Vector &a, const Vector &b)
+Vector FlockingSystem::ComputeDistance(const Vector &a, const Vector &b)
 {
-    Vector dist = a - b;
-    return dist.magnitude();
+    return b - a;
 }
 
-double FlockingSystem::ComputeRangeLimit(const Vector& distance)
+double FlockingSystem::ComputeRangeLimit(const Vector& a, const Vector& b)
 {
 
-    double distance_temp = distance.magnitude();
+    Vector distance = ComputeDistance(a,b);
+    double dab = distance.magnitude();
     
     double rab;
-    if (distance_temp <= _R)
+    if (dab <= _R)
     {
         rab = 1;
     }
-    else if (distance_temp > _R && distance_temp <= _R + _Ramp)
+    else if (dab > _R && dab <= _R + _Ramp)
     {
-        rab = 1 - ((distance_temp - _R)/_Ramp);
+        rab = 1 - ((dab - _R)/_Ramp);
     }
     else {
         rab = 0;
@@ -34,9 +34,9 @@ double FlockingSystem::ComputeRangeLimit(const Vector& distance)
 
 }
 
-double FlockingSystem::ComputeFOVLimit(const Vector& distance, const size_t p)
+double FlockingSystem::ComputeFOVLimit(const Vector& a, const Vector& aVel, const Vector& b)
 {
-    Vector aVel = GetVel(p);
+    Vector distance = ComputeDistance(a,b);
     double theta_ab = (distance * aVel) / (distance.magnitude() * aVel.magnitude()); 
     double fab;
 

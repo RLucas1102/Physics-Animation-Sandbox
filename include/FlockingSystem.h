@@ -44,9 +44,15 @@ namespace pba {
             void SetThetaRamp(double theta_ramp) { _theta_ramp = theta_ramp; }
 
             // Find distance between two boids
-            double ComputeDistance(const Vector& a, const Vector& b);
-            double ComputeRangeLimit(const Vector& distance);
-            double ComputeFOVLimit(const Vector& distance, const size_t p);
+            Vector ComputeDistance(const Vector& a, const Vector& b);
+
+            // Find the range limit based on the distance between two particles
+            double ComputeRangeLimit(const Vector& a, const Vector& b);
+
+            // Find the fov limit based on the distance between two particles
+            double ComputeFOVLimit(const Vector& a, const Vector& aVel, const Vector& b);
+
+            
 
         private:
             std::string name;
@@ -63,7 +69,6 @@ namespace pba {
             std::vector<size_t> Candidate_Boids;
             std::vector<double> Range_Limiters;
             std::vector<double> FOV_Limiters;
-
 
     };
 }
