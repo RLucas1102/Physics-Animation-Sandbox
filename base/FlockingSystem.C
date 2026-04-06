@@ -101,3 +101,8 @@ Vector FlockingSystem::ComputeCAcc()
 
     return _Kc * C;
 }
+
+Flock pba::CreateFlock(const std::string &nam)
+{
+    return std::make_shared<FlockingSystem>(FlockingSystem(nam));
+}

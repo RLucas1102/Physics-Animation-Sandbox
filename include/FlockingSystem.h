@@ -44,18 +44,18 @@ namespace pba {
             void SetThetaRamp(double theta_ramp) { _theta_ramp = theta_ramp; }
 
             // Insert functions for vectors
-            void insert_Distance(const Vector& value) { _Distances.push_back(value); }
-            void insert_DiffVelocity(const Vector& value) { _DiffVelocities.push_back(value); }
-            void insert_CandidateBoid(size_t value) { _Candidate_Boids.push_back(value); }
-            void insert_RangeLimiter(double value) { _Range_Limiters.push_back(value); }
-            void insert_FOVLimiter(double value) { _FOV_Limiters.push_back(value); }
+            void InsertDistance(const Vector& value) { Distances.push_back(value); }
+            void InsertDiffVelocity(const Vector& value) { DiffVelocities.push_back(value); }
+            void InsertCandidateBoid(size_t value) { Candidate_Boids.push_back(value); }
+            void InsertRangeLimiter(double value) { Range_Limiters.push_back(value); }
+            void InsertFOVLimiter(double value) { FOV_Limiters.push_back(value); }
 
             // Clear functions for vectors
-            void clear_Distances() { _Distances.clear(); }
-            void clear_DiffVelocities() { _DiffVelocities.clear(); }
-            void clear_CandidateBoids() { _Candidate_Boids.clear(); }
-            void clear_RangeLimiters() { _Range_Limiters.clear(); }
-            void clear_FOVLimiters() { _FOV_Limiters.clear(); }
+            void ClearDistances() { Distances.clear(); }
+            void ClearDiffVelocities() { DiffVelocities.clear(); }
+            void ClearCandidateBoids() { Candidate_Boids.clear(); }
+            void ClearRangeLimiters() { Range_Limiters.clear(); }
+            void ClearFOVLimiters() { FOV_Limiters.clear(); }
 
             // Find distance between two boids
             Vector ComputeDistance(const size_t a, const size_t b);
@@ -96,13 +96,17 @@ namespace pba {
             double _theta;     // Angular FOV for boid vision
             double _theta_ramp; // Angular range ramping vision to zero
 
-            std::vector<Vector> _Distances;
-            std::vector<Vector> _DiffVelocities;
-            std::vector<size_t> _Candidate_Boids;
-            std::vector<double> _Range_Limiters;
-            std::vector<double> _FOV_Limiters;
+            std::vector<Vector> Distances;
+            std::vector<Vector> DiffVelocities;
+            std::vector<size_t> Candidate_Boids;
+            std::vector<double> Range_Limiters;
+            std::vector<double> FOV_Limiters;
 
     };
+    
+    typedef std::shared_ptr<FlockingSystem> Flock;
+
+    Flock CreateFlock(const std::string& nam = "FlockingDataNoName");
 }
 
 
