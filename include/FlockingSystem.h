@@ -44,15 +44,26 @@ namespace pba {
             void SetThetaRamp(double theta_ramp) { _theta_ramp = theta_ramp; }
 
             // Find distance between two boids
-            Vector ComputeDistance(const Vector& a, const Vector& b);
+            Vector ComputeDistance(const size_t a, const size_t b);
+            
+            // Find the difference in velocity between two boids
+            Vector ComputeVelDiff(const size_t a, const size_t b);
 
             // Find the range limit based on the distance between two particles
-            double ComputeRangeLimit(const Vector& a, const Vector& b);
+            double ComputeRangeLimit(const size_t a, const size_t b);
 
             // Find the fov limit based on the distance between two particles
-            double ComputeFOVLimit(const Vector& a, const Vector& aVel, const Vector& b);
+            double ComputeFOVLimit(const size_t a, const size_t b);
 
-            
+            Vector ComputeCAAcc();
+
+            Vector ComputeMAcc();
+
+            Vector ComputeCAcc();
+
+            // Get size of candidate boids
+            size_t CBsize() {return Candidate_Boids.size(); }
+
 
         private:
             std::string name;
@@ -66,6 +77,7 @@ namespace pba {
             double _theta_ramp; // Angular range ramping vision to zero
 
             std::vector<Vector> Distances;
+            std::vector<Vector> DiffVelocities;
             std::vector<size_t> Candidate_Boids;
             std::vector<double> Range_Limiters;
             std::vector<double> FOV_Limiters;

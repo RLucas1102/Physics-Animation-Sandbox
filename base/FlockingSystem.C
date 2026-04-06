@@ -6,12 +6,21 @@ FlockingSystem::FlockingSystem(const std::string &nam) :
     name (nam)
     {}
 
-Vector FlockingSystem::ComputeDistance(const Vector &a, const Vector &b)
+Vector FlockingSystem::ComputeDistance(const size_t a, const size_t b)
 {
-    return b - a;
+    Vector posA = GetPos(a);
+    Vector posB = GetPos(b);
+    return posB - posA;
 }
 
-double FlockingSystem::ComputeRangeLimit(const Vector& a, const Vector& b)
+Vector FlockingSystem::ComputeVelDiff(const size_t a, const size_t b)
+{
+    Vector velA = GetVel(a);
+    Vector velB = GetVel(b);
+    return velB - velA;
+}
+
+double FlockingSystem::ComputeRangeLimit(const size_t a, const size_t b)
 {
 
     Vector distance = ComputeDistance(a,b);
@@ -34,8 +43,9 @@ double FlockingSystem::ComputeRangeLimit(const Vector& a, const Vector& b)
 
 }
 
-double FlockingSystem::ComputeFOVLimit(const Vector& a, const Vector& aVel, const Vector& b)
+double FlockingSystem::ComputeFOVLimit(const size_t a, const size_t b)
 {
+    Vector aVel = GetVel(a);
     Vector distance = ComputeDistance(a,b);
     double theta_ab = (distance * aVel) / (distance.magnitude() * aVel.magnitude()); 
     double fab;
@@ -52,4 +62,42 @@ double FlockingSystem::ComputeFOVLimit(const Vector& a, const Vector& aVel, cons
 
     return fab;
 
+}
+
+Vector FlockingSystem::ComputeCAAcc()
+{
+    Vector CA = Vector(0,0,0);
+
+    for (size_t p = 0; p < CBsize(); p++)
+    {
+        double mag = Distances[p].magnitude();
+        CA += (Distances[p]/(mag * mag)) * Range_Limiters[p] * FOV_Limiters[p];
+    }
+
+    return -_Kca * CA;
+}
+
+Vector FlockingSystem::ComputeMAcc()
+{
+    Vector M = Vector(0,0,0);
+
+    for (size_t p = 0; p < CBsize(); p++) 
+    {
+        M += DiffVelocities[p] * Range_Limiter[p] * FOV_Limiters[p];
+    }
+
+    return _Km * M;
+
+}
+
+Vector FlockingSystem::ComputeCAcc()
+{
+    Vector C = Vector(0,0,0);
+
+    for (size_t p = 0; p < CBsize(); p++) 
+    {
+        C += Distances[p] * Range_Limiters[p] * FOV_Limiters[p];
+    }
+
+    return _Kc * C;
 }
