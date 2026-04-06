@@ -18,6 +18,7 @@
  #include "SoftBodySystem.h"
  #include "Vector.h"
  #include "OccupancyVolume.h"
+ #include "FlockingSystem.h"
  #include "Edge.h"
  #include <iostream>
  #include <vector>
@@ -171,6 +172,28 @@ class AccumulatingStrutForce : public ForceBase {
 
 //------------------------------------------------
 
+//------------------------------------------------
+// FLOCKING FORCE
+// This is not really a force because boids have
+// no mass, but it works well in here because
+// we are setting acceleration of particles
+// in the the forces
+class FlockingForce : public ForceBase {
+
+    public: 
+        FlockingForce(const double budget);
+        ~FlockingForce(){};
+
+        void compute(PSYS& psys, const double dt);
+
+    private:
+        double Budget;
+};
+
+
+//------------------------------------------------
+
+
  // Create a smart pointer to forces
  Force CreateGravityForce(const Vector& g);
  Force CreateAccumulatingForce();
@@ -178,6 +201,7 @@ class AccumulatingStrutForce : public ForceBase {
                             const double alpha, const double beta, const double eps, const OV& o);
  Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
  Force CreateAccumulatingStrutForce(const double g, const double f);
+ Force CreateFlockingForce(const double budget);
   
 
 
