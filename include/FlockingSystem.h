@@ -43,20 +43,6 @@ namespace pba {
             void SetTheta(double theta) { _theta = theta; }
             void SetThetaRamp(double theta_ramp) { _theta_ramp = theta_ramp; }
 
-            // Insert functions for vectors
-            void InsertDistance(const Vector& value) { Distances.push_back(value); }
-            void InsertDiffVelocity(const Vector& value) { DiffVelocities.push_back(value); }
-            void InsertCandidateBoid(size_t value) { Candidate_Boids.push_back(value); }
-            void InsertRangeLimiter(double value) { Range_Limiters.push_back(value); }
-            void InsertFOVLimiter(double value) { FOV_Limiters.push_back(value); }
-
-            // Clear functions for vectors
-            void ClearDistances() { Distances.clear(); }
-            void ClearDiffVelocities() { DiffVelocities.clear(); }
-            void ClearCandidateBoids() { Candidate_Boids.clear(); }
-            void ClearRangeLimiters() { Range_Limiters.clear(); }
-            void ClearFOVLimiters() { FOV_Limiters.clear(); }
-
             // Find distance between two boids
             Vector ComputeDistance(const size_t a, const size_t b);
             
@@ -70,20 +56,16 @@ namespace pba {
             double ComputeFOVLimit(const size_t a, const size_t b);
 
             // Compute the collision avoidance acceleration of a boid
-            // based on all the current candidate boids
-            Vector ComputeCAAcc();
+            // based on all candidate boids
+            Vector ComputeCAAcc(const size_t a, const std::vector<size_t>& candidates);
 
             // Compute the velocity matching acceleration of a boid
-            // based on all the current candidate boids
-            Vector ComputeMAcc();
+            // based on all candidate boids
+            Vector ComputeMAcc(const size_t a, const std::vector<size_t>& candidates);
 
             // Compute the centering acceleration of a boid
-            // based on all the current candidate
-            Vector ComputeCAcc();
-
-            // Get size of candidate boids
-            size_t CBsize() {return Candidate_Boids.size(); }
-
+            // based on all candidate boids
+            Vector ComputeCAcc(const size_t a, const std::vector<size_t>& candidates);
 
         private:
             std::string name;
@@ -95,12 +77,6 @@ namespace pba {
             double _Ramp;      // Distance from boid range lim. begins to ramp to zero
             double _theta;     // Angular FOV for boid vision
             double _theta_ramp; // Angular range ramping vision to zero
-
-            std::vector<Vector> Distances;
-            std::vector<Vector> DiffVelocities;
-            std::vector<size_t> Candidate_Boids;
-            std::vector<double> Range_Limiters;
-            std::vector<double> FOV_Limiters;
 
     };
     
