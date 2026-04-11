@@ -41,15 +41,15 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     MyThing_PSYS = CreateFlock("My_First_Flocking_System");
     Flock flock = std::dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
     flock->SetKca(1);
-    flock->SetKm(1);
-    flock->SetKc(1);
+    flock->SetKm(3);
+    flock->SetKc(4);
     flock->SetR(1);
-    flock->SetRamp(0.5);
+    flock->SetRamp(0.01);
     flock->SetTheta(1);
-    flock->SetThetaRamp(0.5);
+    flock->SetThetaRamp(0.01);
 
     // Create a Force objects
-    Force FForce = CreateFlockingForce(7);
+    Force FForce = CreateFlockingForce(50);
 
     // Create a Force object that is an accumulating force and add all forces
      accumulator = CreateAccumulatingForce();
@@ -99,18 +99,6 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
    // Keyboard presses specific to MyThing; self explanatory
    PbaThingyDingy::Keyboard(key,x,y);
    if( key == 'e' ){ Emit(); }
-   if( key == 'g'){
-      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
-      g->DecreaseGravityForce();
-      cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
-   } 
-   if( key == 'G'){
-      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
-      g->IncreaseGravityForce();
-      cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
-   }
    if( key == 'c'){
       CollisionSurf->DecreaseCoeffR();
       cout << "Current coefficient of restitution: " << CollisionSurf->GetCoeffR() << "\n";
@@ -127,6 +115,42 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       CollisionSurf->IncreaseCoeffS();
       cout << "Current coefficient of sticky: " << CollisionSurf->GetCoeffS() << "\n";
    }
+   if (key == 'v') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Kca = f->GetKca() - 0.1;
+      f->SetKca(Kca);
+      cout << "Current collision avoidance: " << Kca << "\n";
+   }
+   if (key == 'V') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Kca = f->GetKca() + 0.1;
+      f->SetKca(Kca);
+      cout << "Current collision avoidance: " << Kca << "\n";
+   }
+   if (key == 'b') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Km = f->GetKm() - 0.1;
+      f->SetKm(Km);
+      cout << "Current velocity matching: " << Km << "\n";
+   }
+   if (key == 'B') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Km = f->GetKm() + 0.1;
+      f->SetKm(Km);
+      cout << "Current velocity matching: " << Km << "\n";
+   }
+   if (key == 'n') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Kc = f->GetKc() - 0.1;
+      f->SetKc(Kc);
+      cout << "Current centering: " << Kc << "\n";
+   }
+   if (key == 'N') {
+      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+      double Kc = f->GetKc() + 0.1;
+      f->SetKc(Kc);
+      cout << "Current centering: " << Kc << "\n";
+   }
    
 }
 
@@ -137,7 +161,7 @@ void MyThing::Reset()
 {
    // Create 1000 particle with a random position, velocity, and color
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(100);
+   MyThing_PSYS->AddParticles(1000);
    for(size_t i=0;i<MyThing_PSYS->Psize();i++)
    {
       pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
@@ -162,6 +186,13 @@ void MyThing::Usage()
    cout << "C            Increase coefficient of restitution\n";
    cout << "s            Decrease coefficient of sticky\n";
    cout << "S            Increase coefficient of sticky\n";
+   cout << "v            Decrease collision avoidance\n";
+   cout << "V            Increase collision avoidance\n";
+   cout << "b            Decrease velocity matching\n";
+   cout << "B            Increase velocity matching\n";
+   cout << "n            Decrease centering\n";
+   cout << "N            Increase centering\n";
+
 }
 
 void MyThing::Emit() {
