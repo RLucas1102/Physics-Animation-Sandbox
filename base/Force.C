@@ -202,8 +202,11 @@ void FlockingForce::compute(PSYS& psys, const double dt) {
     
     Flock flock = std::dynamic_pointer_cast<FlockingSystem>(psys);
 
+    #pragma omp parallel for
     for (size_t p = 0; p < flock->Psize(); p++)
     {
+
+        std::vector<size_t> Candidate_Boids;
 
         Vector Acc = flock->GetAcc(p);
 
@@ -216,18 +219,14 @@ void FlockingForce::compute(PSYS& psys, const double dt) {
 
                 if (fab_temp && rab_temp)
                 {
-                    flock->InsertCandidateBoid(q);
-                    flock->InsertDistance(flock->ComputeDistance(p, q));
-                    flock->InsertDiffVelocity(flock->ComputeVelDiff(p, q));
-                    flock->InsertRangeLimiter(rab_temp);
-                    flock->InsertFOVLimiter(fab_temp);
+                    Candidate_Boids.push_back(q);
                 }
             }
         }
 
-        Vector CAAcc = flock->ComputeCAAcc();
-        Vector MAcc  = flock->ComputeMAcc();
-        Vector CAcc  = flock->ComputeCAcc();
+        Vector CAAcc = flock->ComputeCAAcc(p, Candidate_Boids);
+        Vector MAcc  = flock->ComputeMAcc(p, Candidate_Boids);
+        Vector CAcc  = flock->ComputeCAcc(p, Candidate_Boids);
 
         double residual = Budget;
         Vector boid_acceleration = Vector(0,0,0);
@@ -266,11 +265,7 @@ void FlockingForce::compute(PSYS& psys, const double dt) {
         Acc += boid_acceleration;
         flock->SetAcc(p, Acc);
 
-        flock->ClearDistances();
-        flock->ClearDiffVelocities();
-        flock->ClearCandidateBoids();
-        flock->ClearRangeLimiters();
-        flock->ClearFOVLimiters();
+        Candidate_Boids.clear();
         
     }
     
