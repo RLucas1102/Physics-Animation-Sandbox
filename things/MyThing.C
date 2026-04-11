@@ -38,21 +38,30 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     CollisionSurf->MakeBox(3);
 
     // Create a SBD system object to hold particles and interact with them
-    MyThing_PSYS = CreateParticleSystem("My_First_Flocking_System");
- 
+    MyThing_PSYS = CreateFlock("My_First_Flocking_System");
+    Flock flock = std::dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
+    flock->SetKca(1);
+    flock->SetKm(1);
+    flock->SetKc(1);
+    flock->SetR(1);
+    flock->SetRamp(0.5);
+    flock->SetTheta(1);
+    flock->SetThetaRamp(0.5);
+
     // Create a Force objects
-    Force GForce = CreateGravityForce(Vector(0, -1, 0));
+    Force FForce = CreateFlockingForce(7);
 
     // Create a Force object that is an accumulating force and add all forces
      accumulator = CreateAccumulatingForce();
      std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-     f->AddForce(GForce);
+     f->AddForce(FForce);
 
     // Create two partial solvers and set the initial solver to the sixth order solver
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, CollisionSurf);
     solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-    GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
-    solver = CreateSixthOrderSolver(LFSolver);
+    solver = CreateLeapFrogSolver(solverA, solverB);
+    //  GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
+    //  solver = CreateSixthOrderSolver(LFSolver);
 
     // Seed rand with time
     srand(time(NULL));
@@ -89,6 +98,7 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
 {
    // Keyboard presses specific to MyThing; self explanatory
    PbaThingyDingy::Keyboard(key,x,y);
+   if( key == 'e' ){ Emit(); }
    if( key == 'g'){
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
       std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(0));
@@ -125,9 +135,19 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
-   // Generate particles based on model vertices and then create pairs between each particle
+   // Create 1000 particle with a random position, velocity, and color
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
+   MyThing_PSYS->AddParticles(100);
+   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
+   {
+      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
+      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
+      pba::Vector inPos = Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
+   
+      MyThing_PSYS->SetPos(i, inPos);
+      MyThing_PSYS->SetVel(i, inVec);
+      MyThing_PSYS->SetCol(i, inCol);
+   }
 
 }
 
