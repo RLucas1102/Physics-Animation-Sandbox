@@ -38,7 +38,21 @@ using namespace pba;
         PQ (pq),
         force (f)
         {}
-        
+    
+    AdvancePositionRBD::AdvancePositionRBD(PSYS& pq) :
+        PQ (pq)
+        {}    
+
+    pba::AdvancePositionWithCollisionRBD::AdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c) : 
+        PQ (pq),
+        C (c)
+        {}
+
+    AdvanceVelocityRBD::AdvanceVelocityRBD(PSYS& pq, Force& f) :
+        PQ (pq),
+        tau (CreateTorqueFromForce(f))
+        {}
+    
     void AdvancePositionStarter::solve(const double dt) {
         for (size_t i=0; i< PQ->Psize(); i++) {
 
@@ -219,8 +233,74 @@ using namespace pba;
         _AT += AT;
     }
 
-    void pba::AdvanceVelocitySPH::ChangeVDampening(const double VT) {
+    void AdvanceVelocitySPH::ChangeVDampening(const double VT) {
         _VT += VT;
+    }
+
+    void AdvancePositionRBD::solve(const double dt)
+    {
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+
+        Vector rotor =  rbd->_angularVel * dt;
+        rbd->_angularRot = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+
+        rbd->RecomputeMOI(); // Moment of inertia needs to be recomputed after rotation
+
+        rbd->_COM += rbd->_linearVel * dt; // update COM position        
+    }
+    
+    void AdvancePositionWithCollisionRBD::solve(const double dt)
+    {
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);   
+
+        double running_dt = dt;
+        bool moreHits = true;
+        while (moreHits)
+        {
+            moreHits = false;
+            
+            // Initialize expected hit time, collision plane, and colliding particle
+            Vector XH;
+            double dt_EH = dt;
+            size_t p_EH = -1;
+            size_t a_EH = -1;
+
+            for (size_t a = 0; a < PQ->Psize(); a++)
+            {
+                moreHits = C->MultiTriangleHit_RBD(rbd, a, running_dt, XH, a_EH, dt_EH, p_EH);
+            }
+            
+            if (moreHits)
+            {
+                C->handle_RBD(rbd, a_EH, dt_EH, p_EH);
+                
+                running_dt = dt - dt_EH;
+                if (running_dt <= 0.0) {
+                    moreHits = false;
+                }
+            }
+
+            Vector rotor =  rbd->_angularVel * running_dt;
+            rbd->_angularRot = pba::rotation(rotor.unitvector(), -rotor.magnitude()) * rbd->_angularRot;
+            
+            rbd->RecomputeMOI();
+            
+            rbd->_COM += rbd->_linearVel * running_dt;
+
+        }
+    }
+
+    void pba::AdvanceVelocityRBD::solve(const double dt)
+    {
+        std::shared_ptr<RigidBodySystem> rbd = std::dynamic_pointer_cast<RigidBodySystem>(PQ);
+        
+        // Compute tau (updates _angularAcc and _COMAcc)
+        tau->compute(PQ, dt);       
+
+        rbd->_angularMom += rbd->_angularAcc * dt;
+        rbd->_angularVel = rbd->InverseMOI() * rbd->_angularMom;
+
+        rbd->_linearVel += rbd->_COMAcc * dt;
     }
 
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
@@ -266,4 +346,18 @@ using namespace pba;
     GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f) {
         return GISolver( new AdvanceVelocitySPH(pq, f));
     }
- 
+
+    GISolver pba::CreateAdvancePositionRBD(PSYS& pq)
+    {
+        return GISolver( new AdvancePositionRBD(pq));
+    }
+
+    GISolver pba::CreateAdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c)
+    {
+        return GISolver( new AdvancePositionWithCollisionRBD(pq, c));
+    }
+
+    GISolver pba::CreateAdvanceVelocityRBD(PSYS& pq, Force& f)
+    {
+        return GISolver( new AdvanceVelocityRBD(pq, f));
+    }

@@ -38,6 +38,23 @@ double CollisionSurfaceRaw::GetCoeffR() {
     return coeffR;
 }
 
+void CollisionSurfaceRaw::IncreaseCoeffS() {
+    if (coeffS >= 1) {
+        coeffS = 1;
+    }
+    else {
+        coeffS *= 1.1;
+    }
+}
+
+void CollisionSurfaceRaw::DecreaseCoeffS() {
+    coeffS /= 1.1;
+}
+
+double CollisionSurfaceRaw::GetCoeffS() {
+    return coeffS;
+}
+
 void CollisionSurfaceRaw::handle(  const Vector& XS, const Vector& VS, 
                                     const double& dt, const Vector& XH, 
                                     const double& dtH, Vector& XR, Vector& VR,
@@ -46,6 +63,11 @@ void CollisionSurfaceRaw::handle(  const Vector& XS, const Vector& VS,
 
     triangles[i]->handle(XS, VS, dt, XH, dtH, XR, VR, coeffR, coeffS);
 
+}
+
+void pba::CollisionSurfaceRaw::handle_RBD(RigidBody &rbd, const size_t aH, const double &dtH, const size_t &pH)
+{
+    triangles[pH]->handle_RBD(rbd, aH, dtH);
 }
 
 
@@ -71,6 +93,32 @@ bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel,
     return hitFound;
     
 }
+
+bool CollisionSurfaceRaw::MultiTriangleHit_RBD(RigidBody &rbd, const size_t pos,
+                                               const double &dt, Vector &XH, size_t& aH, 
+                                               double &dtH, size_t &pH)
+{
+    bool hitFound = false;
+    dtH = 2.0*dt;
+    for (size_t i = 0; i < triangles.size(); i++)
+    {
+        double dtH_candidate = dtH;
+        Vector XH_candidate;
+        if (triangles[i]->hit_RBD(rbd, pos, dt, XH_candidate, dtH_candidate))
+        {
+            hitFound = true;
+            if(fabs(dtH_candidate) < fabs(dtH)) {
+                dtH = dtH_candidate;
+                XH = XH_candidate;
+                aH = pos;
+                pH = i;
+            }
+        }
+    }
+
+    return hitFound;
+}
+
 void CollisionSurfaceRaw::MakePlane(const double &m) {
     Vector FrontBR = Vector( 1.0 * m, -1.0 * m, 1.0 * m);
     Vector FrontBL = Vector(-1.0 * m, -1.0 * m, 1.0 * m);

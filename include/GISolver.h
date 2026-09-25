@@ -17,7 +17,9 @@
  #include <memory>
 
  #include "ParticleSystem.h"
+ #include "RigidBodySystem.h"
  #include "Force.h"
+ #include "Torque.h"
  #include "CollisionSurface.h"
  #include "OccupancyVolume.h"
   
@@ -211,6 +213,65 @@ class AdvanceVelocityStarter : public GISolverBase
 //----------------------------------------------------
 
 //----------------------------------------------------
+// POSITION PARTIAL SOLVER FOR RBD
+// This solver updates the position based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvancePositionRBD : public GISolverBase 
+{
+  public:
+    AdvancePositionRBD(PSYS& pq);
+    ~AdvancePositionRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    PSYS PQ;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
+// POSITION PARTIAL SOLVER WITH COLLISION FOR RBD
+// This solver updates the position based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvancePositionWithCollisionRBD : public GISolverBase 
+{
+  public:
+    AdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c);
+    ~AdvancePositionWithCollisionRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    PSYS PQ;
+    CollisionSurface C;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
+// Velocity PARTIAL SOLVER FOR RBD
+// This solver updates the velocity based on Rigid
+// body dynamics which includes center of mass,
+// rotations, etc.
+class AdvanceVelocityRBD : public GISolverBase 
+{
+  public:
+    AdvanceVelocityRBD(PSYS& pq, Force& f);
+    ~AdvanceVelocityRBD(){};
+
+    void init() {};
+    void solve(const double dt);
+  
+  private:
+    PSYS PQ;
+    Torque tau;
+};
+//----------------------------------------------------
+
+//----------------------------------------------------
 // COMPOSITE SOLVERS
 // - LeapFrog: Solving position at dt/2, velocity at dt,
 //   and position at dt/2
@@ -341,8 +402,9 @@ class LeapFrogSolver : public GISolverBase
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
  GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
  GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
-  
-
+ GISolver CreateAdvancePositionRBD(PSYS& pq);
+ GISolver CreateAdvancePositionWithCollisionRBD(PSYS& pq, CollisionSurface& c);
+ GISolver CreateAdvanceVelocityRBD(PSYS& pq, Force& f);
 
 }
  #endif

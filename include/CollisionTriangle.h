@@ -12,6 +12,7 @@
 
 #include "Vector.h"
 #include "memory"
+#include "RigidBodySystem.h"
 #include "Color.h"
 
 #include <iostream>
@@ -28,6 +29,11 @@ namespace pba {
             // Then it is tested to see if u and v are barycentric coords i.e. inside the triangle
             // Returns bool and sets the hit position and hit time
             bool hit( const Vector& XS, const Vector& VS, const double dt, Vector& XH, double& dtH);
+
+            // Same as above, but does bisection root finding to estimate dtH_candidate and XH_candidate
+            // before assessing barycentric coordinates
+            // Returns bool and sets the hit position and hit time
+            bool hit_RBD( RigidBody& rbd, const size_t p, const double dt, Vector& XH, double& dtH);
             
             // When a particle needs to move based on a collision that happened, the handle function
             // is called. This updates the reflected position and reflected velocity based on a
@@ -35,6 +41,8 @@ namespace pba {
                             const double& dt, const Vector& XH, 
                             const double& dtH, Vector& XR, Vector& VR,
                             const double Cr, const double Cs) const;
+
+            void handle_RBD( RigidBody& rbd, const size_t aH, const double dtH);
 
             // Getter functions for the vertices and color of a triangle
             double GetP0(size_t i);

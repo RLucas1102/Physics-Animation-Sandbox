@@ -23,6 +23,7 @@
 #include "SPHSystem.h"
 #include "OccupancyVolume.h"
 #include "SoftBodySystem.h"
+#include "RigidBodySystem.h"
 
 using namespace std;
 

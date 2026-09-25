@@ -10,6 +10,7 @@
 #define COLLISION_SURFACE_H
 
 #include "CollisionTriangle.h"
+#include "RigidBodySystem.h"
 
 #include <vector>
 #include <memory>
@@ -32,12 +33,15 @@ namespace pba {
             void SClear();
             // Get specific triangle of the surface
             CollisionTriangle GetTriangle(size_t i);
-            // Increase and decrease the coefficient of restitution
+            // Increase and decrease the coefficient of restitution and sticky
             // of the surface
             void IncreaseCoeffR();
             void DecreaseCoeffR();
-            // Return the current coefficient of restitution
+            void IncreaseCoeffS();
+            void DecreaseCoeffS();
+            // Return the current coefficient of restitution and sticky
             double GetCoeffR();
+            double GetCoeffS();
             // Displays all triangles in surface
             void Display();
             // Calls a specific triangle's handle function
@@ -45,12 +49,21 @@ namespace pba {
                             const double& dt, const Vector& XH, 
                             const double& dtH, Vector& XR, Vector& VR,
                             const size_t& i) const;
+
+            // Calls a specific triangle's handle_rbd function
+            void handle_RBD (RigidBody& rbd, const size_t aH, const double& dtH, const size_t& pH);
             // A function to check if there are multiple hits within a 
             // given timestep
             bool MultiTriangleHit(  const Vector& pos, const Vector& vel, 
                                     const double& dt, Vector& XH, 
                                     double& dtH, size_t& pH);
             
+            // A function to check if there are multiple hits within a
+            // given timestep for RBD system
+            bool MultiTriangleHit_RBD( RigidBody& rbd, const size_t pos,
+                                       const double& dt, Vector& XH, size_t& aH,
+                                       double& dtH, size_t& pH);
+
             // Easy method to create a collision box
             void MakeBox(const double& m);
 
