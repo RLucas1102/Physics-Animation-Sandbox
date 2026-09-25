@@ -37,14 +37,6 @@ double const ParticleSystem::GetMass(const size_t p) {
     return particles[p].mass;
 }
 
-double const ParticleSystem::GetRho(const size_t p) {
-    return particles[p].density;
-}
-
-double const ParticleSystem::GetH() {
-    return h;
-}
-
 void ParticleSystem::SetPos(const size_t p, Vector& inPos) {
     particles[p].position = inPos;
 }
@@ -65,17 +57,49 @@ void ParticleSystem::SetMass(const size_t p, double inMass) {
     particles[p].mass = inMass;
 }
 
-void ParticleSystem::SetRho(const size_t p, double inDensity) {
-    particles[p].density = inDensity;
-}
-
-void ParticleSystem::SetH(const double inH) {
-    h = inH;
-}
-
 size_t const ParticleSystem::Psize() {
     return particles.size();
-} 
+}
+
+void ParticleSystem::GenParticlesFromModel(const char* FilePath) {
+
+    std::string line;
+
+    std::ifstream file(FilePath);
+    if (!file) {
+        std::cout << "Could not open file" << std::endl;
+    }
+
+    Vector inVel = Vector(drand48() * 2 - 1, drand48() * 2 - 1, drand48() * 2 - 1);
+    
+    while (std::getline(file, line)) {
+
+        std::stringstream ss(line);
+        std::string type;
+        
+        ss >> type;
+
+        if(type.compare("v") == 0) {
+
+            ParticleState temp = ParticleState();
+            Vector inPos = Vector(0, 0, 0);
+            Color inCol  = Color(drand48(),drand48(),drand48(),0);
+
+            ss >> inPos[0] >> inPos[1] >> inPos[2];
+
+            temp.position = inPos;
+            temp.velocity = inVel;
+            temp.color    = inCol;
+
+            particles.push_back(temp);
+            
+        }
+
+
+    }
+    
+
+}
 
 void ParticleSystem::Pclear() {
     particles.clear();

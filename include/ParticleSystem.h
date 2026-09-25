@@ -17,6 +17,8 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 namespace pba {
 
@@ -57,7 +59,7 @@ namespace pba {
         
             ParticleSystem (const std::string& nam = "ParticleSysNoName");
 
-            ~ParticleSystem() {};
+            virtual ~ParticleSystem() {};
 
             // Returns the name of particle system, if needed
             const std::string& Name() const {return name;}
@@ -79,10 +81,6 @@ namespace pba {
 
             double const GetMass(const size_t p);
 
-            double const GetRho(const size_t p);
-
-            double const GetH();
-
             // Setter functions to change specific particle attributes
             void SetPos(const size_t p, Vector& inPos);
 
@@ -94,25 +92,22 @@ namespace pba {
 
             void SetMass(const size_t p, double inMass);
 
-            void SetRho(const size_t p, double inDensity);
-
-            void SetH(const double inH);
-
             // Returns the number of particles in the system
             size_t const Psize();
+
+            // Load particles based on a model
+            void GenParticlesFromModel(const char* FilePath);
 
             // Clears all particles from the system
             void Pclear();
 
-        private:
+        protected:
             const std::string name;
 
             // This is all of the particles in the system
             std::vector<ParticleState> particles;
             std::vector<ParticleState>::iterator particles_it;
 
-            // Radius of influence
-            double h;
     };
 
     typedef std::shared_ptr<ParticleSystem> PSYS;

@@ -20,16 +20,24 @@ bool CollisionTriangleRaw::hit(const Vector& XS, const Vector& VS, const double 
     
     Vector XU = XS + VS * dt;
 
-    Vector Normal = normal / normal.magnitude();
+    Vector Normal = normal;
+    Normal.normalize();
 
-    double fXS = normal * (XS - P0);
-    double fXU = normal * (XU - P0);
-    if (fXU == 0 || fXU * fXS < 0) {
-        Vector XH_candidate = XS + VS * ((Normal * (P0 - XS) / (Normal * VS)));
+    double fXS = Normal * (XS - P0);
+    double fXU = Normal * (XU - P0);
+ 
+
+    if (fXU == 0 || (fXU * fXS) < 0) {
+        double sign = 1.0;
+        if(fXS < 0) { sign = -1.0; }
+        double epsilon = 0.0001;
+        
+        // Vector XH_candidate = XS + VS * ((Normal * (P0 - XS) / (Normal * VS)));
+        Vector XH_candidate = XS + VS * ((Normal * (P0 - XS) / (Normal * VS))) + normal * sign * epsilon;
         double dtH_candidate = (Normal * (P0 - XS) / (Normal * VS));
 
-        double u = normal * ((XH_candidate - P0) ^ e2) / (normal * normal);
-        double v = normal * ((e1 ^ (XH_candidate - P0))) / (normal * normal);
+        double u = normal * ((XH_candidate - P0) ^ e2) / pow(normal.magnitude(), 2);
+        double v = normal * ((e1 ^ (XH_candidate - P0))) / pow(normal.magnitude(), 2);
         if ( (u >= 0 && u <= 1) &&
              (v >= 0 && v <= 1) &&
              (u + v >= 0 && u + v <= 1) ) 

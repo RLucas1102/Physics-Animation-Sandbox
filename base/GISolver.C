@@ -110,6 +110,7 @@ using namespace pba;
             Vector XR = X0 + V0 * dt;
             Vector VR = V0;
             double running_dt = dt;
+            
             bool moreHits = true;
             while(moreHits) {
                 moreHits = false;
@@ -134,6 +135,9 @@ using namespace pba;
     }
 
     void AdvancePositionWithCollisionSPH::solve(const double dt)   {
+
+        std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(PQ);
+
         #pragma omp parallel for
         for (size_t i = 0; i < PQ->Psize(); i++) {
             Vector X0 = PQ->GetPos(i);
@@ -178,11 +182,11 @@ using namespace pba;
                 
                 for (size_t particle : cellContents) {
                     Vector AB = PQ->GetPos(i) - PQ->GetPos(particle);
-                    newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, PQ->GetH());
+                    newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, sph->GetH());
                 }
             }
 
-            PQ->SetRho(i, newRho);
+            sph->SetRho(i, newRho);
 
         }
     }

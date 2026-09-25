@@ -1,6 +1,4 @@
 #include "Force.h"
-#include "ParticleSystem.h"
-#include "Vector.h"
 
 using namespace pba;
 
@@ -42,6 +40,18 @@ void GravityForce::compute( PSYS& psys, const double dt) {
     
 }
 
+void GravityForce::IncreaseGravityForce() {
+    gravity *= 1.1;
+}
+
+void GravityForce::DecreaseGravityForce() {
+    gravity /= 1.1;
+}
+
+double GravityForce::GetGravityMag() {
+    return gravity[1];
+}
+
 ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const double gamma, 
                                const double alpha, const double beta, const double eps, const OV& o) :
                                _Pbar (Pbar), _rhoBar(rhoBar), _gamma(gamma),
@@ -50,39 +60,41 @@ ViscosityForce::ViscosityForce(const double Pbar, const double rhoBar, const dou
 
 void ViscosityForce::compute(PSYS &psys, const double dt) {
 
+    std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(psys);
+    
     #pragma omp parallel for
-    for(size_t i = 0; i < psys->Psize(); i++) {
-        Vector A = psys->GetAcc(i);
+    for(size_t i = 0; i < sph->Psize(); i++) {
+        Vector A = sph->GetAcc(i);
         Vector viscosity = Vector(0,0,0);
             
-        double Ca = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(i));
+        double Ca = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, sph->GetRho(i));
         
-        size_t cell = O->FindPosInVolume(psys->GetPos(i));
+        size_t cell = O->FindPosInVolume(sph->GetPos(i));
         std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
  
         for (size_t cell : neighborhood) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, psys->GetRho(particle));
+                double Cb = CalcSpeedOfSound(_Pbar, _rhoBar, _gamma, sph->GetRho(particle));
                 double Cab = Ca + Cb;
 
-                Vector Pa = psys->GetPos(i);
-                Vector Pb = psys->GetPos(particle);
-                Vector Va = psys->GetVel(i);
-                Vector Vb = psys->GetVel(particle);
+                Vector Pa = sph->GetPos(i);
+                Vector Pb = sph->GetPos(particle);
+                Vector Va = sph->GetVel(i);
+                Vector Vb = sph->GetVel(particle);
 
-                double muab = CalcMuab(psys->GetH(), Pa, Pb, Va, Vb, _eps);
-                double Piab = CalcPiab(_alpha, _beta, Cab, muab, psys->GetRho(i), psys->GetRho(particle));
+                double muab = CalcMuab(sph->GetH(), Pa, Pb, Va, Vb, _eps);
+                double Piab = CalcPiab(_alpha, _beta, Cab, muab, sph->GetRho(i), sph->GetRho(particle));
 
-                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                viscosity += psys->GetMass(particle) * Piab * CalcGradWeightKernel(AB, psys->GetH());
+                Vector AB = sph->GetPos(i) - sph->GetPos(particle);
+                viscosity += sph->GetMass(particle) * Piab * CalcGradWeightKernel(AB, sph->GetH());
                     
             }
         }
 
         A -= viscosity;
-        psys->SetAcc(i, A);
+        sph->SetAcc(i, A);
         
     }
 }
@@ -100,28 +112,30 @@ PressureForce::PressureForce(const double Pbar, const double rhoBar, const doubl
 
 void PressureForce::compute(PSYS &psys, const double dt) {
 
+    std::shared_ptr<SPHSystem> sph = std::dynamic_pointer_cast<SPHSystem>(psys);
+    
     #pragma omp parallel for
-    for(size_t i = 0; i < psys->Psize(); i++) {
-        Vector A = psys->GetAcc(i);
+    for(size_t i = 0; i < sph->Psize(); i++) {
+        Vector A = sph->GetAcc(i);
         Vector pressure = Vector(0,0,0);
         
-        size_t cell = O->FindPosInVolume(psys->GetPos(i));
+        size_t cell = O->FindPosInVolume(sph->GetPos(i));
         std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
  
         for (size_t cell : neighborhood) {
             std::vector<size_t> cellContents = O->GetCellContents(cell);
             
             for (size_t particle : cellContents) {
-                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(i))/std::pow(psys->GetRho(i), 2);
-                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, psys->GetRho(particle))/std::pow(psys->GetRho(particle), 2);
+                double term1 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, sph->GetRho(i))/std::pow(sph->GetRho(i), 2);
+                double term2 = CalcTaitEquation(_rhoBar, _Pbar, _gamma, sph->GetRho(particle))/std::pow(sph->GetRho(particle), 2);
 
-                Vector AB = psys->GetPos(i) - psys->GetPos(particle);
-                pressure += psys->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, psys->GetH());
+                Vector AB = sph->GetPos(i) - sph->GetPos(particle);
+                pressure += sph->GetMass(particle) * (term1 + term2) * CalcGradWeightKernel(AB, sph->GetH());
             }
         }
 
         A -= pressure;
-        psys->SetAcc(i, A);
+        sph->SetAcc(i, A);
         
     }
 
@@ -139,16 +153,45 @@ void PressureForce::ChangePower(const double gamma) {
     _gamma += gamma;
 }
 
-void GravityForce::IncreaseGravityForce() {
-    gravity *= 1.1;
-}
+AccumulatingStrutForce::AccumulatingStrutForce(const double g, const double f) :
+    _spring (g),
+    _friction(f)
+    {}
 
-void GravityForce::DecreaseGravityForce() {
-    gravity /= 1.1;
-}
+void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
 
-double GravityForce::GetGravityMag() {
-    return gravity[1];
+    std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(psys);
+
+    for(size_t i = 0; i < s->Pairs(); i++) {
+        const SoftEdge& se = s->GetConnectedPair(i);
+        const size_t& inode = se->GetFirstNode();
+        const size_t& jnode = se->GetSecondNode();
+
+        Vector iPos = s->GetPos(inode);
+        Vector jPos = s->GetPos(jnode);
+
+        Vector iVel = s->GetVel(inode);
+        Vector jVel = s->GetVel(jnode);
+        
+        Vector dx = iPos - jPos;
+        Vector ff = iVel - jVel;
+
+        Vector F;
+        double separation = dx.magnitude() - se->GetEdgeLength();
+        dx.normalize();
+        F = dx * (separation * _spring);
+        F += dx * (dx*ff) * _friction;
+        
+        Vector iAcc = s->GetAcc(inode);
+        Vector jAcc = s->GetAcc(jnode);
+
+        jAcc = jAcc + F/s->GetMass(jnode);
+        iAcc = iAcc - F/s->GetMass(inode);
+        s->SetAcc(jnode, jAcc);
+        s->SetAcc(inode, iAcc);
+
+    }
+
 }
 
 Force pba::CreateGravityForce(const Vector& g) {
@@ -165,6 +208,10 @@ Force pba::CreateViscosityForce(const double Pbar, const double rhoBar, const do
 
 Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o) {
     return Force( new PressureForce(Pbar, rhoBar, gamma, o) );
+}
+
+Force pba::CreateAccumulatingStrutForce(const double g, const double f) {
+    return Force( new AccumulatingStrutForce(g, f) );
 }
 
 double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {

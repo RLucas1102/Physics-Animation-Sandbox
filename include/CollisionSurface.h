@@ -13,6 +13,9 @@
 
 #include <vector>
 #include <memory>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 namespace pba {
     
@@ -50,6 +53,12 @@ namespace pba {
             
             // Easy method to create a collision box
             void MakeBox(const double& m);
+
+            // Easy method to make collision plane
+            void MakePlane(const double& m);
+
+            // Create collision surface from model
+            void MakeSurfFromModel(const char* FilePath, const double& m, Vector& t);
 
             // Get upper right and bottom left corners of box
             Vector const GetLLC();

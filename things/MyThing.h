@@ -20,7 +20,9 @@
 #include "ParticleSystem.h"
 #include "GISolver.h"
 #include "CollisionSurface.h"
-
+#include "SPHSystem.h"
+#include "OccupancyVolume.h"
+#include "SoftBodySystem.h"
 
 using namespace std;
 
@@ -31,7 +33,7 @@ class MyThing: public PbaThingyDingy
   public:
 
     // Feel free to customize the name of this thing.
-    MyThing(const std::string nam = "Smoothed Particle Hydrodynamics");
+    MyThing(const std::string nam = "Soft Body Dynamics");
    ~MyThing();
 
     //! Initialization, including GLUT initialization.
@@ -82,7 +84,7 @@ class MyThing: public PbaThingyDingy
     GISolver solver;
     GISolver solverB;
     Force accumulator;
-    CollisionSurface Box;
+    CollisionSurface CollisionSurf;
     Vector initPos;
 
 };

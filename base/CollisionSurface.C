@@ -5,7 +5,7 @@
 using namespace pba;
 
 CollisionSurfaceRaw::CollisionSurfaceRaw() :
-    coeffR (0.9),
+    coeffR (1.0),
     coeffS (1.0)
     {}
 
@@ -70,6 +70,92 @@ bool CollisionSurfaceRaw::MultiTriangleHit(const Vector &pos, const Vector &vel,
 
     return hitFound;
     
+}
+void CollisionSurfaceRaw::MakePlane(const double &m) {
+    Vector FrontBR = Vector( 1.0 * m, -1.0 * m, 1.0 * m);
+    Vector FrontBL = Vector(-1.0 * m, -1.0 * m, 1.0 * m);
+    Vector BackBR = Vector( 1.0 * m, -1.0 * m, -1.0 * m);
+    Vector BackBL = Vector(-1.0 * m, -1.0 * m, -1.0 * m);
+
+    CollisionTriangle Bot1   = MakeCollisionTriangle(FrontBR, FrontBL, BackBR);
+    CollisionTriangle Bot2   = MakeCollisionTriangle(FrontBL, BackBL, BackBR);
+
+    Bot1->SetColor(Color(  1.0, 0.5, 0.0, 1.0));
+    Bot2->SetColor(Color(  0.5, 1.0, 0.5, 1.0));
+    
+    triangles.push_back(Bot1);
+    triangles.push_back(Bot2);
+
+}
+
+void CollisionSurfaceRaw::MakeSurfFromModel(const char *FilePath, const double& m, Vector& t) {
+
+    std::vector<Vector> vertices;
+    std::vector<Vector> faces;
+    std::string line;
+
+    std::ifstream file(FilePath);
+    if (!file) {
+        std::cout << "Could not open file" << std::endl;
+    }
+
+    while (std::getline(file, line)) {
+
+        std::stringstream ss(line);
+        std::string type;
+        
+        ss >> type;
+
+        if(type.compare("v") == 0) {
+
+            Vector inPos = Vector(0, 0, 0);
+
+            ss >> inPos[0] >> inPos[1] >> inPos[2];
+
+            vertices.push_back(inPos);
+            
+        }
+        else if(type.compare("f") == 0) {
+
+            Vector inFace = Vector(0, 0, 0);
+
+            ss >> inFace[0] >> inFace[1] >> inFace[2];
+
+            inFace -= Vector(1,1,1);
+
+            faces.push_back(inFace);
+
+        }
+
+    }
+
+    for (Vector face : faces) {
+
+        int f0 = face[0];
+        int f1 = face[1];
+        int f2 = face[2];
+        
+        Vector f0Coord;
+        Vector f1Coord;
+        Vector f2Coord;
+        
+        f0Coord = vertices[f0]*m;
+        f1Coord = vertices[f1]*m;
+        f2Coord = vertices[f2]*m;
+
+        f0Coord = vertices[f0] + t;
+        f1Coord = vertices[f1] + t;
+        f2Coord = vertices[f2] + t;
+        
+
+        CollisionTriangle triangle = MakeCollisionTriangle(f0Coord, f1Coord, f2Coord);
+
+        triangle->SetColor(Color(drand48(),drand48(),drand48(),0));
+
+        triangles.push_back(triangle);
+
+    }
+
 }
 
 void CollisionSurfaceRaw::MakeBox(const double& m) {

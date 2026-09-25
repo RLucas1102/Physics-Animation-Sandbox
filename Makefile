@@ -6,6 +6,9 @@ OFILES = base/PbaViewer.o \
          base/LinearAlgebra.o \
 		 base/OccupancyVolume.o \
 		 base/ParticleSystem.o\
+		 base/SPHSystem.o\
+		 base/SoftBodySystem.o\
+		 base/Edge.o\
 		 base/Force.o\
 		 base/CollisionTriangle.o\
 		 base/CollisionSurface.o\
@@ -19,7 +22,7 @@ OFILES = base/PbaViewer.o \
 ROOTDIR = .
 LIB = $(ROOTDIR)/lib/libpba.a 
 GLLDFLAGS     = -lglut -lGL -lm -lGLU
-CXX = g++ -Wall -g -O2 -fPIC $(DEFINES) -fopenmp -std=c++11
+CXX = g++ -Wall -g -O0 -fPIC $(DEFINES) -fopenmp -std=c++11
 INCLUDES =  -I ./include/ -I /usr/local/include/ -I/usr/include/ -I ./things
 
 
