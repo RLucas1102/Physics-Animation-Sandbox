@@ -1,6 +1,8 @@
 #include "GISolver.h"
 #include "Vector.h"
 #include "Force.h"
+#include <iostream>
+#include <vector>
 
 using namespace pba;
 
@@ -24,6 +26,17 @@ using namespace pba;
     AdvancePositionWithCollision::AdvancePositionWithCollision(PSYS& pq, CollisionSurface& c) :
         PQ (pq),
         C (c)
+        {}
+
+    AdvancePositionWithCollisionSPH::AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o) :
+        PQ (pq),
+        C (c),
+        O (o)
+        {}
+
+    AdvanceVelocitySPH::AdvanceVelocitySPH(PSYS& pq, Force& f) :
+        PQ (pq),
+        force (f)
         {}
         
     void AdvancePositionStarter::solve(const double dt) {
@@ -120,12 +133,102 @@ using namespace pba;
         
     }
 
+    void AdvancePositionWithCollisionSPH::solve(const double dt)   {
+        #pragma omp parallel for
+        for (size_t i = 0; i < PQ->Psize(); i++) {
+            Vector X0 = PQ->GetPos(i);
+            Vector V0 = PQ->GetVel(i);
+            Vector XR = X0 + V0 * dt;
+            Vector VR = V0;
+            double running_dt = dt;
+            bool moreHits = true;
+            while(moreHits) {
+                moreHits = false;
+                Vector XH;
+                double dtH = 0;
+                size_t pH = -1;
+                if(C->MultiTriangleHit(X0, V0, running_dt, XH, dtH, pH)) {
+                    moreHits = true;
+                    C->handle(X0, V0, dt, XH, dtH, XR, VR, pH);
+                    X0 = XH;
+                    V0 = VR;
+                    running_dt = dt - dtH;
+                    if (running_dt == 0.0) {
+                        moreHits = false;
+                    }
+                }
+            }
+
+
+            PQ->SetPos(i, XR);
+            PQ->SetVel(i, VR);
+        }
+
+        O->ClearCells();
+        O->Populate(PQ);
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < PQ->Psize(); i++) {
+            double newRho = 0;
+            size_t cell = O->FindPosInVolume(PQ->GetPos(i));
+            std::vector<size_t> neighborhood = O->GetNeighborhood(cell);
+            
+            for (size_t cell : neighborhood) {
+                std::vector<size_t> cellContents = O->GetCellContents(cell);
+                
+                for (size_t particle : cellContents) {
+                    Vector AB = PQ->GetPos(i) - PQ->GetPos(particle);
+                    newRho += PQ->GetMass(particle) * CalcWeightKernel(AB, PQ->GetH());
+                }
+            }
+
+            PQ->SetRho(i, newRho);
+
+        }
+    }
+
+    void AdvanceVelocitySPH::solve(const double dt) {
+        force->compute(PQ, dt);
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < PQ->Psize(); i++) {
+            Vector V = PQ->GetVel(i);
+            Vector A = PQ->GetAcc(i);
+           
+            if(V.magnitude() > _VT) {
+                V = V * (_VT/V.magnitude());
+            }
+
+            if(A.magnitude() > _AT) {
+                A = A * (_AT/A.magnitude());
+            }
+
+            V += A * dt;
+
+            PQ->SetVel(i, V);
+
+        }
+
+    }
+
+    void AdvanceVelocitySPH::ChangeADampening(const double AT) {
+        _AT += AT;
+    }
+
+    void pba::AdvanceVelocitySPH::ChangeVDampening(const double VT) {
+        _VT += VT;
+    }
+
     GISolver pba::CreateAdvancePositionStarter(PSYS& pq) {
         return GISolver( new AdvancePositionStarter(pq) );
     }
 
     GISolver pba::CreateAdvanceVelocityStarter(PSYS& pq) {
         return GISolver( new AdvanceVelocityStarter(pq) );
+    }
+
+    GISolver pba::CreateSixthOrderSolver(GISolver& s) {
+        return GISolver( new SixthOrderSolver(s) );
     }
 
     GISolver pba::CreateForwardEulerSolver(GISolver& A, GISolver& B) {
@@ -151,3 +254,12 @@ using namespace pba;
     GISolver pba::CreateAdvancePositionWithCollision(PSYS &pq, CollisionSurface& c) {
         return GISolver( new AdvancePositionWithCollision(pq, c) );
     }
+    
+    GISolver pba::CreateAdvancePositionWithCollisionSPH(PSYS &pq, CollisionSurface& c, OV& o) {
+        return GISolver( new AdvancePositionWithCollisionSPH(pq, c, o) );
+    }
+
+    GISolver pba::CreateAdvanceVelocitySPH(PSYS& pq, Force& f) {
+        return GISolver( new AdvanceVelocitySPH(pq, f));
+    }
+ 

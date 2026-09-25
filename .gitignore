@@ -2,4 +2,5 @@
 .vscode/
 
 # zip files
-*.zip
+*.zip# .vscode
+.vscode/

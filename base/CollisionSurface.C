@@ -5,7 +5,7 @@
 using namespace pba;
 
 CollisionSurfaceRaw::CollisionSurfaceRaw() :
-    coeffR (1.0),
+    coeffR (0.9),
     coeffS (1.0)
     {}
 
@@ -84,6 +84,9 @@ void CollisionSurfaceRaw::MakeBox(const double& m) {
     Vector BackTR = Vector( 1.0 * m,  1.0 * m, -1.0 * m);
     Vector BackTL = Vector(-1.0 * m,  1.0 * m, -1.0 * m);
 
+    _llc = BackBL;
+    _urc = FrontTR;
+
     CollisionTriangle Front1 = MakeCollisionTriangle(FrontTR, FrontBL, FrontBR);
     CollisionTriangle Front2 = MakeCollisionTriangle(FrontTR, FrontTL, FrontBL);
 
@@ -128,6 +131,14 @@ void CollisionSurfaceRaw::MakeBox(const double& m) {
     triangles.push_back(Bot1);
     triangles.push_back(Bot2);
 
+}
+
+Vector const CollisionSurfaceRaw::GetURC() {
+    return _urc;
+}
+
+Vector const CollisionSurfaceRaw::GetLLC() {
+    return _llc;
 }
 
 void CollisionSurfaceRaw::Display() {

@@ -19,6 +19,7 @@
  #include "ParticleSystem.h"
  #include "Force.h"
  #include "CollisionSurface.h"
+ #include "OccupancyVolume.h"
   
  namespace pba{
   
@@ -128,6 +129,62 @@ class AdvanceVelocityStarter : public GISolverBase
 
  //---------------------------------------------------
 
+
+ //---------------------------------------------------
+ // POSITION PARTIAL SOLVER WITH COLLISION FOR SPH
+ // This solver updates the position of paticles
+ // with collision based on fluid dynamics implemented 
+ // with SPH
+ class AdvancePositionWithCollisionSPH : public GISolverBase 
+ {
+    public:
+      AdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
+      ~AdvancePositionWithCollisionSPH(){};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+      PSYS PQ;
+      CollisionSurface C;
+      OV O; // Occupancy Volume
+ };
+
+
+// --------------------------------------------------
+
+// --------------------------------------------------
+// VELOCITY PARTIAL SOLVER FOR SPH
+// This solver updates the velocity of particles
+// based on SPH forces like viscosity and pressure.
+// There are user defined values that need to be
+// defined for SPH systems, thus they are stored here
+ class AdvanceVelocitySPH : public GISolverBase
+ {
+    public:
+      AdvanceVelocitySPH(PSYS& pq, Force& f);
+      ~AdvanceVelocitySPH(){};
+
+      void init() {};
+      void solve(const double dt);
+
+      void ChangeVDampening(const double VT);
+      void ChangeADampening(const double AT);
+
+      double GetAT() const { return _AT; }
+      double GetVT() const { return _VT; }
+
+      void SetAT(const double AT) { _AT = AT; }
+      void SetVT(const double VT) { _VT = VT;} 
+
+    private:
+      PSYS PQ;
+      Force force;
+      double _AT;
+      double _VT;
+
+ };
+
  //---------------------------------------------------
  // VELOCITY PARTIAL SOLVER WITH FORCE
  // This solver updates velocity bsed on some force
@@ -157,10 +214,42 @@ class AdvanceVelocityStarter : public GISolverBase
 // COMPOSITE SOLVERS
 // - LeapFrog: Solving position at dt/2, velocity at dt,
 //   and position at dt/2
-
+// - Sixth order solver: Does 5 calls to a given solver
+//   at different time steps
 // - ForwardEuler: Solving position then velocity
 // - BackwardEuler: Solving velocity then position
- class LeapFrogSolver : public GISolverBase
+ 
+class SixthOrderSolver : public GISolverBase
+{
+  public:
+
+    SixthOrderSolver( GISolver& s) :
+      solver(s)
+      {
+        a = 1.0/(4.0 - std::pow(4.0, 1.0/3.0));
+        b = 1.0 - 4.0*a;
+      }
+    
+    ~SixthOrderSolver(){}
+
+    void init(){ solver->init(); }
+
+    void solve(const double dt) {
+      const double dta = a * dt;
+      const double dtb = b * dt;
+      solver->solve(dta);
+      solver->solve(dta);
+      solver->solve(dtb);
+      solver->solve(dta);
+      solver->solve(dta);
+    }
+
+    private:
+      GISolver solver;
+      double a, b;
+
+};
+class LeapFrogSolver : public GISolverBase
  {
    public:
   
@@ -241,6 +330,7 @@ class AdvanceVelocityStarter : public GISolverBase
   
 
  // Create solver functions to create smart pointers of each solver
+ GISolver CreateSixthOrderSolver(GISolver& s);
  GISolver CreateLeapFrogSolver( GISolver& A, GISolver&  B );
  GISolver CreateForwardEulerSolver( GISolver& A, GISolver& B );
  GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);
@@ -249,9 +339,10 @@ class AdvanceVelocityStarter : public GISolverBase
  GISolver CreateAdvancePosition(PSYS& pq);
  GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
  GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
+ GISolver CreateAdvancePositionWithCollisionSPH(PSYS& pq, CollisionSurface& c, OV& o);
+ GISolver CreateAdvanceVelocitySPH(PSYS& pq, Force& f);
+  
 
-  
- }
-  
-  
+
+}
  #endif

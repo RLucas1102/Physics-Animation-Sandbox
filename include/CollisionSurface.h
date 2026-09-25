@@ -51,11 +51,17 @@ namespace pba {
             // Easy method to create a collision box
             void MakeBox(const double& m);
 
+            // Get upper right and bottom left corners of box
+            Vector const GetLLC();
+            Vector const GetURC();
+
         private:
 
             std::vector<CollisionTriangle> triangles;
             double coeffR;
             double coeffS;
+            
+            Vector _llc, _urc;
 
 
     };

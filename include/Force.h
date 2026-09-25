@@ -15,7 +15,9 @@
   
  #include "ParticleSystem.h"
  #include "Vector.h"
+ #include "OccupancyVolume.h"
  #include <iostream>
+ #include <vector>
   
   
  namespace pba
@@ -33,10 +35,35 @@
   
  };
   
-  
-  
  typedef std::shared_ptr<ForceBase> Force;
-  
+
+ //------------------------------------------------
+ // ACCUMULATING FORCE
+ // Computes all forces acting on a system by
+ // tracking a vector of forces and iterating
+ // through the vector to calculate the 
+ // cumulative force of all forces in
+class AccumulatingForce : public ForceBase {
+    
+    public:
+        AccumulatingForce(){};
+        ~AccumulatingForce(){};
+
+        void compute( PSYS& psys, const double dt);
+
+        // Build up the collection of forces to accumulate
+        void AddForce( Force& f);
+
+        // Get Force from accumulator
+        Force GetForce(const size_t i); 
+
+    private:
+        std::vector<Force> forces;
+
+
+};
+//-------------------------------------------------
+
  //------------------------------------------------
  // GRAVITY FORCE
  // Computes a new acceleration for each a particle
@@ -62,9 +89,76 @@
 
 //-------------------------------------------------
 
- // Create a smart pointer to gravity force
+//-------------------------------------------------
+// VISCOSITY FORCE
+// Computes a new acceleration for each particle
+// based on the calculated viscosity for SPH sim
+class ViscosityForce : public ForceBase {
+
+    public:
+        ViscosityForce(const double Pbar, const double rhoBar, const double gamma,
+                       const double alpha, const double beta, const double eps,
+                       const OV& o);
+        ~ViscosityForce(){};
+
+        void compute(PSYS& psys, const double dt);
+
+        void ChangeVStrength(const double alpha);
+        
+        double GetStrength() const { return _alpha; }
+
+    private:
+        double _Pbar, _rhoBar, _gamma, _alpha, _beta, _eps;
+        OV O;
+};
+
+//------------------------------------------------
+
+//------------------------------------------------
+// PRESSURE FORCE
+// Computes a new acceleration for each particle
+// based on the calculated pressure for SPH sim
+class PressureForce : public ForceBase {
+
+    public:
+        PressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
+        ~PressureForce(){};
+
+        void compute(PSYS& psys, const double dt);
+
+        void ChangePStrength(const double Pbar);
+        void ChangeBaseDensity(const double rhoBar);
+        void ChangePower(const double gamma);
+
+        double GetPStrength() const { return _Pbar; }
+        double GetBaseDensity() const  { return _rhoBar; }
+        double GetPower() const { return _gamma; }
+
+    private:
+        double _Pbar, _rhoBar, _gamma;
+        OV O;
+};
+
+//------------------------------------------------
+
+ // Create a smart pointer to forces
  Force CreateGravityForce(const Vector& g);
+ Force CreateAccumulatingForce();
+ Force CreateViscosityForce(const double Pbar, const double rhoBar, const double gamma,
+                            const double alpha, const double beta, const double eps, const OV& o);
+ Force CreatePressureForce(const double Pbar, const double rhoBar, const double gamma, const OV& o);
   
-  
+
+
+ // Utility Functions
+ // ------------------------------------------------------
+ // Many of these functions are used to calculate specific values for pressure and viscosity in SPH forces
+ double CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density);
+ double CalcMuab(const double h, Vector& P1, Vector& P2, Vector& V1, Vector& V2, const double eps); 
+ double CalcPiab(const double alpha, const double beta, const double C, const double muab, const double densitya, const double densityb);
+ double CalcWeightKernel(Vector& P, const double h);
+ Vector CalcGradWeightKernel(Vector& P, const double h);
+ double CalcTaitEquation(const double rhoBar, const double Pbar, const double gamma, const double density);
+
  }
  #endif
