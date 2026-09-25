@@ -194,6 +194,84 @@ void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
 
 }
 
+pba::FlockingForce::FlockingForce(const double budget) :
+    Budget (budget)
+    {}
+
+void FlockingForce::compute(PSYS& psys, const double dt) {
+    
+    Flock flock = std::dynamic_pointer_cast<FlockingSystem>(psys);
+
+    #pragma omp parallel for
+    for (size_t p = 0; p < flock->Psize(); p++)
+    {
+
+        std::vector<size_t> Candidate_Boids;
+
+        Vector Acc = flock->GetAcc(p);
+
+        for (size_t q = 0; q < flock->Psize(); q++)
+        {
+            if (p != q) {
+
+                double rab_temp = flock->ComputeRangeLimit(p,q);
+                double fab_temp = flock->ComputeFOVLimit(p,q);
+
+                if (fab_temp && rab_temp)
+                {
+                    Candidate_Boids.push_back(q);
+                }
+            }
+        }
+
+        Vector CAAcc = flock->ComputeCAAcc(p, Candidate_Boids);
+        Vector MAcc  = flock->ComputeMAcc(p, Candidate_Boids);
+        Vector CAcc  = flock->ComputeCAcc(p, Candidate_Boids);
+
+        double residual = Budget;
+        Vector boid_acceleration = Vector(0,0,0);
+
+        if(CAAcc.magnitude() < residual) 
+        {
+            boid_acceleration += CAAcc;
+            residual -= CAAcc.magnitude();
+
+            if (CAcc.magnitude() < residual)
+            {
+                boid_acceleration += CAcc;
+                residual -= CAcc.magnitude();
+                
+                if (MAcc.magnitude() < residual)
+                {
+                    boid_acceleration += MAcc;
+                }
+                else 
+                {
+                    boid_acceleration += MAcc * (residual / MAcc.magnitude());
+                }
+                
+            }
+            else 
+            {
+                boid_acceleration += CAcc * (residual / CAcc.magnitude());
+            }
+            
+        }
+        else 
+        {
+            boid_acceleration = CAAcc * (residual / CAAcc.magnitude());
+        }
+
+        Acc += boid_acceleration;
+        flock->SetAcc(p, Acc);
+
+        Candidate_Boids.clear();
+        
+    }
+    
+    
+}
+
 Force pba::CreateGravityForce(const Vector& g) {
     return Force( new GravityForce(g) );
 }
@@ -212,6 +290,10 @@ Force pba::CreatePressureForce(const double Pbar, const double rhoBar, const dou
 
 Force pba::CreateAccumulatingStrutForce(const double g, const double f) {
     return Force( new AccumulatingStrutForce(g, f) );
+}
+
+Force pba::CreateFlockingForce(const double budget) {
+    return Force( new FlockingForce(budget));
 }
 
 double pba::CalcSpeedOfSound(const double Pbar, const double rhoBar, const double gamma, const double density) {
