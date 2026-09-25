@@ -1,0 +1,257 @@
+//*******************************************************************
+ //
+ //  GISolver.h
+ //
+ //  Base class for Geometric Integration solvers
+ //
+ //  Copyright (c) 2017 Jerry Tessendorf
+ //
+ //  Adapted by Lucas Robenolt
+ //
+ //*******************************************************************
+  
+ #ifndef __PBA_GISOLVER_H__
+ #define __PBA_GISOLVER_H__
+  
+ #include <cmath>
+ #include <memory>
+
+ #include "ParticleSystem.h"
+ #include "Force.h"
+ #include "CollisionSurface.h"
+  
+ namespace pba{
+  
+ // Base class that all solvers will inherent from
+ class GISolverBase
+ {
+   public:
+  
+     GISolverBase(){}
+  
+     virtual void init() = 0;
+     virtual void solve( const double dt ) = 0;
+     virtual ~GISolverBase(){};
+  
+  
+   protected:
+  
+ };
+  
+ typedef std::shared_ptr<GISolverBase> GISolver;
+
+// -------------------------------------------------
+// STARTER CODE PARTIAL SOLVERS
+// These partial solvers were an adaptation of 
+// Jerry Tessendorf's starter solvers
+// These solvers move particles with a repeating 
+// pattern around a circle.
+
+ class AdvancePositionStarter : public GISolverBase
+ {
+    public:
+
+      AdvancePositionStarter(PSYS& pq);
+      ~AdvancePositionStarter() {};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+
+      PSYS PQ;
+
+ };
+
+class AdvanceVelocityStarter : public GISolverBase
+{
+  public:
+  
+    AdvanceVelocityStarter(PSYS& pq);
+    ~AdvanceVelocityStarter() {};
+
+    void init() {};
+    void solve(const double dt);
+
+  private:
+
+    PSYS PQ;
+
+};
+
+//---------------------------------------------------
+
+//---------------------------------------------------
+// SIMPLE POSITION PARTIAL SOLVER
+// This solver simply updates position based on 
+// velocity with no collisions
+// Mainly used for testing the velocity partial solver
+ class AdvancePosition : public GISolverBase
+ {
+    public:
+
+      AdvancePosition(PSYS& pq);
+      ~AdvancePosition() {};
+
+      void init() {};
+      void solve(const double dt);
+
+    private:
+
+      PSYS PQ;
+
+ };
+
+ //--------------------------------------------------
+
+ //--------------------------------------------------
+ // POSITION PARTIAL SOLVER WITH COLLISION
+ // This solver updates position with collision
+ // A collision surface is defined in MyThing and a
+ // smart pointer is handed to this class to use for
+ /// collision detection and handling
+ class AdvancePositionWithCollision : public GISolverBase
+ {
+    public:
+
+      AdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
+      ~AdvancePositionWithCollision(){};
+
+      void init() {};
+      void solve(const double dt);
+
+      private:
+
+        PSYS PQ;
+        CollisionSurface C;
+ };
+
+ //---------------------------------------------------
+
+ //---------------------------------------------------
+ // VELOCITY PARTIAL SOLVER WITH FORCE
+ // This solver updates velocity bsed on some force
+ // acting on the system. Force is defined in MyThing
+ // and passed in. This is used when there is only one
+ // force acting on the system
+ class AdvanceVelocity : public GISolverBase
+{
+  public:
+  
+    AdvanceVelocity(PSYS& pq, Force& f);
+    ~AdvanceVelocity() {};
+
+    void init() {};
+    void solve(const double dt);
+
+  private:
+
+    PSYS PQ;
+    Force force;
+
+};
+
+//----------------------------------------------------
+
+//----------------------------------------------------
+// COMPOSITE SOLVERS
+// - LeapFrog: Solving position at dt/2, velocity at dt,
+//   and position at dt/2
+
+// - ForwardEuler: Solving position then velocity
+// - BackwardEuler: Solving velocity then position
+ class LeapFrogSolver : public GISolverBase
+ {
+   public:
+  
+     LeapFrogSolver( GISolver& A, GISolver&  B ) :
+       a (A),
+       b (B)
+     {}
+  
+     ~LeapFrogSolver(){}
+  
+     void init(){ a->init(); b->init(); }
+  
+     void solve( const double dt )
+     {
+        const double dtd2 = 0.5*dt;
+        a->solve(dtd2);
+        b->solve(dt);
+        a->solve(dtd2);
+     }
+  
+   private:
+  
+     GISolver a;
+     GISolver b;
+ };
+  
+ class ForwardEulerSolver : public GISolverBase
+ {
+   public:
+  
+     ForwardEulerSolver( GISolver& A, GISolver& B ) :
+       a (A),
+       b (B)
+     {}
+  
+     ~ForwardEulerSolver(){}
+  
+     void init(){ a->init(); b->init(); }
+  
+     void solve( const double dt )
+     {
+        a->solve(dt);
+        b->solve(dt);
+     }
+  
+   private:
+  
+     GISolver a;
+     GISolver b;
+ };
+ 
+ class BackwardEulerSolver : public GISolverBase
+ {
+   public:
+  
+     BackwardEulerSolver( GISolver& A, GISolver& B ) :
+       a (A),
+       b (B)
+     {}
+  
+     ~BackwardEulerSolver(){}
+  
+     void init(){ a->init(); b->init(); }
+  
+     void solve( const double dt )
+     {
+        b->solve(dt);
+        a->solve(dt);
+     }
+  
+   private:
+  
+     GISolver a;
+     GISolver b;
+ };
+
+ //------------------------------------------------------
+  
+
+ // Create solver functions to create smart pointers of each solver
+ GISolver CreateLeapFrogSolver( GISolver& A, GISolver&  B );
+ GISolver CreateForwardEulerSolver( GISolver& A, GISolver& B );
+ GISolver CreateBackwardEulerSolver( GISolver& A, GISolver& B);
+ GISolver CreateAdvancePositionStarter(PSYS& pq);
+ GISolver CreateAdvanceVelocityStarter(PSYS& pq);
+ GISolver CreateAdvancePosition(PSYS& pq);
+ GISolver CreateAdvanceVelocity(PSYS& pq, Force& f);
+ GISolver CreateAdvancePositionWithCollision(PSYS& pq, CollisionSurface& c);
+
+  
+ }
+  
+  
+ #endif
