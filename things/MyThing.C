@@ -37,8 +37,16 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     CollisionSurf = MakeCollisionSurface();
     CollisionSurf->MakeBox(3);
 
+   // Set soft body properties (spring and friction constant)
+    double ks = 20;
+    double kf = 0.1;
+
     // Create a SBD system object to hold particles and interact with them
-    MyThing_PSYS = CreateParticleSystem("My_First_Flocking_System");
+    MyThing_PSYS = CreateSoftBody("My_First_SoftBody_System");
+ 
+    // Create a Force objects
+    Force GForce = CreateGravityForce(Vector(0, -1, 0));
+    Force SForce = CreateAccumulatingStrutForce(ks, kf);
 
     // Create a Force objects
     Force FForce = CreateFlockingForce(50);
@@ -54,14 +62,16 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     // Create a Force object that is an accumulating force and add all forces
      accumulator = CreateAccumulatingForce();
      std::shared_ptr<AccumulatingForce> f = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+     f->AddForce(SForce);
      f->AddForce(FForce);
+     f->AddForce(GForce);
+
 
     // Create two partial solvers and set the initial solver to the sixth order solver
     GISolver solverA = CreateAdvancePositionWithCollision(MyThing_PSYS, CollisionSurf);
     solverB = CreateAdvanceVelocity(MyThing_PSYS, accumulator);
-    solver = CreateLeapFrogSolver(solverA, solverB);
-    //  GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
-    //  solver = CreateSixthOrderSolver(LFSolver);
+    GISolver LFSolver = CreateLeapFrogSolver(solverA, solverB);
+    solver = CreateSixthOrderSolver(LFSolver);
 
     // Seed rand with time
     srand(time(NULL));
@@ -99,6 +109,18 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
    // Keyboard presses specific to MyThing; self explanatory
    PbaThingyDingy::Keyboard(key,x,y);
    if( key == 'e' ){ Emit(); }
+   if( key == 'g'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(2));
+      g->DecreaseGravityForce();
+      cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
+   } 
+   if( key == 'G'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<GravityForce> g = dynamic_pointer_cast<GravityForce>(a->GetForce(2));
+      g->IncreaseGravityForce();
+      cout << "Current gravity magnitude: " << g->GetGravityMag() << "\n";
+   }
    if( key == 'c'){
       CollisionSurf->DecreaseCoeffR();
       cout << "Current coefficient of restitution: " << CollisionSurf->GetCoeffR() << "\n";
@@ -117,46 +139,70 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
    }
    if (key == 'v') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Kca = ff->GetKca() - 0.1;
       ff->SetKca(Kca);
       cout << "Current collision avoidance: " << Kca << "\n";
    }
    if (key == 'V') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Kca = ff->GetKca() + 0.1;
       ff->SetKca(Kca);
       cout << "Current collision avoidance: " << Kca << "\n";
    }
    if (key == 'b') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Km = ff->GetKm() - 0.1;
       ff->SetKm(Km);
       cout << "Current velocity matching: " << Km << "\n";
    }
    if (key == 'B') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Km = ff->GetKm() + 0.1;
       ff->SetKm(Km);
       cout << "Current velocity matching: " << Km << "\n";
    }
    if (key == 'n') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Kc = ff->GetKc() - 0.1;
       ff->SetKc(Kc);
       cout << "Current centering: " << Kc << "\n";
    }
    if (key == 'N') {
       std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
-      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(1));
       double Kc = ff->GetKc() + 0.1;
       ff->SetKc(Kc);
       cout << "Current centering: " << Kc << "\n";
    }
+   if( key == 'z'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(0));
+      s->SetSpring(-0.1);
+      cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+   } 
+   if( key == 'Z'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(0));
+      s->SetSpring(0.1);
+      cout << "Current Spring magnitude: " << s->GetSpring() << "\n";
+   } 
+   if( key == 'x'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(0));
+      s->SetFriction(-0.01);
+      cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+   } 
+   if( key == 'X'){
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<AccumulatingStrutForce> s = dynamic_pointer_cast<AccumulatingStrutForce>(a->GetForce(0));
+      s->SetFriction(0.01);
+      cout << "Current Friction magnitude: " << s->GetFriction() << "\n";
+   } 
    
 }
 
@@ -165,19 +211,13 @@ void MyThing::solve() { solver->solve(dt); }
 
 void MyThing::Reset()
 {
-   // Create 1000 particle with a random position, velocity, and color
+   // Generate particles based on model vertices and then create pairs between each particle
    MyThing_PSYS->Pclear();
-   MyThing_PSYS->AddParticles(1000);
-   for(size_t i=0;i<MyThing_PSYS->Psize();i++)
-   {
-      pba::Color inCol  = pba::Color(drand48(),drand48(),drand48(),0);
-      pba::Vector inVec = pba::Vector(drand48()-0.5,drand48()-0.5,drand48()-0.5);
-      pba::Vector inPos = Vector(drand48() * 5 - 2.5,drand48() * 5 - 2.5,drand48() * 5 - 2.5);
-   
-      MyThing_PSYS->SetPos(i, inPos);
-      MyThing_PSYS->SetVel(i, inVec);
-      MyThing_PSYS->SetCol(i, inCol);
-   }
+   MyThing_PSYS->GenParticlesFromModel("./misc/models/smallsphere.obj");
+
+   std::shared_ptr<SoftBodySystem> s = std::dynamic_pointer_cast<SoftBodySystem>(MyThing_PSYS);
+   s->ClearPairs();
+   s->CreatePairs();
 
 }
 
@@ -198,6 +238,10 @@ void MyThing::Usage()
    cout << "B            Increase velocity matching\n";
    cout << "n            Decrease centering\n";
    cout << "N            Increase centering\n";
+   cout << "z            Decrease magnitude of spring\n";
+   cout << "Z            Increase magnitude of spring\n";
+   cout << "x            Decrease magnitude of friction\n";
+   cout << "X            Increase magnitude of friction\n";
 
 }
 
