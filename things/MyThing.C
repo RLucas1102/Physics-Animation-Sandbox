@@ -38,18 +38,18 @@ void MyThing::Init( const std::vector<std::string>& args ) {
     CollisionSurf->MakeBox(3);
 
     // Create a SBD system object to hold particles and interact with them
-    MyThing_PSYS = CreateFlock("My_First_Flocking_System");
-    Flock flock = std::dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-    flock->SetKca(1);
-    flock->SetKm(3);
-    flock->SetKc(4);
-    flock->SetR(1);
-    flock->SetRamp(0.01);
-    flock->SetTheta(1);
-    flock->SetThetaRamp(0.01);
+    MyThing_PSYS = CreateParticleSystem("My_First_Flocking_System");
 
     // Create a Force objects
     Force FForce = CreateFlockingForce(50);
+    std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(FForce);
+    ff->SetKca(1);
+    ff->SetKm(3);
+    ff->SetKc(4);
+    ff->SetR(1);
+    ff->SetRamp(0.01);
+    ff->SetTheta(1);
+    ff->SetThetaRamp(0.01);
 
     // Create a Force object that is an accumulating force and add all forces
      accumulator = CreateAccumulatingForce();
@@ -116,39 +116,45 @@ void MyThing::Keyboard( unsigned char key, int x, int y )
       cout << "Current coefficient of sticky: " << CollisionSurf->GetCoeffS() << "\n";
    }
    if (key == 'v') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Kca = f->GetKca() - 0.1;
-      f->SetKca(Kca);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Kca = ff->GetKca() - 0.1;
+      ff->SetKca(Kca);
       cout << "Current collision avoidance: " << Kca << "\n";
    }
    if (key == 'V') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Kca = f->GetKca() + 0.1;
-      f->SetKca(Kca);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Kca = ff->GetKca() + 0.1;
+      ff->SetKca(Kca);
       cout << "Current collision avoidance: " << Kca << "\n";
    }
    if (key == 'b') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Km = f->GetKm() - 0.1;
-      f->SetKm(Km);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Km = ff->GetKm() - 0.1;
+      ff->SetKm(Km);
       cout << "Current velocity matching: " << Km << "\n";
    }
    if (key == 'B') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Km = f->GetKm() + 0.1;
-      f->SetKm(Km);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Km = ff->GetKm() + 0.1;
+      ff->SetKm(Km);
       cout << "Current velocity matching: " << Km << "\n";
    }
    if (key == 'n') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Kc = f->GetKc() - 0.1;
-      f->SetKc(Kc);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Kc = ff->GetKc() - 0.1;
+      ff->SetKc(Kc);
       cout << "Current centering: " << Kc << "\n";
    }
    if (key == 'N') {
-      Flock f = dynamic_pointer_cast<FlockingSystem>(MyThing_PSYS);
-      double Kc = f->GetKc() + 0.1;
-      f->SetKc(Kc);
+      std::shared_ptr<AccumulatingForce> a = dynamic_pointer_cast<AccumulatingForce>(accumulator);
+      std::shared_ptr<FlockingForce> ff = dynamic_pointer_cast<FlockingForce>(a->GetForce(0));
+      double Kc = ff->GetKc() + 0.1;
+      ff->SetKc(Kc);
       cout << "Current centering: " << Kc << "\n";
    }
    

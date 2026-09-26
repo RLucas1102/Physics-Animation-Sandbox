@@ -18,7 +18,6 @@
  #include "SoftBodySystem.h"
  #include "Vector.h"
  #include "OccupancyVolume.h"
- #include "FlockingSystem.h"
  #include "Edge.h"
  #include <iostream>
  #include <vector>
@@ -186,8 +185,57 @@ class FlockingForce : public ForceBase {
 
         void compute(PSYS& psys, const double dt);
 
+        // Getter and setter methods
+        double GetKca() { return _Kca; }
+        double GetKm() { return _Km; }
+        double GetKc() { return _Kc; }
+        double GetR() { return _R; }
+        double GetRamp() { return _Ramp; }
+        double GetTheta() { return _theta; }
+        double GetThetaRamp() { return _theta_ramp; }
+
+        void SetKca(double Kca) { _Kca = Kca; }
+        void SetKm(double Km) { _Km = Km; }
+        void SetKc(double Kc) { _Kc = Kc; }
+        void SetR(double R) { _R = R; }
+        void SetRamp(double Ramp) { _Ramp = Ramp; }
+        void SetTheta(double theta) { _theta = theta; }
+        void SetThetaRamp(double theta_ramp) { _theta_ramp = theta_ramp; }
+
+        // Find distance between two boids
+        Vector ComputeDistance(PSYS& psys, const size_t a, const size_t b);
+        
+        // Find the difference in velocity between two boids
+        Vector ComputeVelDiff(PSYS& psys, const size_t a, const size_t b);
+
+        // Find the range limit based on the distance between two particles
+        double ComputeRangeLimit(PSYS& psys, const size_t a, const size_t b);
+
+        // Find the fov limit based on the distance between two particles
+        double ComputeFOVLimit(PSYS& psys, const size_t a, const size_t b);
+
+        // Compute the collision avoidance acceleration of a boid
+        // based on all candidate boids
+        Vector ComputeCAAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates);
+
+        // Compute the velocity matching acceleration of a boid
+        // based on all candidate boids
+        Vector ComputeMAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates);
+
+        // Compute the centering acceleration of a boid
+        // based on all candidate boids
+        Vector ComputeCAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates);
+
     private:
         double Budget;
+        double _Kca;       // Collision avoidance multiplier
+        double _Km;        // Velocity matching multiplier
+        double _Kc;        // Centering multiplier
+        double _R;         // Distance from boid range lim. begins to ramp
+        double _Ramp;      // Distance from boid range lim. begins to ramp to zero
+        double _theta;     // Angular FOV for boid vision
+        double _theta_ramp; // Angular range ramping vision to zero
+
 };
 
 

@@ -9,7 +9,6 @@ OFILES = base/PbaViewer.o \
 		 base/SPHSystem.o\
 		 base/SoftBodySystem.o\
 		 base/RigidBodySystem.o\
-		 base/FlockingSystem.o\
 		 base/Edge.o\
 		 base/Force.o\
 		 base/Torque.o\

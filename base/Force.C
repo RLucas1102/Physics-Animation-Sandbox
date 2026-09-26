@@ -194,28 +194,26 @@ void AccumulatingStrutForce::compute(PSYS& psys, const double dt) {
 
 }
 
-pba::FlockingForce::FlockingForce(const double budget) :
+FlockingForce::FlockingForce(const double budget) :
     Budget (budget)
     {}
 
 void FlockingForce::compute(PSYS& psys, const double dt) {
     
-    Flock flock = std::dynamic_pointer_cast<FlockingSystem>(psys);
-
     #pragma omp parallel for
-    for (size_t p = 0; p < flock->Psize(); p++)
+    for (size_t p = 0; p < psys->Psize(); p++)
     {
 
         std::vector<size_t> Candidate_Boids;
 
-        Vector Acc = flock->GetAcc(p);
+        Vector Acc = psys->GetAcc(p);
 
-        for (size_t q = 0; q < flock->Psize(); q++)
+        for (size_t q = 0; q < psys->Psize(); q++)
         {
             if (p != q) {
 
-                double rab_temp = flock->ComputeRangeLimit(p,q);
-                double fab_temp = flock->ComputeFOVLimit(p,q);
+                double rab_temp = this->ComputeRangeLimit(psys, p,q);
+                double fab_temp = this->ComputeFOVLimit(psys, p,q);
 
                 if (fab_temp && rab_temp)
                 {
@@ -224,9 +222,9 @@ void FlockingForce::compute(PSYS& psys, const double dt) {
             }
         }
 
-        Vector CAAcc = flock->ComputeCAAcc(p, Candidate_Boids);
-        Vector MAcc  = flock->ComputeMAcc(p, Candidate_Boids);
-        Vector CAcc  = flock->ComputeCAcc(p, Candidate_Boids);
+        Vector CAAcc = this->ComputeCAAcc(psys, p, Candidate_Boids);
+        Vector MAcc  = this->ComputeMAcc(psys, p, Candidate_Boids);
+        Vector CAcc  = this->ComputeCAcc(psys, p, Candidate_Boids);
 
         double residual = Budget;
         Vector boid_acceleration = Vector(0,0,0);
@@ -263,13 +261,113 @@ void FlockingForce::compute(PSYS& psys, const double dt) {
         }
 
         Acc += boid_acceleration;
-        flock->SetAcc(p, Acc);
+        psys->SetAcc(p, Acc);
 
         Candidate_Boids.clear();
         
     }
     
     
+}
+
+Vector FlockingForce::ComputeDistance(PSYS& psys, const size_t a, const size_t b)
+{
+    Vector posA = psys->GetPos(a);
+    Vector posB = psys->GetPos(b);
+    return posB - posA;
+}
+
+Vector FlockingForce::ComputeVelDiff(PSYS& psys, const size_t a, const size_t b)
+{
+    Vector velA = psys->GetVel(a);
+    Vector velB = psys->GetVel(b);
+    return velB - velA;
+}
+
+double FlockingForce::ComputeRangeLimit(PSYS& psys, const size_t a, const size_t b)
+{
+
+    Vector distance = ComputeDistance(psys, a,b);
+    double dab = distance.magnitude();
+    
+    double rab;
+    if (dab <= _R)
+    {
+        rab = 1;
+    }
+    else if (dab > _R && dab <= _R + _Ramp)
+    {
+        rab = 1 - ((dab - _R)/_Ramp);
+    }
+    else {
+        rab = 0;
+    }
+    
+    return rab;
+
+}
+
+double FlockingForce::ComputeFOVLimit(PSYS& psys, const size_t a, const size_t b)
+{
+    Vector aVel = psys->GetVel(a);
+    Vector distance = ComputeDistance(psys,a,b);
+    double theta_ab = (distance * aVel) / (distance.magnitude() * aVel.magnitude()); 
+    double fab;
+
+    if(theta_ab >= cos(_theta)) {
+        fab = 1;
+    }
+    else if (theta_ab < cos(_theta) && theta_ab > cos(_theta + _theta_ramp)) {
+        fab = 1 - ((cos(_theta) - theta_ab) / (cos(_theta) - cos(_theta + _theta_ramp)));
+    }
+    else {
+        fab = 0;
+    }
+
+    return fab;
+
+}
+
+Vector FlockingForce::ComputeCAAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates)
+{
+    Vector CA = Vector(0,0,0);
+
+    for (size_t candidate : candidates)
+    {
+        Vector dist = ComputeDistance(psys,a, candidate);
+
+        double mag = dist.magnitude();
+        CA += (dist/(mag * mag)) * ComputeRangeLimit(psys, a, candidate) * ComputeFOVLimit(psys, a, candidate);
+    }
+
+    return -_Kca * CA;
+}
+
+Vector FlockingForce::ComputeMAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates)
+{
+    Vector M = Vector(0,0,0);
+
+    for (size_t candidate : candidates) 
+    {
+        M += ComputeVelDiff(psys, a, candidate) * ComputeRangeLimit(psys, a, candidate) * ComputeFOVLimit(psys, a, candidate);
+    }
+
+    return _Km * M;
+
+}
+
+Vector FlockingForce::ComputeCAcc(PSYS& psys, const size_t a, const std::vector<size_t>& candidates)
+{
+    Vector C = Vector(0,0,0);
+
+    for (size_t candidate : candidates) 
+    {
+        Vector dist = ComputeDistance(psys, a, candidate);
+
+        C += dist * ComputeRangeLimit(psys, a, candidate) * ComputeFOVLimit(psys, a, candidate);
+    }
+
+    return _Kc * C;
 }
 
 Force pba::CreateGravityForce(const Vector& g) {
